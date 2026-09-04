@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Binary Search Interactive Visualizer & Code Tracer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
       --background: #090d16;
@@ -16,12 +16,18 @@
     }
     body {
       background-color: #090d16;
+      color: #f8fafc;
     }
     .math-font {
       font-family: "Cambria Math", "Latin Modern Math", "STIX Two Math", "Times New Roman", serif;
     }
+    .code-text {
+      white-space: pre !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      tab-size: 4;
+    }
     .active-line {
-      background: rgba(59, 130, 246, 0.15) !important;
+      background: rgba(59, 130, 246, 0.22) !important;
       border-left: 3px solid #3b82f6 !important;
     }
     .active-line-indicator {
@@ -41,41 +47,42 @@
     }
   </style>
 </head>
-<body class="bg-transparent text-[var(--foreground)] antialiased p-3 sm:p-5 font-sans">
-  <div class="max-w-5xl mx-auto bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden">
+<body class="bg-[#090d16] text-[#f8fafc] antialiased p-3 sm:p-5 font-sans min-h-screen flex items-center justify-center">
+  <div class="max-w-5xl w-full mx-auto bg-[#0f172a] text-[#f8fafc] border border-[#1e293b] rounded-2xl shadow-2xl overflow-hidden">
     
     <!-- Top Header & LaTeX Invariant Bar -->
-    <div class="p-5 border-b border-[var(--border)] bg-[var(--background)]/50">
+    <div class="p-5 border-b border-[#1e293b] bg-[#090d16]/70">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div class="flex items-center gap-2">
-            <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20">
+            <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
               Interactive Tracer
             </span>
-            <h1 class="text-xl font-bold tracking-tight">?댁쭊 ?먯깋 (Binary Search)</h1>
+            <h1 class="text-xl font-bold tracking-tight text-white">이진 탐색 (Binary Search)</h1>
           </div>
-          <p class="text-xs text-[var(--muted-foreground)] mt-1">
-            肄붾뱶 ?쇱씤 踰덊샇? 諛곗뿴 硫붾え由??곹깭(L, R, Mid)??1:1 ?숆린???ㅽ뻾 ?몃젅?댁꽌
+          <p class="text-xs text-[#94a3b8] mt-1">
+            코드 라인 번호와 배열 메모리 상태(L, R, Mid)의 1:1 동기화 실행 트레이서
           </p>
         </div>
 
         <!-- LaTeX Math Badge Box -->
-        <div class="flex flex-wrap items-center gap-3 bg-[var(--card)] border border-[var(--border)] px-4 py-2 rounded-xl shadow-sm">
+        <div class="flex flex-wrap items-center gap-3 bg-[#090d16] border border-[#1e293b] px-4 py-2 rounded-xl shadow-inner">
           <div class="text-xs">
-            <span class="text-[var(--muted-foreground)] font-medium">?섑븰??遺덈??? </span>
+            <span class="text-[#94a3b8] font-medium">수학적 불변식: </span>
             <span class="math-font text-sm font-semibold text-blue-400">
-              Target ??[nums[L], nums[R]]
+              Target ∈ [nums[L], nums[R]]
             </span>
           </div>
-          <div class="h-4 w-px bg-[var(--border)]"></div>
+          <div class="h-4 w-px bg-[#1e293b]"></div>
           <div class="text-xs">
-            <span class="text-[var(--muted-foreground)] font-medium">以묎컙媛?怨꾩궛: </span>
+            <span class="text-[#94a3b8] font-medium">중간값 계산: </span>
             <span class="math-font text-sm text-emerald-400">
-              mid = ??(L + R) / 2 ??            </span>
+              mid = ⌊ (L + R) / 2 ⌋
+            </span>
           </div>
-          <div class="h-4 w-px bg-[var(--border)]"></div>
+          <div class="h-4 w-px bg-[#1e293b]"></div>
           <div class="text-xs">
-            <span class="text-[var(--muted-foreground)] font-medium">?쒓컙 蹂듭옟?? </span>
+            <span class="text-[#94a3b8] font-medium">시간 복잡도: </span>
             <span class="math-font text-sm text-purple-400 font-semibold">
               T(N) = O(log N)
             </span>
@@ -85,90 +92,90 @@
     </div>
 
     <!-- Main Grid: Left Code Tracer & Right Visual Canvas -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 border-b border-[var(--border)]">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 border-b border-[#1e293b]">
       
       <!-- Left Column: Code Lines Tracer (5 Cols) -->
-      <div class="lg:col-span-5 border-r border-[var(--border)] p-4 flex flex-col justify-between bg-[var(--sidebar)]/30">
+      <div class="lg:col-span-5 border-r border-[#1e293b] p-4 flex flex-col justify-between bg-[#0b1120]/60">
         <div>
-          <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]/60 mb-2">
-            <span class="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
+          <div class="flex items-center justify-between pb-3 border-b border-[#1e293b]/80 mb-2">
+            <span class="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">
               Python Algorithm Code
             </span>
-            <span id="activeLineBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-400">
+            <span id="activeLineBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold">
               Line 2
             </span>
           </div>
 
-          <!-- Code Lines Container -->
+          <!-- Code Lines Container with strict whitespace preservation -->
           <div id="codeLines" class="font-mono text-xs space-y-0.5 select-none">
             <!-- Line 1 -->
-            <div data-line="1" class="py-1 px-2 rounded flex items-center gap-3 text-[var(--muted-foreground)]">
-              <span class="w-5 text-right opacity-40 select-none">1</span>
+            <div data-line="1" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
+              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">1</span>
               <span class="code-text"><span class="text-purple-400 font-semibold">def</span> <span class="text-blue-400">binary_search</span>(nums, target):</span>
             </div>
             <!-- Line 2 -->
-            <div data-line="2" class="py-1 px-2 rounded flex items-center gap-3 active-line">
-              <span class="w-5 text-right opacity-60 font-bold select-none text-blue-400">2</span>
+            <div data-line="2" class="py-1 px-2 rounded flex items-center active-line">
+              <span class="w-6 text-right pr-3 opacity-80 font-bold select-none text-blue-400 font-mono text-[11px]">2</span>
               <span class="code-text">    left, right = <span class="text-amber-400">0</span>, <span class="text-purple-400">len</span>(nums) - <span class="text-amber-400">1</span></span>
             </div>
             <!-- Line 3 -->
-            <div data-line="3" class="py-1 px-2 rounded flex items-center gap-3">
-              <span class="w-5 text-right opacity-40 select-none">3</span>
+            <div data-line="3" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
+              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">3</span>
               <span class="code-text">    <span class="text-purple-400 font-semibold">while</span> left &lt;= right:</span>
             </div>
             <!-- Line 4 -->
-            <div data-line="4" class="py-1 px-2 rounded flex items-center gap-3">
-              <span class="w-5 text-right opacity-40 select-none">4</span>
+            <div data-line="4" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
+              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">4</span>
               <span class="code-text">        mid = (left + right) // <span class="text-amber-400">2</span></span>
             </div>
             <!-- Line 5 -->
-            <div data-line="5" class="py-1 px-2 rounded flex items-center gap-3">
-              <span class="w-5 text-right opacity-40 select-none">5</span>
+            <div data-line="5" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
+              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">5</span>
               <span class="code-text">        <span class="text-purple-400 font-semibold">if</span> nums[mid] == target:</span>
             </div>
             <!-- Line 6 -->
-            <div data-line="6" class="py-1 px-2 rounded flex items-center gap-3">
-              <span class="w-5 text-right opacity-40 select-none">6</span>
+            <div data-line="6" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
+              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">6</span>
               <span class="code-text">            <span class="text-purple-400 font-semibold">return</span> mid</span>
             </div>
             <!-- Line 7 -->
-            <div data-line="7" class="py-1 px-2 rounded flex items-center gap-3">
-              <span class="w-5 text-right opacity-40 select-none">7</span>
+            <div data-line="7" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
+              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">7</span>
               <span class="code-text">        <span class="text-purple-400 font-semibold">elif</span> nums[mid] &lt; target:</span>
             </div>
             <!-- Line 8 -->
-            <div data-line="8" class="py-1 px-2 rounded flex items-center gap-3">
-              <span class="w-5 text-right opacity-40 select-none">8</span>
+            <div data-line="8" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
+              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">8</span>
               <span class="code-text">            left = mid + <span class="text-amber-400">1</span></span>
             </div>
             <!-- Line 9 -->
-            <div data-line="9" class="py-1 px-2 rounded flex items-center gap-3">
-              <span class="w-5 text-right opacity-40 select-none">9</span>
+            <div data-line="9" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
+              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">9</span>
               <span class="code-text">        <span class="text-purple-400 font-semibold">else</span>:</span>
             </div>
             <!-- Line 10 -->
-            <div data-line="10" class="py-1 px-2 rounded flex items-center gap-3">
-              <span class="w-5 text-right opacity-40 select-none">10</span>
+            <div data-line="10" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
+              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">10</span>
               <span class="code-text">            right = mid - <span class="text-amber-400">1</span></span>
             </div>
             <!-- Line 11 -->
-            <div data-line="11" class="py-1 px-2 rounded flex items-center gap-3">
-              <span class="w-5 text-right opacity-40 select-none">11</span>
+            <div data-line="11" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
+              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">11</span>
               <span class="code-text">    <span class="text-purple-400 font-semibold">return</span> -<span class="text-amber-400">1</span></span>
             </div>
           </div>
         </div>
 
         <!-- Current Step Detailed Explanation Box -->
-        <div class="mt-4 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
-          <div class="flex items-center gap-2 mb-1">
+        <div class="mt-4 p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/30">
+          <div class="flex items-center gap-2 mb-1.5">
             <span class="active-line-indicator"></span>
             <span id="explanationTitle" class="text-xs font-bold text-blue-400">
-              珥덇린 ?곹깭 ?ㅼ젙
+              초기 상태 설정
             </span>
           </div>
-          <p id="explanationText" class="text-xs text-[var(--foreground)] leading-relaxed">
-            ?꾩껜 諛곗뿴(?몃뜳??0~6)???먯깋 援ш컙?쇰줈 ?ㅼ젙?섍린 ?꾪빐 left=0, right=6?쇰줈 珥덇린?뷀빀?덈떎.
+          <p id="explanationText" class="text-xs text-slate-200 leading-relaxed">
+            전체 배열(인덱스 0~6)을 탐색 구간으로 설정하기 위해 left=0, right=6으로 초기화합니다.
           </p>
         </div>
       </div>
@@ -177,25 +184,25 @@
       <div class="lg:col-span-7 p-4 sm:p-6 flex flex-col justify-between space-y-6">
         
         <!-- Target Info & Range Indicator -->
-        <div class="flex items-center justify-between bg-[var(--background)] px-4 py-2.5 rounded-xl border border-[var(--border)]">
+        <div class="flex items-center justify-between bg-[#090d16] px-4 py-2.5 rounded-xl border border-[#1e293b]">
           <div class="flex items-center gap-3">
-            <span class="text-xs font-semibold text-[var(--muted-foreground)]">李얜뒗 媛?(Target):</span>
+            <span class="text-xs font-semibold text-[#94a3b8]">찾는 값 (Target):</span>
             <span class="px-2.5 py-0.5 text-sm font-bold rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30">
               9
             </span>
           </div>
           <div class="flex items-center gap-2 text-xs">
-            <span class="text-[var(--muted-foreground)]">?꾩옱 ?먯깋 援ш컙:</span>
+            <span class="text-[#94a3b8]">현재 탐색 구간:</span>
             <span id="searchRangeText" class="font-mono font-bold text-blue-400">
-              [0, 6] (?ш린: 7媛?
+              [0, 6] (크기: 7개)
             </span>
           </div>
         </div>
 
         <!-- Array Elements Canvas with Pointers -->
         <div class="py-4">
-          <div class="text-xs text-[var(--muted-foreground)] mb-3 flex items-center justify-between">
-            <span>諛곗뿴 硫붾え由??쒓컖??(?몃뜳??& 媛?</span>
+          <div class="text-xs text-[#94a3b8] mb-3 flex items-center justify-between">
+            <span>배열 메모리 시각화 (인덱스 & 값)</span>
             <div class="flex items-center gap-3 text-[11px]">
               <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-blue-500 inline-block"></span> L (Left)</span>
               <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-amber-500 inline-block"></span> M (Mid)</span>
@@ -210,25 +217,25 @@
         </div>
 
         <!-- Live Variables Watcher Panel -->
-        <div class="bg-[var(--background)] p-4 rounded-xl border border-[var(--border)]">
-          <div class="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
-            ?ㅼ떆媛?蹂??媛먯떆李?(Variable Watcher)
+        <div class="bg-[#090d16] p-4 rounded-xl border border-[#1e293b]">
+          <div class="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-3">
+            실시간 변수 감시창 (Variable Watcher)
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-            <div class="p-2.5 rounded-lg bg-[var(--card)] border border-[var(--border)]">
-              <div class="text-[11px] text-[var(--muted-foreground)] mb-0.5">left</div>
+            <div class="p-2.5 rounded-lg bg-[#0f172a] border border-[#1e293b]">
+              <div class="text-[11px] text-[#94a3b8] mb-0.5">left</div>
               <div id="varLeft" class="font-mono text-base font-bold text-blue-400">0</div>
             </div>
-            <div class="p-2.5 rounded-lg bg-[var(--card)] border border-[var(--border)]">
-              <div class="text-[11px] text-[var(--muted-foreground)] mb-0.5">right</div>
+            <div class="p-2.5 rounded-lg bg-[#0f172a] border border-[#1e293b]">
+              <div class="text-[11px] text-[#94a3b8] mb-0.5">right</div>
               <div id="varRight" class="font-mono text-base font-bold text-purple-400">6</div>
             </div>
-            <div class="p-2.5 rounded-lg bg-[var(--card)] border border-[var(--border)]">
-              <div class="text-[11px] text-[var(--muted-foreground)] mb-0.5">mid</div>
+            <div class="p-2.5 rounded-lg bg-[#0f172a] border border-[#1e293b]">
+              <div class="text-[11px] text-[#94a3b8] mb-0.5">mid</div>
               <div id="varMid" class="font-mono text-base font-bold text-amber-400">-</div>
             </div>
-            <div class="p-2.5 rounded-lg bg-[var(--card)] border border-[var(--border)]">
-              <div class="text-[11px] text-[var(--muted-foreground)] mb-0.5">nums[mid] vs 9</div>
+            <div class="p-2.5 rounded-lg bg-[#0f172a] border border-[#1e293b]">
+              <div class="text-[11px] text-[#94a3b8] mb-0.5">nums[mid] vs 9</div>
               <div id="varComp" class="font-mono text-xs font-semibold text-emerald-400 mt-1">-</div>
             </div>
           </div>
@@ -238,31 +245,32 @@
     </div>
 
     <!-- Bottom Controls & Timeline Slider -->
-    <div class="p-4 bg-[var(--background)]/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="p-4 bg-[#090d16]/90 flex flex-col sm:flex-row items-center justify-between gap-4">
       
       <!-- Buttons -->
       <div class="flex items-center gap-2">
-        <button id="btnFirst" class="p-2 text-xs font-medium rounded-lg bg-[var(--card)] border border-[var(--border)] hover:bg-zinc-800 transition">
-          ??泥섏쓬
+        <button id="btnFirst" class="p-2 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
+          ⏮ 처음
         </button>
-        <button id="btnPrev" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--card)] border border-[var(--border)] hover:bg-zinc-800 transition">
-          ? ?댁쟾
+        <button id="btnPrev" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
+          ◀ 이전
         </button>
         <button id="btnPlay" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition flex items-center gap-1.5">
-          <span id="playIcon">??/span> <span id="playText">?먮룞 ?ъ깮</span>
+          <span id="playIcon">▶</span> <span id="playText">자동 재생</span>
         </button>
-        <button id="btnNext" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--card)] border border-[var(--border)] hover:bg-zinc-800 transition">
-          ?ㅼ쓬 ??        </button>
-        <button id="btnReset" class="p-2 text-xs font-medium rounded-lg bg-[var(--card)] border border-[var(--border)] hover:bg-zinc-800 transition">
-          ?봽 由ъ뀑
+        <button id="btnNext" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
+          다음 ▶
+        </button>
+        <button id="btnReset" class="p-2 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
+          🔄 리셋
         </button>
       </div>
 
       <!-- Slider & Step Indicator -->
       <div class="flex items-center gap-3 w-full sm:w-auto">
-        <span class="text-xs text-[var(--muted-foreground)] whitespace-nowrap">Step:</span>
+        <span class="text-xs text-[#94a3b8] whitespace-nowrap">Step:</span>
         <input id="stepSlider" type="range" min="0" max="6" value="0" class="w-full sm:w-48 accent-blue-500 cursor-pointer">
-        <span id="stepBadge" class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[var(--card)] border border-[var(--border)] text-blue-400 whitespace-nowrap">
+        <span id="stepBadge" class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[#090d16] border border-[#1e293b] text-blue-400 whitespace-nowrap">
           0 / 6
         </span>
       </div>
@@ -272,100 +280,98 @@
   </div>
 
   <script>
-    // Data setup
     const nums = [1, 3, 5, 7, 9, 11, 13];
     const target = 9;
 
-    // Step-by-step trace data (1:1 mapped to code line, state, and visuals)
     const traceSteps = [
       {
         step: 0,
         line: 2,
-        title: "?먯깋 援ш컙 珥덇린??,
-        desc: "諛곗뿴???쒖옉??left=0, ?앹젏 right=6?쇰줈 ?ㅼ젙?섏뿬 ?꾩껜 諛곗뿴 [1 ~ 13]???먯깋 踰붿쐞濡?吏?뺥빀?덈떎.",
+        title: "탐색 구간 초기화",
+        desc: "배열의 시작점 left=0, 끝점 right=6으로 설정하여 전체 배열 [1 ~ 13]을 탐색 범위로 지정합니다.",
         left: 0,
         right: 6,
         mid: null,
-        comp: "?먯깋 ?쒖옉",
-        rangeText: "[0, 6] (?꾩껜 7媛?",
+        comp: "탐색 시작",
+        rangeText: "[0, 6] (전체 7개)",
         activeIndices: [0, 1, 2, 3, 4, 5, 6],
         foundIndex: null
       },
       {
         step: 1,
         line: 4,
-        title: "1?뚯감 以묎컙媛?Mid) 怨꾩궛",
-        desc: "left(0) <= right(6) ?깅┰. 以묎컙 ?몃뜳??mid = ??0 + 6) / 2??= 3???좏깮?⑸땲?? nums[3]??媛믪? 7?낅땲??",
+        title: "1회차 중간값(Mid) 계산",
+        desc: "left(0) <= right(6) 성립. 중간 인덱스 mid = ⌊(0 + 6) / 2⌋ = 3을 선택합니다. nums[3]의 값은 7입니다.",
         left: 0,
         right: 6,
         mid: 3,
         comp: "nums[3]=7",
-        rangeText: "[0, 6] (?ш린: 7媛?",
+        rangeText: "[0, 6] (크기: 7개)",
         activeIndices: [0, 1, 2, 3, 4, 5, 6],
         foundIndex: null
       },
       {
         step: 2,
         line: 8,
-        title: "鍮꾧탳 諛??쇱そ 援ш컙 ?덈씫 (Left ?대룞)",
-        desc: "nums[mid]=7 < target(9) ?대?濡? ?寃잛? 臾댁“嫄?3踰??몃뜳?ㅻ낫???ㅻⅨ履쎌뿉 ?덉뒿?덈떎. 0~3踰?援ш컙??紐⑤몢 ?덈씫?쒗궎怨?left = mid + 1 = 4濡??대룞?⑸땲??",
+        title: "비교 및 왼쪽 구간 탈락 (Left 이동)",
+        desc: "nums[mid]=7 < target(9) 이므로, 타겟은 무조건 3번 인덱스보다 오른쪽에 있습니다. 0~3번 구간을 모두 탈락시키고 left = mid + 1 = 4로 이동합니다.",
         left: 4,
         right: 6,
         mid: 3,
         comp: "7 < 9 (L = mid + 1)",
-        rangeText: "[4, 6] (?ш린: 3媛?",
+        rangeText: "[4, 6] (크기: 3개)",
         activeIndices: [4, 5, 6],
         foundIndex: null
       },
       {
         step: 3,
         line: 4,
-        title: "2?뚯감 以묎컙媛?Mid) 怨꾩궛",
-        desc: "left(4) <= right(6) ?깅┰. ??援ш컙 [4, 6]??以묎컙媛?mid = ??4 + 6) / 2??= 5瑜??좏깮?⑸땲?? nums[5]??媛믪? 11?낅땲??",
+        title: "2회차 중간값(Mid) 계산",
+        desc: "left(4) <= right(6) 성립. 새 구간 [4, 6]의 중간값 mid = ⌊(4 + 6) / 2⌋ = 5를 선택합니다. nums[5]의 값은 11입니다.",
         left: 4,
         right: 6,
         mid: 5,
         comp: "nums[5]=11",
-        rangeText: "[4, 6] (?ш린: 3媛?",
+        rangeText: "[4, 6] (크기: 3개)",
         activeIndices: [4, 5, 6],
         foundIndex: null
       },
       {
         step: 4,
         line: 10,
-        title: "鍮꾧탳 諛??ㅻⅨ履?援ш컙 ?덈씫 (Right ?대룞)",
-        desc: "nums[mid]=11 > target(9) ?대?濡? ?寃잛? 5踰??몃뜳?ㅻ낫???쇱そ???덉뒿?덈떎. 5~6踰?援ш컙???덈씫?쒗궎怨?right = mid - 1 = 4濡??대룞?⑸땲??",
+        title: "비교 및 오른쪽 구간 탈락 (Right 이동)",
+        desc: "nums[mid]=11 > target(9) 이므로, 타겟은 5번 인덱스보다 왼쪽에 있습니다. 5~6번 구간을 탈락시키고 right = mid - 1 = 4로 이동합니다.",
         left: 4,
         right: 4,
         mid: 5,
         comp: "11 > 9 (R = mid - 1)",
-        rangeText: "[4, 4] (?ш린: 1媛?",
+        rangeText: "[4, 4] (크기: 1개)",
         activeIndices: [4],
         foundIndex: null
       },
       {
         step: 5,
         line: 4,
-        title: "3?뚯감 ?⑥씪 ?먯냼 ?섎졃",
-        desc: "left(4) <= right(4) ?깅┰! mid = ??4 + 4) / 2??= 4瑜??좏깮?⑸땲?? L, R, Mid媛 紐⑤몢 ?몃뜳??4瑜?媛由ы궢?덈떎.",
+        title: "3회차 단일 원소 수렴",
+        desc: "left(4) <= right(4) 성립! mid = ⌊(4 + 4) / 2⌋ = 4를 선택합니다. L, R, Mid가 모두 인덱스 4를 가리킵니다.",
         left: 4,
         right: 4,
         mid: 4,
         comp: "nums[4]=9",
-        rangeText: "[4, 4] (?ш린: 1媛?",
+        rangeText: "[4, 4] (크기: 1개)",
         activeIndices: [4],
         foundIndex: null
       },
       {
         step: 6,
         line: 6,
-        title: "?럦 Target ?쇱튂! 諛섑솚 (Found)",
-        desc: "nums[mid]=9 == target(9) ?쇱튂! ?먯깋 ?깃났. 李얠? ?몃뜳??4瑜?利됱떆 諛섑솚?섍퀬 ?⑥닔瑜?醫낅즺?⑸땲??",
+        title: "🎉 Target 일치! 반환 (Found)",
+        desc: "nums[mid]=9 == target(9) 일치! 탐색 성공. 찾은 인덱스 4를 즉시 반환하고 함수를 종료합니다.",
         left: 4,
         right: 4,
         mid: 4,
         comp: "9 == 9 (MATCH!)",
-        rangeText: "諛쒓껄 ?꾨즺 (Index 4)",
+        rangeText: "발견 완료 (Index 4)",
         activeIndices: [4],
         foundIndex: 4
       }
@@ -375,7 +381,6 @@
     let isPlaying = false;
     let playInterval = null;
 
-    // DOM Elements
     const arrayContainer = document.getElementById('arrayContainer');
     const stepSlider = document.getElementById('stepSlider');
     const stepBadge = document.getElementById('stepBadge');
@@ -391,16 +396,15 @@
     const playIcon = document.getElementById('playIcon');
     const playText = document.getElementById('playText');
 
-    // Initial render of Array Cards
     function renderArrayCards() {
       arrayContainer.innerHTML = '';
       nums.forEach((val, idx) => {
         const card = document.createElement('div');
         card.id = `card-${idx}`;
-        card.className = 'card-transition flex flex-col items-center p-2 rounded-xl border border-[var(--border)] bg-[var(--card)]';
+        card.className = 'card-transition flex flex-col items-center p-2 rounded-xl border border-[#1e293b] bg-[#0f172a]';
         card.innerHTML = `
-          <span class="text-[10px] text-[var(--muted-foreground)] font-mono mb-1">idx ${idx}</span>
-          <div id="card-val-${idx}" class="w-full py-2.5 rounded-lg font-mono font-bold text-center text-sm sm:text-base bg-[var(--background)] border border-[var(--border)]/60">
+          <span class="text-[10px] text-[#94a3b8] font-mono mb-1">idx ${idx}</span>
+          <div id="card-val-${idx}" class="w-full py-2.5 rounded-lg font-mono font-bold text-center text-sm sm:text-base bg-[#090d16] border border-[#1e293b] text-white">
             ${val}
           </div>
           <div id="card-badges-${idx}" class="mt-2 min-h-[22px] flex items-center gap-1 flex-wrap justify-center text-[10px] font-mono font-bold">
@@ -410,12 +414,10 @@
       });
     }
 
-    // Update state to current step
     function updateStep(stepIndex) {
       currentStep = stepIndex;
       const s = traceSteps[stepIndex];
 
-      // Update Slider & Badges
       stepSlider.value = stepIndex;
       stepBadge.innerText = `${stepIndex} / ${traceSteps.length - 1}`;
       activeLineBadge.innerText = `Line ${s.line}`;
@@ -423,34 +425,31 @@
       explanationText.innerText = s.desc;
       searchRangeText.innerText = s.rangeText;
 
-      // Update Variables
       varLeft.innerText = s.left !== null ? s.left : '-';
       varRight.innerText = s.right !== null ? s.right : '-';
       varMid.innerText = s.mid !== null ? s.mid : '-';
       varComp.innerText = s.comp;
 
-      // Update Code Line Highlighting
       document.querySelectorAll('#codeLines > div').forEach(div => {
         const lineNum = parseInt(div.getAttribute('data-line'));
         if (lineNum === s.line) {
           div.classList.add('active-line');
-          div.classList.remove('opacity-40');
+          div.classList.remove('text-[#94a3b8]');
+          div.classList.add('text-white');
         } else {
           div.classList.remove('active-line');
-          div.classList.add('opacity-70');
+          div.classList.add('text-[#94a3b8]');
+          div.classList.remove('text-white');
         }
       });
 
-      // Update Array Cards & Badges
       nums.forEach((val, idx) => {
         const card = document.getElementById(`card-${idx}`);
         const cardVal = document.getElementById(`card-val-${idx}`);
         const cardBadges = document.getElementById(`card-badges-${idx}`);
 
-        // Reset badge html
         cardBadges.innerHTML = '';
 
-        // Pointer Badges
         if (idx === s.left) {
           cardBadges.innerHTML += `<span class="px-1.5 py-0.5 rounded bg-blue-500 text-white shadow-xs">L</span>`;
         }
@@ -461,27 +460,23 @@
           cardBadges.innerHTML += `<span class="px-1.5 py-0.5 rounded bg-purple-500 text-white shadow-xs">R</span>`;
         }
 
-        // Active / Eliminated Styling
         const isActive = s.activeIndices.includes(idx);
         if (!isActive) {
-          card.classList.add('opacity-30', 'grayscale');
-          cardVal.className = 'w-full py-2.5 rounded-lg font-mono text-center text-sm sm:text-base bg-[var(--background)]/30 border border-transparent text-[var(--muted-foreground)]';
+          card.classList.add('opacity-25', 'grayscale');
+          cardVal.className = 'w-full py-2.5 rounded-lg font-mono text-center text-sm sm:text-base bg-[#090d16]/40 border border-transparent text-[#94a3b8]';
         } else {
-          card.classList.remove('opacity-30', 'grayscale');
+          card.classList.remove('opacity-25', 'grayscale');
           if (idx === s.foundIndex) {
-            // Target Found!
             cardVal.className = 'w-full py-2.5 rounded-lg font-mono font-bold text-center text-sm sm:text-base bg-emerald-500/20 border-2 border-emerald-500 text-emerald-400 shadow-lg shadow-emerald-500/20';
           } else if (idx === s.mid) {
-            // Mid Element Under Inspection
             cardVal.className = 'w-full py-2.5 rounded-lg font-mono font-bold text-center text-sm sm:text-base bg-amber-500/20 border-2 border-amber-500 text-amber-300';
           } else {
-            cardVal.className = 'w-full py-2.5 rounded-lg font-mono font-bold text-center text-sm sm:text-base bg-[var(--background)] border border-blue-500/40 text-[var(--foreground)]';
+            cardVal.className = 'w-full py-2.5 rounded-lg font-mono font-bold text-center text-sm sm:text-base bg-[#090d16] border border-blue-500/40 text-slate-100';
           }
         }
       });
     }
 
-    // Playback Controls
     function togglePlay() {
       if (isPlaying) {
         pause();
@@ -492,8 +487,8 @@
 
     function play() {
       isPlaying = true;
-      playIcon.innerText = '??;
-      playText.innerText = '?쇱떆 ?뺤?';
+      playIcon.innerText = '⏸';
+      playText.innerText = '일시 정지';
       btnPlay.classList.replace('bg-blue-600', 'bg-amber-600');
       btnPlay.classList.replace('hover:bg-blue-500', 'hover:bg-amber-500');
 
@@ -513,14 +508,13 @@
 
     function pause() {
       isPlaying = false;
-      playIcon.innerText = '??;
-      playText.innerText = '?먮룞 ?ъ깮';
+      playIcon.innerText = '▶';
+      playText.innerText = '자동 재생';
       btnPlay.classList.replace('bg-amber-600', 'bg-blue-600');
       btnPlay.classList.replace('hover:bg-amber-500', 'hover:bg-blue-500');
       if (playInterval) clearInterval(playInterval);
     }
 
-    // Event Listeners
     document.getElementById('btnNext').addEventListener('click', () => {
       pause();
       if (currentStep < traceSteps.length - 1) updateStep(currentStep + 1);
@@ -548,10 +542,8 @@
       updateStep(parseInt(e.target.value));
     });
 
-    // Init on load
     renderArrayCards();
     updateStep(0);
   </script>
 </body>
 </html>
-
