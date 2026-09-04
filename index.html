@@ -91,6 +91,39 @@
       </div>
     </div>
 
+    <!-- NEW: Function Input & Desirable Output Specification Card -->
+    <div class="px-5 py-3 border-b border-[#1e293b] bg-[#0b1120]/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+      
+      <!-- Input Spec -->
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <span class="px-2 py-0.5 rounded font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+          📥 Input
+        </span>
+        <div class="font-mono text-slate-300 flex items-center gap-2 flex-wrap">
+          <span><span class="text-purple-400 font-semibold">nums</span>: <span class="text-blue-300">list[int]</span> = <span class="text-amber-300 font-semibold">[1, 3, 5, 7, 9, 11, 13]</span></span>
+          <span class="text-[#64748b]">|</span>
+          <span><span class="text-purple-400 font-semibold">target</span>: <span class="text-blue-300">int</span> = <span class="text-amber-300 font-semibold">9</span></span>
+        </div>
+        <span class="text-[11px] text-[#94a3b8] hidden md:inline">(※ 오름차순 정렬 배열)</span>
+      </div>
+
+      <!-- Desirable Output Spec -->
+      <div class="flex items-center gap-2.5">
+        <span class="px-2 py-0.5 rounded font-mono font-bold bg-purple-500/10 text-purple-400 border border-purple-500/30 flex items-center gap-1">
+          📤 Desirable Output
+        </span>
+        <div class="font-mono flex items-center gap-1.5">
+          <span class="text-blue-300">int</span>
+          <span class="text-slate-400">=</span>
+          <span id="outputSpecBadge" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">
+            Index 4 (값: 9)
+          </span>
+        </div>
+        <span class="text-[11px] text-[#94a3b8] hidden md:inline">(미존재 시: -1)</span>
+      </div>
+
+    </div>
+
     <!-- Main Grid: Left Code Tracer & Right Visual Canvas -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 border-b border-[#1e293b]">
       
@@ -106,12 +139,12 @@
             </span>
           </div>
 
-          <!-- Code Lines Container with strict whitespace preservation -->
+          <!-- Code Lines Container with strict whitespace preservation & Type Hints -->
           <div id="codeLines" class="font-mono text-xs space-y-0.5 select-none">
             <!-- Line 1 -->
             <div data-line="1" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
               <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">1</span>
-              <span class="code-text"><span class="text-purple-400 font-semibold">def</span> <span class="text-blue-400">binary_search</span>(nums, target):</span>
+              <span class="code-text"><span class="text-purple-400 font-semibold">def</span> <span class="text-blue-400">binary_search</span>(nums: list[int], target: int) -&gt; int:</span>
             </div>
             <!-- Line 2 -->
             <div data-line="2" class="py-1 px-2 rounded flex items-center active-line">
