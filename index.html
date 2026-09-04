@@ -73,10 +73,13 @@
         </div>
       </div>
 
-      <!-- Algorithm Dropdown Selector -->
-      <div class="flex items-center gap-2">
-        <label for="algoSelect" class="text-xs text-[#94a3b8] hidden md:block">알고리즘 선택:</label>
-        <select id="algoSelect" class="bg-[#0f172a] border border-[#334155] text-white text-xs rounded-xl px-3 py-2 font-medium focus:outline-none focus:border-blue-500 cursor-pointer shadow-sm">
+      <!-- Algorithm Dropdown Selector with Mobile 1-Tap Switchers -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <label for="algoSelect" class="text-xs text-[#94a3b8] hidden md:block">알고리즘:</label>
+        <button id="btnPrevAlgo" title="이전 알고리즘" class="w-8 h-8 rounded-xl bg-[#0f172a] border border-[#334155] text-slate-300 hover:text-white hover:border-blue-500 active:scale-95 transition flex items-center justify-center text-xs font-bold select-none cursor-pointer">
+          ◀
+        </button>
+        <select id="algoSelect" class="bg-[#0f172a] border border-[#334155] text-white text-xs rounded-xl px-2.5 py-2 font-medium focus:outline-none focus:border-blue-500 cursor-pointer shadow-sm max-w-[190px] sm:max-w-none truncate">
           <optgroup label="🔍 탐색 & 정렬">
             <option value="binary-search">1. 이진 탐색 (Binary Search)</option>
             <option value="dfs-bfs">2. 깊이/너비 우선 탐색 (DFS / BFS)</option>
@@ -99,13 +102,16 @@
             <option value="tree-heap">11. 트리 & 힙 (Tree & Heap)</option>
           </optgroup>
         </select>
+        <button id="btnNextAlgo" title="다음 알고리즘" class="w-8 h-8 rounded-xl bg-[#0f172a] border border-[#334155] text-slate-300 hover:text-white hover:border-blue-500 active:scale-95 transition flex items-center justify-center text-xs font-bold select-none cursor-pointer">
+          ▶
+        </button>
       </div>
 
     </div>
   </header>
 
   <!-- Main Algorithm Dashboard Container -->
-  <main class="flex-1 max-w-6xl w-full mx-auto p-3 sm:p-5">
+  <main class="flex-1 max-w-6xl w-full mx-auto p-3 sm:p-5 pb-36 sm:pb-32">
     <div class="bg-[#0f172a] border border-[#1e293b] rounded-2xl shadow-2xl overflow-hidden">
       
       <!-- Top Algorithm Header & LaTeX Invariant Bar -->
@@ -230,46 +236,54 @@
 
       </div>
 
-      <!-- Bottom Controls & Timeline Slider -->
-      <div class="p-4 bg-[#090d16]/90 flex flex-col sm:flex-row items-center justify-between gap-4">
-        
-        <!-- Playback Buttons -->
-        <div class="flex items-center gap-2">
-          <button id="btnFirst" class="p-2 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
-            ⏮ 처음
-          </button>
-          <button id="btnPrev" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
-            ◀ 이전
-          </button>
-          <button id="btnPlay" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition flex items-center gap-1.5">
-            <span id="playIcon">▶</span> <span id="playText">자동 재생</span>
-          </button>
-          <button id="btnNext" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
-            다음 ▶
-          </button>
-          <button id="btnReset" class="p-2 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
-            🔄 리셋
-          </button>
-        </div>
-
-        <!-- Step Slider & Progress -->
-        <div class="flex items-center gap-3 w-full sm:w-auto">
-          <span class="text-xs text-[#94a3b8] whitespace-nowrap">Step:</span>
-          <input id="stepSlider" type="range" min="0" max="6" value="0" class="w-full sm:w-48 accent-blue-500 cursor-pointer">
-          <span id="stepBadge" class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[#090d16] border border-[#1e293b] text-blue-400 whitespace-nowrap">
-            0 / 6
-          </span>
-        </div>
-
-      </div>
-
     </div>
   </main>
 
   <!-- Footer -->
-  <footer class="text-center text-xs text-[#64748b] py-4 border-t border-[#1e293b]/60">
+  <footer class="text-center text-xs text-[#64748b] py-6 mb-24 border-t border-[#1e293b]/60">
     Coding Interview Preparation 2026 · AlgoVisualizer Hub by acha21
   </footer>
+
+  <!-- Floating Bottom Control Bar (Always visible on Mobile & Desktop) -->
+  <aside aria-label="알고리즘 인터랙티브 컨트롤러" class="fixed bottom-0 left-0 right-0 z-50 bg-[#090d16]/95 backdrop-blur-xl border-t border-[#1e293b] shadow-[0_-10px_30px_rgba(0,0,0,0.8)] px-3 py-2 sm:px-6 sm:py-3">
+    <div class="max-w-4xl mx-auto flex flex-col gap-2">
+      <!-- Top Row: Step Slider & Badges -->
+      <div class="flex items-center justify-between gap-2.5 text-xs">
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <span class="text-[#94a3b8] font-medium hidden sm:inline">단계:</span>
+          <span id="stepBadge" class="font-mono font-bold px-2 py-0.5 rounded bg-[#0f172a] border border-[#1e293b] text-blue-400 text-[11px] sm:text-xs whitespace-nowrap">
+            0 / 6
+          </span>
+          <span id="activeLineMiniBadge" class="font-mono font-semibold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[11px] sm:text-xs whitespace-nowrap">
+            Line 2
+          </span>
+        </div>
+        <div class="flex-1 max-w-md mx-1 sm:mx-3 flex items-center gap-2">
+          <input id="stepSlider" type="range" min="0" max="6" value="0" class="w-full accent-blue-500 cursor-pointer h-2 bg-[#1e293b] rounded-lg">
+        </div>
+        <span id="stepProgressPct" class="text-[11px] font-mono text-[#64748b] w-8 text-right font-medium">0%</span>
+      </div>
+
+      <!-- Bottom Row: Touch-Friendly Action Buttons -->
+      <div class="flex items-center justify-center gap-1.5 sm:gap-3">
+        <button id="btnFirst" title="첫 단계로" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs font-medium rounded-xl bg-[#1e293b] border border-[#334155] text-slate-300 hover:text-white hover:bg-slate-700 active:scale-95 transition flex items-center gap-1 min-h-[38px] cursor-pointer">
+          <span>⏮</span> <span class="hidden sm:inline">처음</span>
+        </button>
+        <button id="btnPrev" title="이전 단계 (단축키: ← 또는 P)" class="px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold rounded-xl bg-[#1e293b] border border-[#334155] text-slate-200 hover:text-white hover:bg-slate-700 active:scale-95 transition flex items-center gap-1 min-h-[38px] cursor-pointer">
+          <span>◀</span> <span>이전</span>
+        </button>
+        <button id="btnPlay" title="재생 / 일시정지 (단축키: Space)" class="px-5 py-1.5 sm:px-7 sm:py-2 text-xs sm:text-sm font-bold rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 active:scale-95 transition flex items-center gap-1.5 min-h-[38px] cursor-pointer">
+          <span id="playIcon">▶</span> <span id="playText">자동 재생</span>
+        </button>
+        <button id="btnNext" title="다음 단계 (단축키: → 또는 N)" class="px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold rounded-xl bg-[#1e293b] border border-[#334155] text-slate-200 hover:text-white hover:bg-slate-700 active:scale-95 transition flex items-center gap-1 min-h-[38px] cursor-pointer">
+          <span>다음</span> <span>▶</span>
+        </button>
+        <button id="btnReset" title="초기화" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs font-medium rounded-xl bg-[#1e293b] border border-[#334155] text-slate-300 hover:text-white hover:bg-slate-700 active:scale-95 transition flex items-center gap-1 min-h-[38px] cursor-pointer">
+          <span>🔄</span> <span class="hidden sm:inline">리셋</span>
+        </button>
+      </div>
+    </div>
+  </aside>
 
   <!-- Algorithm Definitions & Engine Script -->
   <script>
@@ -1198,6 +1212,7 @@
 
     // Engine Core Functions
     function loadAlgorithm(key) {
+      if (typeof ALIAS_MAP !== 'undefined' && ALIAS_MAP[key]) key = ALIAS_MAP[key];
       if (!ALGORITHMS[key]) key = 'binary-search';
       currentAlgoKey = key;
       currentStepIndex = 0;
@@ -1236,12 +1251,22 @@
 
       // Update Slider max
       const slider = document.getElementById('stepSlider');
-      slider.max = data.steps.length - 1;
-      slider.value = 0;
+      if (slider) {
+        slider.max = data.steps.length - 1;
+        slider.value = 0;
+      }
 
       // Update Dropdown value
-      document.getElementById('algoSelect').value = key;
-      window.location.hash = '#' + key;
+      const select = document.getElementById('algoSelect');
+      if (select) select.value = key;
+
+      if (window.location.hash !== '#' + key) {
+        if (history.replaceState) {
+          history.replaceState(null, '', '#' + key);
+        } else {
+          window.location.hash = '#' + key;
+        }
+      }
 
       // Render Step 0
       renderStep(0);
@@ -1251,11 +1276,27 @@
       currentStepIndex = stepIndex;
       const data = ALGORITHMS[currentAlgoKey];
       const s = data.steps[stepIndex];
+      const totalSteps = data.steps.length - 1;
 
       // Slider & Badge
-      document.getElementById('stepSlider').value = stepIndex;
-      document.getElementById('stepBadge').innerText = `${stepIndex} / ${data.steps.length - 1}`;
-      document.getElementById('activeLineBadge').innerText = `Line ${s.line}`;
+      const slider = document.getElementById('stepSlider');
+      if (slider) slider.value = stepIndex;
+
+      const stepBadge = document.getElementById('stepBadge');
+      if (stepBadge) stepBadge.innerText = `${stepIndex} / ${totalSteps}`;
+
+      const activeLineBadge = document.getElementById('activeLineBadge');
+      if (activeLineBadge) activeLineBadge.innerText = `Line ${s.line}`;
+
+      const miniBadge = document.getElementById('activeLineMiniBadge');
+      if (miniBadge) miniBadge.innerText = `Line ${s.line}`;
+
+      const pctElem = document.getElementById('stepProgressPct');
+      if (pctElem) {
+        const pct = totalSteps > 0 ? Math.round((stepIndex / totalSteps) * 100) : 100;
+        pctElem.innerText = `${pct}%`;
+      }
+
       document.getElementById('explanationTitle').innerText = s.title;
       document.getElementById('explanationText').innerText = s.desc;
 
@@ -1328,10 +1369,97 @@
       if (playInterval) clearInterval(playInterval);
     }
 
+    // Algorithm ordering and aliases
+    const ALGO_KEYS_ORDER = [
+      'binary-search',
+      'dfs-bfs',
+      'two-pointer',
+      'sliding-window',
+      'array-string',
+      'dp',
+      'greedy',
+      'dijkstra',
+      'union-find',
+      'hash-map',
+      'tree-heap'
+    ];
+
+    const ALIAS_MAP = {
+      'binarysearch': 'binary-search',
+      'binary_search': 'binary-search',
+      'bs': 'binary-search',
+      'twopointer': 'two-pointer',
+      'two_pointer': 'two-pointer',
+      'slidingwindow': 'sliding-window',
+      'sliding_window': 'sliding-window',
+      'prefixsum': 'sliding-window',
+      'prefix_sum': 'sliding-window',
+      'dp': 'dp',
+      'dynamicprogramming': 'dp',
+      'dynamic-programming': 'dp',
+      'dynamic_programming': 'dp',
+      'dfs': 'dfs-bfs',
+      'bfs': 'dfs-bfs',
+      'dfs-bfs': 'dfs-bfs',
+      'dfsbfs': 'dfs-bfs',
+      'dfs_bfs': 'dfs-bfs',
+      'graph': 'dijkstra',
+      'dijkstra': 'dijkstra',
+      'unionfind': 'union-find',
+      'union-find': 'union-find',
+      'union_find': 'union-find',
+      'disjointset': 'union-find',
+      'disjoint-set': 'union-find',
+      'hashmap': 'hash-map',
+      'hash-map': 'hash-map',
+      'hash_map': 'hash-map',
+      'hash': 'hash-map',
+      'tree': 'tree-heap',
+      'heap': 'tree-heap',
+      'treeheap': 'tree-heap',
+      'tree-heap': 'tree-heap',
+      'tree_heap': 'tree-heap',
+      'array': 'array-string',
+      'string': 'array-string',
+      'arraystring': 'array-string',
+      'array-string': 'array-string',
+      'array_string': 'array-string'
+    };
+
+    function getHashKey() {
+      const raw = (window.location.hash || '')
+        .replace(/^[#/]+/, '')
+        .replace(/\/+$/, '')
+        .trim()
+        .toLowerCase();
+      if (!raw) return null;
+      if (ALGORITHMS[raw]) return raw;
+      if (ALIAS_MAP[raw] && ALGORITHMS[ALIAS_MAP[raw]]) return ALIAS_MAP[raw];
+      return null;
+    }
+
     // Event Listeners
     document.getElementById('algoSelect').addEventListener('change', (e) => {
       loadAlgorithm(e.target.value);
     });
+
+    const btnPrevAlgo = document.getElementById('btnPrevAlgo');
+    if (btnPrevAlgo) {
+      btnPrevAlgo.addEventListener('click', () => {
+        const idx = ALGO_KEYS_ORDER.indexOf(currentAlgoKey);
+        const prevIdx = (idx - 1 + ALGO_KEYS_ORDER.length) % ALGO_KEYS_ORDER.length;
+        loadAlgorithm(ALGO_KEYS_ORDER[prevIdx]);
+      });
+    }
+
+    const btnNextAlgo = document.getElementById('btnNextAlgo');
+    if (btnNextAlgo) {
+      btnNextAlgo.addEventListener('click', () => {
+        const idx = ALGO_KEYS_ORDER.indexOf(currentAlgoKey);
+        const nextIdx = (idx + 1) % ALGO_KEYS_ORDER.length;
+        loadAlgorithm(ALGO_KEYS_ORDER[nextIdx]);
+      });
+    }
 
     document.getElementById('btnNext').addEventListener('click', () => {
       pause();
@@ -1361,22 +1489,43 @@
       renderStep(parseInt(e.target.value));
     });
 
-    window.addEventListener('hashchange', () => {
-      const hash = window.location.hash.replace('#', '');
-      if (hash && ALGORITHMS[hash] && hash !== currentAlgoKey) {
-        loadAlgorithm(hash);
+    // Keyboard Shortcuts (ArrowLeft: 이전, ArrowRight: 다음, Space: 재생/정지)
+    window.addEventListener('keydown', (e) => {
+      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+      if (e.key === 'ArrowRight' || e.key === 'n') {
+        e.preventDefault();
+        pause();
+        const data = ALGORITHMS[currentAlgoKey];
+        if (currentStepIndex < data.steps.length - 1) renderStep(currentStepIndex + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'p') {
+        e.preventDefault();
+        pause();
+        if (currentStepIndex > 0) renderStep(currentStepIndex - 1);
+      } else if (e.key === ' ' || e.key === 'k') {
+        e.preventDefault();
+        togglePlay();
       }
     });
 
-    // Initial App Load
-    window.addEventListener('DOMContentLoaded', () => {
-      const initialHash = window.location.hash.replace('#', '');
-      if (initialHash && ALGORITHMS[initialHash]) {
-        loadAlgorithm(initialHash);
-      } else {
-        loadAlgorithm('binary-search');
+    // Hash change listener
+    window.addEventListener('hashchange', () => {
+      const target = getHashKey();
+      if (target && ALGORITHMS[target] && target !== currentAlgoKey) {
+        loadAlgorithm(target);
       }
     });
+
+    // Initial App Load (Immediate invocation ensures no DOMContentLoaded race condition)
+    function init() {
+      const initialKey = getHashKey() || 'binary-search';
+      loadAlgorithm(initialKey);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   </script>
 </body>
 </html>
