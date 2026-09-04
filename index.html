@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Binary Search Interactive Visualizer & Code Tracer</title>
+  <title>AlgoVisualizer - 11 Core Interview Algorithms</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
@@ -12,11 +12,11 @@
       --border: #1e293b;
       --foreground: #f8fafc;
       --muted-foreground: #94a3b8;
-      --sidebar: #0b1120;
     }
     body {
       background-color: #090d16;
       color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     .math-font {
       font-family: "Cambria Math", "Latin Modern Math", "STIX Two Math", "Times New Roman", serif;
@@ -45,424 +45,1203 @@
     .card-transition {
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #090d16; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
   </style>
 </head>
-<body class="bg-[#090d16] text-[#f8fafc] antialiased p-3 sm:p-5 font-sans min-h-screen flex items-center justify-center">
-  <div class="max-w-5xl w-full mx-auto bg-[#0f172a] text-[#f8fafc] border border-[#1e293b] rounded-2xl shadow-2xl overflow-hidden">
-    
-    <!-- Top Header & LaTeX Invariant Bar -->
-    <div class="p-5 border-b border-[#1e293b] bg-[#090d16]/70">
-      <div class="flex flex-wrap items-center justify-between gap-3">
+<body class="antialiased min-h-screen flex flex-col justify-between">
+  
+  <!-- Top Global Navigation & Algorithm Selector -->
+  <header class="sticky top-0 z-50 bg-[#090d16]/90 backdrop-blur-md border-b border-[#1e293b] px-4 py-3">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand & Hub Title -->
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30">
+          🎯
+        </div>
         <div>
-          <div class="flex items-center gap-2">
-            <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              Interactive Tracer
-            </span>
-            <h1 class="text-xl font-bold tracking-tight text-white">이진 탐색 (Binary Search)</h1>
-          </div>
-          <p class="text-xs text-[#94a3b8] mt-1">
-            코드 라인 번호와 배열 메모리 상태(L, R, Mid)의 1:1 동기화 실행 트레이서
+          <h1 class="text-sm sm:text-base font-bold tracking-tight text-white flex items-center gap-2">
+            AlgoVisualizer <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-normal">2026 Edition</span>
+          </h1>
+          <p class="text-[11px] text-[#94a3b8] hidden sm:block">
+            11개 핵심 알고리즘 인터랙티브 실행 트레이서 & 입출력 명세 허브
           </p>
         </div>
-
-        <!-- LaTeX Math Badge Box -->
-        <div class="flex flex-wrap items-center gap-3 bg-[#090d16] border border-[#1e293b] px-4 py-2 rounded-xl shadow-inner">
-          <div class="text-xs">
-            <span class="text-[#94a3b8] font-medium">수학적 불변식: </span>
-            <span class="math-font text-sm font-semibold text-blue-400">
-              Target ∈ [nums[L], nums[R]]
-            </span>
-          </div>
-          <div class="h-4 w-px bg-[#1e293b]"></div>
-          <div class="text-xs">
-            <span class="text-[#94a3b8] font-medium">중간값 계산: </span>
-            <span class="math-font text-sm text-emerald-400">
-              mid = ⌊ (L + R) / 2 ⌋
-            </span>
-          </div>
-          <div class="h-4 w-px bg-[#1e293b]"></div>
-          <div class="text-xs">
-            <span class="text-[#94a3b8] font-medium">시간 복잡도: </span>
-            <span class="math-font text-sm text-purple-400 font-semibold">
-              T(N) = O(log N)
-            </span>
-          </div>
-        </div>
       </div>
+
+      <!-- Algorithm Dropdown Selector -->
+      <div class="flex items-center gap-2">
+        <label for="algoSelect" class="text-xs text-[#94a3b8] hidden md:block">알고리즘 선택:</label>
+        <select id="algoSelect" class="bg-[#0f172a] border border-[#334155] text-white text-xs rounded-xl px-3 py-2 font-medium focus:outline-none focus:border-blue-500 cursor-pointer shadow-sm">
+          <optgroup label="🔍 탐색 & 정렬">
+            <option value="binary-search">1. 이진 탐색 (Binary Search)</option>
+            <option value="dfs-bfs">2. 깊이/너비 우선 탐색 (DFS / BFS)</option>
+          </optgroup>
+          <optgroup label="👉 포인터 & 윈도우">
+            <option value="two-pointer">3. 투 포인터 (Two Pointer)</option>
+            <option value="sliding-window">4. 슬라이딩 윈도우 (Sliding Window)</option>
+            <option value="array-string">5. 배열 테크닉 (Array & String)</option>
+          </optgroup>
+          <optgroup label="⚡ 최적화 & 탐욕">
+            <option value="dp">6. 동적 계획법 (Dynamic Programming)</option>
+            <option value="greedy">7. 그리디 (Greedy)</option>
+          </optgroup>
+          <optgroup label="🌐 그래프 & 집합">
+            <option value="dijkstra">8. 다익스트라 최단 경로 (Dijkstra)</option>
+            <option value="union-find">9. 서로소 집합 (Union-Find)</option>
+          </optgroup>
+          <optgroup label="📦 핵심 자료구조">
+            <option value="hash-map">10. 해시 맵 (Hash Map)</option>
+            <option value="tree-heap">11. 트리 & 힙 (Tree & Heap)</option>
+          </optgroup>
+        </select>
+      </div>
+
     </div>
+  </header>
 
-    <!-- NEW: Function Input & Desirable Output Specification Card -->
-    <div class="px-5 py-3 border-b border-[#1e293b] bg-[#0b1120]/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+  <!-- Main Algorithm Dashboard Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-3 sm:p-5">
+    <div class="bg-[#0f172a] border border-[#1e293b] rounded-2xl shadow-2xl overflow-hidden">
       
-      <!-- Input Spec -->
-      <div class="flex items-center gap-2.5 flex-wrap">
-        <span class="px-2 py-0.5 rounded font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
-          📥 Input
-        </span>
-        <div class="font-mono text-slate-300 flex items-center gap-2 flex-wrap">
-          <span><span class="text-purple-400 font-semibold">nums</span>: <span class="text-blue-300">list[int]</span> = <span class="text-amber-300 font-semibold">[1, 3, 5, 7, 9, 11, 13]</span></span>
-          <span class="text-[#64748b]">|</span>
-          <span><span class="text-purple-400 font-semibold">target</span>: <span class="text-blue-300">int</span> = <span class="text-amber-300 font-semibold">9</span></span>
+      <!-- Top Algorithm Header & LaTeX Invariant Bar -->
+      <div class="p-5 border-b border-[#1e293b] bg-[#090d16]/70">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="algoCategoryBadge" class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                탐색 & 정렬
+              </span>
+              <h2 id="algoTitle" class="text-xl font-bold tracking-tight text-white">
+                이진 탐색 (Binary Search)
+              </h2>
+            </div>
+            <p id="algoSubtitle" class="text-xs text-[#94a3b8] mt-1">
+              코드 라인 번호와 메모리 상태의 1:1 동기화 실행 트레이서
+            </p>
+          </div>
+
+          <!-- LaTeX Math Invariant Box -->
+          <div id="mathBox" class="flex flex-wrap items-center gap-3 bg-[#090d16] border border-[#1e293b] px-4 py-2 rounded-xl shadow-inner">
+            <!-- Dynamic Math Badges rendered here -->
+          </div>
         </div>
-        <span class="text-[11px] text-[#94a3b8] hidden md:inline">(※ 오름차순 정렬 배열)</span>
       </div>
 
-      <!-- Desirable Output Spec -->
-      <div class="flex items-center gap-2.5">
-        <span class="px-2 py-0.5 rounded font-mono font-bold bg-purple-500/10 text-purple-400 border border-purple-500/30 flex items-center gap-1">
-          📤 Desirable Output
-        </span>
-        <div class="font-mono flex items-center gap-1.5">
-          <span class="text-blue-300">int</span>
-          <span class="text-slate-400">=</span>
-          <span id="outputSpecBadge" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">
-            Index 4 (값: 9)
+      <!-- Function Input & Desirable Output Specification Bar -->
+      <div class="px-5 py-3 border-b border-[#1e293b] bg-[#0b1120]/90 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <!-- Input Spec -->
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <span class="px-2 py-0.5 rounded font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+            📥 Input
+          </span>
+          <div id="inputSpecContent" class="font-mono text-slate-300 flex items-center gap-2 flex-wrap">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Output Spec -->
+        <div class="flex items-center gap-2.5">
+          <span class="px-2 py-0.5 rounded font-mono font-bold bg-purple-500/10 text-purple-400 border border-purple-500/30 flex items-center gap-1">
+            📤 Desirable Output
+          </span>
+          <div id="outputSpecContent" class="font-mono flex items-center gap-1.5">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Grid: Left Code & Right Canvas -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 border-b border-[#1e293b]">
+        
+        <!-- Left: Code Tracer (5 Cols) -->
+        <div class="lg:col-span-5 border-r border-[#1e293b] p-4 flex flex-col justify-between bg-[#0b1120]/60">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-[#1e293b]/80 mb-2">
+              <span class="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">
+                Python Algorithm Code
+              </span>
+              <span id="activeLineBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold">
+                Line 2
+              </span>
+            </div>
+
+            <!-- Code Lines Container with strict whitespace preservation -->
+            <div id="codeLines" class="font-mono text-xs space-y-0.5 select-none overflow-x-auto pb-2">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Explanation Box -->
+          <div class="mt-4 p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/30">
+            <div class="flex items-center gap-2 mb-1.5">
+              <span class="active-line-indicator"></span>
+              <span id="explanationTitle" class="text-xs font-bold text-blue-400">
+                스텝 설명
+              </span>
+            </div>
+            <p id="explanationText" class="text-xs text-slate-200 leading-relaxed">
+              설명이 여기에 표시됩니다.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: Visual Data Structure Canvas & Variables (7 Cols) -->
+        <div class="lg:col-span-7 p-4 sm:p-6 flex flex-col justify-between space-y-6 bg-[#090d16]/30">
+          
+          <!-- Context / Status Subheader -->
+          <div id="canvasSubheader" class="flex items-center justify-between bg-[#090d16] px-4 py-2.5 rounded-xl border border-[#1e293b]">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Dynamic Canvas Area (Array, Queue, Grid, Trees, etc.) -->
+          <div class="py-2 min-h-[140px] flex items-center justify-center">
+            <div id="visualCanvas" class="w-full">
+              <!-- Rendered by algorithm specific canvas drawer -->
+            </div>
+          </div>
+
+          <!-- Live Variable Watcher -->
+          <div class="bg-[#090d16] p-4 rounded-xl border border-[#1e293b]">
+            <div class="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-3 flex items-center justify-between">
+              <span>실시간 변수 감시창 (Variable Watcher)</span>
+              <span class="text-[10px] text-slate-500 font-mono">Live Memory</span>
+            </div>
+            <div id="varWatcherGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Bottom Controls & Timeline Slider -->
+      <div class="p-4 bg-[#090d16]/90 flex flex-col sm:flex-row items-center justify-between gap-4">
+        
+        <!-- Playback Buttons -->
+        <div class="flex items-center gap-2">
+          <button id="btnFirst" class="p-2 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
+            ⏮ 처음
+          </button>
+          <button id="btnPrev" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
+            ◀ 이전
+          </button>
+          <button id="btnPlay" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition flex items-center gap-1.5">
+            <span id="playIcon">▶</span> <span id="playText">자동 재생</span>
+          </button>
+          <button id="btnNext" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
+            다음 ▶
+          </button>
+          <button id="btnReset" class="p-2 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
+            🔄 리셋
+          </button>
+        </div>
+
+        <!-- Step Slider & Progress -->
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <span class="text-xs text-[#94a3b8] whitespace-nowrap">Step:</span>
+          <input id="stepSlider" type="range" min="0" max="6" value="0" class="w-full sm:w-48 accent-blue-500 cursor-pointer">
+          <span id="stepBadge" class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[#090d16] border border-[#1e293b] text-blue-400 whitespace-nowrap">
+            0 / 6
           </span>
         </div>
-        <span class="text-[11px] text-[#94a3b8] hidden md:inline">(미존재 시: -1)</span>
+
       </div>
 
     </div>
+  </main>
 
-    <!-- Main Grid: Left Code Tracer & Right Visual Canvas -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 border-b border-[#1e293b]">
-      
-      <!-- Left Column: Code Lines Tracer (5 Cols) -->
-      <div class="lg:col-span-5 border-r border-[#1e293b] p-4 flex flex-col justify-between bg-[#0b1120]/60">
-        <div>
-          <div class="flex items-center justify-between pb-3 border-b border-[#1e293b]/80 mb-2">
-            <span class="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">
-              Python Algorithm Code
-            </span>
-            <span id="activeLineBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold">
-              Line 2
-            </span>
-          </div>
+  <!-- Footer -->
+  <footer class="text-center text-xs text-[#64748b] py-4 border-t border-[#1e293b]/60">
+    Coding Interview Preparation 2026 · AlgoVisualizer Hub by acha21
+  </footer>
 
-          <!-- Code Lines Container with strict whitespace preservation & Type Hints -->
-          <div id="codeLines" class="font-mono text-xs space-y-0.5 select-none">
-            <!-- Line 1 -->
-            <div data-line="1" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
-              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">1</span>
-              <span class="code-text"><span class="text-purple-400 font-semibold">def</span> <span class="text-blue-400">binary_search</span>(nums: list[int], target: int) -&gt; int:</span>
-            </div>
-            <!-- Line 2 -->
-            <div data-line="2" class="py-1 px-2 rounded flex items-center active-line">
-              <span class="w-6 text-right pr-3 opacity-80 font-bold select-none text-blue-400 font-mono text-[11px]">2</span>
-              <span class="code-text">    left, right = <span class="text-amber-400">0</span>, <span class="text-purple-400">len</span>(nums) - <span class="text-amber-400">1</span></span>
-            </div>
-            <!-- Line 3 -->
-            <div data-line="3" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
-              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">3</span>
-              <span class="code-text">    <span class="text-purple-400 font-semibold">while</span> left &lt;= right:</span>
-            </div>
-            <!-- Line 4 -->
-            <div data-line="4" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
-              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">4</span>
-              <span class="code-text">        mid = (left + right) // <span class="text-amber-400">2</span></span>
-            </div>
-            <!-- Line 5 -->
-            <div data-line="5" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
-              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">5</span>
-              <span class="code-text">        <span class="text-purple-400 font-semibold">if</span> nums[mid] == target:</span>
-            </div>
-            <!-- Line 6 -->
-            <div data-line="6" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
-              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">6</span>
-              <span class="code-text">            <span class="text-purple-400 font-semibold">return</span> mid</span>
-            </div>
-            <!-- Line 7 -->
-            <div data-line="7" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
-              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">7</span>
-              <span class="code-text">        <span class="text-purple-400 font-semibold">elif</span> nums[mid] &lt; target:</span>
-            </div>
-            <!-- Line 8 -->
-            <div data-line="8" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
-              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">8</span>
-              <span class="code-text">            left = mid + <span class="text-amber-400">1</span></span>
-            </div>
-            <!-- Line 9 -->
-            <div data-line="9" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
-              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">9</span>
-              <span class="code-text">        <span class="text-purple-400 font-semibold">else</span>:</span>
-            </div>
-            <!-- Line 10 -->
-            <div data-line="10" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
-              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">10</span>
-              <span class="code-text">            right = mid - <span class="text-amber-400">1</span></span>
-            </div>
-            <!-- Line 11 -->
-            <div data-line="11" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
-              <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">11</span>
-              <span class="code-text">    <span class="text-purple-400 font-semibold">return</span> -<span class="text-amber-400">1</span></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Current Step Detailed Explanation Box -->
-        <div class="mt-4 p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/30">
-          <div class="flex items-center gap-2 mb-1.5">
-            <span class="active-line-indicator"></span>
-            <span id="explanationTitle" class="text-xs font-bold text-blue-400">
-              초기 상태 설정
-            </span>
-          </div>
-          <p id="explanationText" class="text-xs text-slate-200 leading-relaxed">
-            전체 배열(인덱스 0~6)을 탐색 구간으로 설정하기 위해 left=0, right=6으로 초기화합니다.
-          </p>
-        </div>
-      </div>
-
-      <!-- Right Column: Visual Data Structure & Memory States (7 Cols) -->
-      <div class="lg:col-span-7 p-4 sm:p-6 flex flex-col justify-between space-y-6">
-        
-        <!-- Target Info & Range Indicator -->
-        <div class="flex items-center justify-between bg-[#090d16] px-4 py-2.5 rounded-xl border border-[#1e293b]">
-          <div class="flex items-center gap-3">
-            <span class="text-xs font-semibold text-[#94a3b8]">찾는 값 (Target):</span>
-            <span class="px-2.5 py-0.5 text-sm font-bold rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30">
-              9
-            </span>
-          </div>
-          <div class="flex items-center gap-2 text-xs">
-            <span class="text-[#94a3b8]">현재 탐색 구간:</span>
-            <span id="searchRangeText" class="font-mono font-bold text-blue-400">
-              [0, 6] (크기: 7개)
-            </span>
-          </div>
-        </div>
-
-        <!-- Array Elements Canvas with Pointers -->
-        <div class="py-4">
-          <div class="text-xs text-[#94a3b8] mb-3 flex items-center justify-between">
-            <span>배열 메모리 시각화 (인덱스 & 값)</span>
-            <div class="flex items-center gap-3 text-[11px]">
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-blue-500 inline-block"></span> L (Left)</span>
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-amber-500 inline-block"></span> M (Mid)</span>
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-purple-500 inline-block"></span> R (Right)</span>
-            </div>
-          </div>
-
-          <!-- Cards Row -->
-          <div id="arrayContainer" class="grid grid-cols-7 gap-2">
-            <!-- Dynamically generated array cards -->
-          </div>
-        </div>
-
-        <!-- Live Variables Watcher Panel -->
-        <div class="bg-[#090d16] p-4 rounded-xl border border-[#1e293b]">
-          <div class="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-3">
-            실시간 변수 감시창 (Variable Watcher)
-          </div>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-            <div class="p-2.5 rounded-lg bg-[#0f172a] border border-[#1e293b]">
-              <div class="text-[11px] text-[#94a3b8] mb-0.5">left</div>
-              <div id="varLeft" class="font-mono text-base font-bold text-blue-400">0</div>
-            </div>
-            <div class="p-2.5 rounded-lg bg-[#0f172a] border border-[#1e293b]">
-              <div class="text-[11px] text-[#94a3b8] mb-0.5">right</div>
-              <div id="varRight" class="font-mono text-base font-bold text-purple-400">6</div>
-            </div>
-            <div class="p-2.5 rounded-lg bg-[#0f172a] border border-[#1e293b]">
-              <div class="text-[11px] text-[#94a3b8] mb-0.5">mid</div>
-              <div id="varMid" class="font-mono text-base font-bold text-amber-400">-</div>
-            </div>
-            <div class="p-2.5 rounded-lg bg-[#0f172a] border border-[#1e293b]">
-              <div class="text-[11px] text-[#94a3b8] mb-0.5">nums[mid] vs 9</div>
-              <div id="varComp" class="font-mono text-xs font-semibold text-emerald-400 mt-1">-</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Bottom Controls & Timeline Slider -->
-    <div class="p-4 bg-[#090d16]/90 flex flex-col sm:flex-row items-center justify-between gap-4">
-      
-      <!-- Buttons -->
-      <div class="flex items-center gap-2">
-        <button id="btnFirst" class="p-2 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
-          ⏮ 처음
-        </button>
-        <button id="btnPrev" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
-          ◀ 이전
-        </button>
-        <button id="btnPlay" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition flex items-center gap-1.5">
-          <span id="playIcon">▶</span> <span id="playText">자동 재생</span>
-        </button>
-        <button id="btnNext" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
-          다음 ▶
-        </button>
-        <button id="btnReset" class="p-2 text-xs font-medium rounded-lg bg-[#1e293b] border border-[#334155] hover:bg-slate-700 transition">
-          🔄 리셋
-        </button>
-      </div>
-
-      <!-- Slider & Step Indicator -->
-      <div class="flex items-center gap-3 w-full sm:w-auto">
-        <span class="text-xs text-[#94a3b8] whitespace-nowrap">Step:</span>
-        <input id="stepSlider" type="range" min="0" max="6" value="0" class="w-full sm:w-48 accent-blue-500 cursor-pointer">
-        <span id="stepBadge" class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[#090d16] border border-[#1e293b] text-blue-400 whitespace-nowrap">
-          0 / 6
-        </span>
-      </div>
-
-    </div>
-
-  </div>
-
+  <!-- Algorithm Definitions & Engine Script -->
   <script>
-    const nums = [1, 3, 5, 7, 9, 11, 13];
-    const target = 9;
+    // Database of 11 Algorithms
+    const ALGORITHMS = {
+      'binary-search': {
+        title: "이진 탐색 (Binary Search)",
+        category: "🔍 탐색 & 정렬",
+        subtitle: "정렬된 배열에서 매 스텝마다 탐색 범위를 1/2로 좁히는 최적 탐색",
+        mathBadges: [
+          { label: "수학적 불변식", formula: "Target ∈ [nums[L], nums[R]]", color: "text-blue-400" },
+          { label: "중간값 계산", formula: "mid = ⌊(L + R) / 2⌋", color: "text-emerald-400" },
+          { label: "시간 복잡도", formula: "T(N) = O(log N)", color: "text-purple-400 font-semibold" }
+        ],
+        inputHtml: `<span><span class="text-purple-400 font-semibold">nums</span>: <span class="text-blue-300">list[int]</span> = <span class="text-amber-300 font-semibold">[1, 3, 5, 7, 9, 11, 13]</span></span>
+                    <span class="text-[#64748b]">|</span>
+                    <span><span class="text-purple-400 font-semibold">target</span>: <span class="text-blue-300">int</span> = <span class="text-amber-300 font-semibold">9</span></span>`,
+        outputHtml: `<span class="text-blue-300">int</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">Index 4 (값: 9)</span>`,
+        code: [
+          "def binary_search(nums: list[int], target: int) -> int:",
+          "    left, right = 0, len(nums) - 1",
+          "    while left <= right:",
+          "        mid = (left + right) // 2",
+          "        if nums[mid] == target:",
+          "            return mid",
+          "        elif nums[mid] < target:",
+          "            left = mid + 1",
+          "        else:",
+          "            right = mid - 1",
+          "    return -1"
+        ],
+        steps: [
+          {
+            line: 2, title: "탐색 범위 초기화",
+            desc: "배열의 시작점 left=0, 끝점 right=6으로 설정하여 전체 배열 [1 ~ 13]을 탐색 범위로 지정합니다.",
+            vars: { left: 0, right: 6, mid: "-", "nums[mid] vs 9": "탐색 시작" },
+            header: `<div class="flex items-center gap-2 text-xs"><span class="text-slate-400">Target:</span><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold font-mono">9</span></div><div class="text-xs text-blue-400 font-mono font-bold">구간 [0, 6] (7개)</div>`,
+            render: () => renderArray([1, 3, 5, 7, 9, 11, 13], 0, 6, null, [0,1,2,3,4,5,6], null)
+          },
+          {
+            line: 4, title: "1회차 중간값(Mid) 계산",
+            desc: "left(0) <= right(6) 성립. 중간 인덱스 mid = ⌊(0 + 6) / 2⌋ = 3 (값: 7)을 선택합니다.",
+            vars: { left: 0, right: 6, mid: 3, "nums[mid] vs 9": "nums[3]=7" },
+            header: `<div class="flex items-center gap-2 text-xs"><span class="text-slate-400">Target:</span><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold font-mono">9</span></div><div class="text-xs text-blue-400 font-mono font-bold">구간 [0, 6] (7개)</div>`,
+            render: () => renderArray([1, 3, 5, 7, 9, 11, 13], 0, 6, 3, [0,1,2,3,4,5,6], null)
+          },
+          {
+            line: 8, title: "비교 및 왼쪽 절반 탈락 (Left 이동)",
+            desc: "nums[mid]=7 < target(9) 이므로 타겟은 무조건 오른쪽에 있습니다. 0~3번을 버리고 left = mid + 1 = 4로 이동합니다.",
+            vars: { left: 4, right: 6, mid: 3, "nums[mid] vs 9": "7 < 9 (L 이동)" },
+            header: `<div class="flex items-center gap-2 text-xs"><span class="text-slate-400">Target:</span><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold font-mono">9</span></div><div class="text-xs text-blue-400 font-mono font-bold">구간 [4, 6] (3개)</div>`,
+            render: () => renderArray([1, 3, 5, 7, 9, 11, 13], 4, 6, 3, [4,5,6], null)
+          },
+          {
+            line: 4, title: "2회차 중간값(Mid) 계산",
+            desc: "left(4) <= right(6) 성립. 새 구간 [4, 6]의 중간값 mid = ⌊(4 + 6) / 2⌋ = 5 (값: 11)을 확인합니다.",
+            vars: { left: 4, right: 6, mid: 5, "nums[mid] vs 9": "nums[5]=11" },
+            header: `<div class="flex items-center gap-2 text-xs"><span class="text-slate-400">Target:</span><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold font-mono">9</span></div><div class="text-xs text-blue-400 font-mono font-bold">구간 [4, 6] (3개)</div>`,
+            render: () => renderArray([1, 3, 5, 7, 9, 11, 13], 4, 6, 5, [4,5,6], null)
+          },
+          {
+            line: 10, title: "비교 및 오른쪽 구간 탈락 (Right 이동)",
+            desc: "nums[mid]=11 > target(9) 이므로 타겟은 왼쪽에 있습니다. 5~6번을 버리고 right = mid - 1 = 4로 이동합니다.",
+            vars: { left: 4, right: 4, mid: 5, "nums[mid] vs 9": "11 > 9 (R 이동)" },
+            header: `<div class="flex items-center gap-2 text-xs"><span class="text-slate-400">Target:</span><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold font-mono">9</span></div><div class="text-xs text-blue-400 font-mono font-bold">구간 [4, 4] (1개)</div>`,
+            render: () => renderArray([1, 3, 5, 7, 9, 11, 13], 4, 4, 5, [4], null)
+          },
+          {
+            line: 4, title: "3회차 단일 원소 수렴",
+            desc: "left(4) <= right(4) 성립! mid = ⌊(4 + 4) / 2⌋ = 4를 선택합니다. L, R, Mid가 모두 인덱스 4를 가리킵니다.",
+            vars: { left: 4, right: 4, mid: 4, "nums[mid] vs 9": "nums[4]=9" },
+            header: `<div class="flex items-center gap-2 text-xs"><span class="text-slate-400">Target:</span><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold font-mono">9</span></div><div class="text-xs text-emerald-400 font-mono font-bold">수렴 [4, 4]</div>`,
+            render: () => renderArray([1, 3, 5, 7, 9, 11, 13], 4, 4, 4, [4], null)
+          },
+          {
+            line: 6, title: "🎉 Target 일치! 인덱스 반환",
+            desc: "nums[mid]=9 == target(9) 일치! 탐색 성공. 찾은 인덱스 4를 즉시 반환합니다.",
+            vars: { left: 4, right: 4, mid: 4, "nums[mid] vs 9": "9 == 9 (MATCH!)" },
+            header: `<div class="flex items-center gap-2 text-xs"><span class="text-slate-400">Status:</span><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold font-mono">FOUND</span></div><div class="text-xs text-emerald-400 font-mono font-bold">반환값: 4</div>`,
+            render: () => renderArray([1, 3, 5, 7, 9, 11, 13], 4, 4, 4, [4], 4)
+          }
+        ]
+      },
 
-    const traceSteps = [
-      {
-        step: 0,
-        line: 2,
-        title: "탐색 구간 초기화",
-        desc: "배열의 시작점 left=0, 끝점 right=6으로 설정하여 전체 배열 [1 ~ 13]을 탐색 범위로 지정합니다.",
-        left: 0,
-        right: 6,
-        mid: null,
-        comp: "탐색 시작",
-        rangeText: "[0, 6] (전체 7개)",
-        activeIndices: [0, 1, 2, 3, 4, 5, 6],
-        foundIndex: null
+      'two-pointer': {
+        title: "투 포인터 (Two Pointer)",
+        category: "👉 포인터 & 윈도우",
+        subtitle: "정렬된 배열의 양 끝에서 좁혀오며 목표 합(Target Sum)을 O(N)에 탐색",
+        mathBadges: [
+          { label: "단조성 불변식", formula: "Sum < Target ⇒ L++, Sum > Target ⇒ R--", color: "text-blue-400" },
+          { label: "시간 복잡도", formula: "T(N) = O(N)", color: "text-emerald-400 font-semibold" },
+          { label: "공간 복잡도", formula: "S(N) = O(1)", color: "text-purple-400 font-semibold" }
+        ],
+        inputHtml: `<span><span class="text-purple-400 font-semibold">numbers</span>: <span class="text-blue-300">list[int]</span> = <span class="text-amber-300 font-semibold">[2, 7, 11, 15]</span></span>
+                    <span class="text-[#64748b]">|</span>
+                    <span><span class="text-purple-400 font-semibold">target</span>: <span class="text-blue-300">int</span> = <span class="text-amber-300 font-semibold">9</span></span>`,
+        outputHtml: `<span class="text-blue-300">list[int]</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">[0, 1] (인덱스 쌍)</span>`,
+        code: [
+          "def two_sum_sorted(numbers: list[int], target: int) -> list[int]:",
+          "    left, right = 0, len(numbers) - 1",
+          "    while left < right:",
+          "        current_sum = numbers[left] + numbers[right]",
+          "        if current_sum == target:",
+          "            return [left, right]",
+          "        elif current_sum < target:",
+          "            left += 1",
+          "        else:",
+          "            right -= 1",
+          "    return []"
+        ],
+        steps: [
+          {
+            line: 2, title: "양 끝 포인터 초기화",
+            desc: "가장 작은 값(left=0, 값 2)과 가장 큰 값(right=3, 값 15)에 포인터를 배치합니다.",
+            vars: { left: 0, right: 3, current_sum: "-", "비교 vs 9": "시작" },
+            header: `<div class="text-xs text-slate-400 font-mono">Target: <span class="text-amber-400 font-bold">9</span></div><div class="text-xs text-blue-400 font-mono">초기 구간 [0, 3]</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 3, null, null)
+          },
+          {
+            line: 4, title: "1회차 두 수의 합 계산",
+            desc: "current_sum = numbers[0] + numbers[3] = 2 + 15 = 17을 계산합니다.",
+            vars: { left: 0, right: 3, current_sum: 17, "비교 vs 9": "17 > 9" },
+            header: `<div class="text-xs text-slate-400 font-mono">합: <span class="text-amber-400 font-bold">17</span> (Target: 9)</div><div class="text-xs text-purple-400 font-mono">초과! R 축소 필요</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 3, 17, null)
+          },
+          {
+            line: 10, title: "합이 너무 큼 -> Right 포인터 좌측 이동",
+            desc: "17 > 9 이므로 합을 줄이기 위해 가장 큰 원소(15)를 포기하고 right -= 1 (인덱스 2)로 이동합니다.",
+            vars: { left: 0, right: 2, current_sum: 17, "비교 vs 9": "right = 2" },
+            header: `<div class="text-xs text-slate-400 font-mono">R 이동 완료</div><div class="text-xs text-blue-400 font-mono">새 구간 [0, 2]</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 2, null, null)
+          },
+          {
+            line: 4, title: "2회차 두 수의 합 계산",
+            desc: "current_sum = numbers[0] + numbers[2] = 2 + 11 = 13을 계산합니다.",
+            vars: { left: 0, right: 2, current_sum: 13, "비교 vs 9": "13 > 9" },
+            header: `<div class="text-xs text-slate-400 font-mono">합: <span class="text-amber-400 font-bold">13</span> (Target: 9)</div><div class="text-xs text-purple-400 font-mono">초과! R 축소 필요</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 2, 13, null)
+          },
+          {
+            line: 10, title: "합이 여전히 큼 -> Right 포인터 좌측 이동",
+            desc: "13 > 9 이므로 다시 right -= 1 (인덱스 1)로 이동합니다.",
+            vars: { left: 0, right: 1, current_sum: 13, "비교 vs 9": "right = 1" },
+            header: `<div class="text-xs text-slate-400 font-mono">R 이동 완료</div><div class="text-xs text-blue-400 font-mono">새 구간 [0, 1]</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 1, null, null)
+          },
+          {
+            line: 4, title: "3회차 두 수의 합 계산",
+            desc: "current_sum = numbers[0] + numbers[1] = 2 + 7 = 9를 계산합니다.",
+            vars: { left: 0, right: 1, current_sum: 9, "비교 vs 9": "9 == 9 (일치!)" },
+            header: `<div class="text-xs text-slate-400 font-mono">합: <span class="text-emerald-400 font-bold">9</span> (Target: 9)</div><div class="text-xs text-emerald-400 font-mono font-bold">🎉 MATCH!</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 1, 9, [0, 1])
+          },
+          {
+            line: 6, title: "🎉 정답 인덱스 쌍 반환",
+            desc: "current_sum == target 성립! 인덱스 쌍 [0, 1]을 반환하고 종료합니다.",
+            vars: { left: 0, right: 1, current_sum: 9, "비교 vs 9": "RETURN [0, 1]" },
+            header: `<div class="text-xs text-emerald-400 font-bold">반환값: [0, 1]</div><div class="text-xs text-slate-400">값: 2 + 7 = 9</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 1, 9, [0, 1])
+          }
+        ]
       },
-      {
-        step: 1,
-        line: 4,
-        title: "1회차 중간값(Mid) 계산",
-        desc: "left(0) <= right(6) 성립. 중간 인덱스 mid = ⌊(0 + 6) / 2⌋ = 3을 선택합니다. nums[3]의 값은 7입니다.",
-        left: 0,
-        right: 6,
-        mid: 3,
-        comp: "nums[3]=7",
-        rangeText: "[0, 6] (크기: 7개)",
-        activeIndices: [0, 1, 2, 3, 4, 5, 6],
-        foundIndex: null
+
+      'sliding-window': {
+        title: "슬라이딩 윈도우 (Sliding Window)",
+        category: "👉 포인터 & 윈도우",
+        subtitle: "고정 크기 K의 윈도우를 우측으로 1칸씩 밀며 O(1)에 합을 갱신 (최대 부분합 탐색)",
+        mathBadges: [
+          { label: "윈도우 갱신식", formula: "Sum = Sum - nums[i - k] + nums[i]", color: "text-blue-400" },
+          { label: "시간 복잡도", formula: "T(N) = O(N)", color: "text-emerald-400 font-semibold" },
+          { label: "공간 복잡도", formula: "S(N) = O(1)", color: "text-purple-400 font-semibold" }
+        ],
+        inputHtml: `<span><span class="text-purple-400 font-semibold">nums</span>: <span class="text-blue-300">list[int]</span> = <span class="text-amber-300 font-semibold">[2, 1, 5, 1, 3, 2]</span></span>
+                    <span class="text-[#64748b]">|</span>
+                    <span><span class="text-purple-400 font-semibold">k</span>: <span class="text-blue-300">int</span> = <span class="text-amber-300 font-semibold">3</span></span>`,
+        outputHtml: `<span class="text-blue-300">int</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">9 (윈도우 [5, 1, 3]의 합)</span>`,
+        code: [
+          "def max_subarray_sum(nums: list[int], k: int) -> int:",
+          "    window_sum = sum(nums[:k])",
+          "    max_sum = window_sum",
+          "    for i in range(k, len(nums)):",
+          "        window_sum += nums[i] - nums[i - k]",
+          "        max_sum = max(max_sum, window_sum)",
+          "    return max_sum"
+        ],
+        steps: [
+          {
+            line: 2, title: "첫 번째 윈도우(k=3) 형성",
+            desc: "초기 윈도우 [0..2]의 원소 2 + 1 + 5 = 8을 계산합니다.",
+            vars: { i: "-", window_sum: 8, max_sum: 8, "윈도우 범위": "[0, 2]" },
+            header: `<div class="text-xs text-blue-400 font-mono font-bold">윈도우 합: 8</div><div class="text-xs text-amber-400 font-mono">현재 최대합: 8</div>`,
+            render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 0, 2, 8, 8)
+          },
+          {
+            line: 5, title: "윈도우 1칸 우측 슬라이딩 (i = 3)",
+            desc: "새 원소 nums[3]=1 추가(+), 빠지는 원소 nums[0]=2 제외(-). 8 - 2 + 1 = 7.",
+            vars: { i: 3, window_sum: 7, max_sum: 8, "윈도우 범위": "[1, 3]" },
+            header: `<div class="text-xs text-slate-400 font-mono">8 - 2 + 1 = <span class="text-blue-400 font-bold">7</span></div><div class="text-xs text-amber-400 font-mono">최대합 8 유지</div>`,
+            render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 1, 3, 7, 8)
+          },
+          {
+            line: 5, title: "윈도우 1칸 우측 슬라이딩 (i = 4) 🌟",
+            desc: "새 원소 nums[4]=3 추가(+), 빠지는 원소 nums[1]=1 제외(-). 7 - 1 + 3 = 9. 최대합 9로 갱신!",
+            vars: { i: 4, window_sum: 9, max_sum: 9, "윈도우 범위": "[2, 4]" },
+            header: `<div class="text-xs text-slate-400 font-mono">7 - 1 + 3 = <span class="text-emerald-400 font-bold">9</span></div><div class="text-xs text-emerald-400 font-mono font-bold">🎉 최대합 9 갱신!</div>`,
+            render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 2, 4, 9, 9)
+          },
+          {
+            line: 5, title: "윈도우 1칸 우측 슬라이딩 (i = 5)",
+            desc: "새 원소 nums[5]=2 추가(+), 빠지는 원소 nums[2]=5 제외(-). 9 - 5 + 2 = 6. 최대합 9 유지.",
+            vars: { i: 5, window_sum: 6, max_sum: 9, "윈도우 범위": "[3, 5]" },
+            header: `<div class="text-xs text-slate-400 font-mono">9 - 5 + 2 = <span class="text-blue-400 font-bold">6</span></div><div class="text-xs text-emerald-400 font-mono">최대합 9 유지</div>`,
+            render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 3, 5, 6, 9)
+          },
+          {
+            line: 7, title: "🎉 최종 최댓값 반환",
+            desc: "배열 끝까지 탐색 완료. 최종 최댓값 9를 반환합니다.",
+            vars: { i: "종료", window_sum: 6, max_sum: 9, "윈도우 범위": "완료" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">반환값: 9</div><div class="text-xs text-slate-400">구간 [5, 1, 3]</div>`,
+            render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 2, 4, 9, 9, true)
+          }
+        ]
       },
-      {
-        step: 2,
-        line: 8,
-        title: "비교 및 왼쪽 구간 탈락 (Left 이동)",
-        desc: "nums[mid]=7 < target(9) 이므로, 타겟은 무조건 3번 인덱스보다 오른쪽에 있습니다. 0~3번 구간을 모두 탈락시키고 left = mid + 1 = 4로 이동합니다.",
-        left: 4,
-        right: 6,
-        mid: 3,
-        comp: "7 < 9 (L = mid + 1)",
-        rangeText: "[4, 6] (크기: 3개)",
-        activeIndices: [4, 5, 6],
-        foundIndex: null
+
+      'dp': {
+        title: "동적 계획법 (Dynamic Programming)",
+        category: "⚡ 최적화 & 탐욕",
+        subtitle: "작은 부분 문제의 해를 메모하여 큰 문제의 최적해를 도출 (계단 오르기 / 피보나치)",
+        mathBadges: [
+          { label: "점화식 (Recurrence)", formula: "dp[i] = dp[i-1] + dp[i-2]", color: "text-blue-400" },
+          { label: "기저 조건 (Base Case)", formula: "dp[1]=1, dp[2]=2", color: "text-emerald-400" },
+          { label: "시간 복잡도", formula: "T(N) = O(N)", color: "text-purple-400 font-semibold" }
+        ],
+        inputHtml: `<span><span class="text-purple-400 font-semibold">n</span>: <span class="text-blue-300">int</span> = <span class="text-amber-300 font-semibold">5</span> (오를 계단의 수)</span>`,
+        outputHtml: `<span class="text-blue-300">int</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">8 (도달 가능한 경우의 수)</span>`,
+        code: [
+          "def climb_stairs(n: int) -> int:",
+          "    if n <= 2: return n",
+          "    dp = [0] * (n + 1)",
+          "    dp[1], dp[2] = 1, 2",
+          "    for i in range(3, n + 1):",
+          "        dp[i] = dp[i - 1] + dp[i - 2]",
+          "    return dp[n]"
+        ],
+        steps: [
+          {
+            line: 4, title: "기저 조건(Base Cases) 초기화",
+            desc: "1계단을 오르는 방법 1가지, 2계단을 오르는 방법 2가지를 DP 테이블에 미리 채워둡니다.",
+            vars: { i: "-", "dp[1]": 1, "dp[2]": 2, "계산 식": "Base Cases" },
+            header: `<div class="text-xs text-blue-400 font-mono">dp[1]=1, dp[2]=2</div><div class="text-xs text-slate-400 font-mono">목표: dp[5]</div>`,
+            render: () => renderDP([null, 1, 2, 0, 0, 0], 2, [1, 2])
+          },
+          {
+            line: 6, title: "i = 3 계산: dp[3] = dp[2] + dp[1]",
+            desc: "3번째 계단은 2번 계단에서 1칸 오르거나, 1번 계단에서 2칸 뛰는 방법의 합: 2 + 1 = 3.",
+            vars: { i: 3, "dp[i]": 3, "dp[i-1]": 2, "dp[i-2]": 1 },
+            header: `<div class="text-xs text-slate-400 font-mono">dp[3] = 2 + 1 = <span class="text-amber-400 font-bold">3</span></div><div class="text-xs text-blue-400 font-mono">i = 3 완료</div>`,
+            render: () => renderDP([null, 1, 2, 3, 0, 0], 3, [1, 2])
+          },
+          {
+            line: 6, title: "i = 4 계산: dp[4] = dp[3] + dp[2]",
+            desc: "4번째 계단 도달 경우의 수 = dp[3] + dp[2] = 3 + 2 = 5.",
+            vars: { i: 4, "dp[i]": 5, "dp[i-1]": 3, "dp[i-2]": 2 },
+            header: `<div class="text-xs text-slate-400 font-mono">dp[4] = 3 + 2 = <span class="text-amber-400 font-bold">5</span></div><div class="text-xs text-blue-400 font-mono">i = 4 완료</div>`,
+            render: () => renderDP([null, 1, 2, 3, 5, 0], 4, [2, 3])
+          },
+          {
+            line: 6, title: "i = 5 계산: dp[5] = dp[4] + dp[3]",
+            desc: "5번째 계단 도달 경우의 수 = dp[4] + dp[3] = 5 + 3 = 8.",
+            vars: { i: 5, "dp[i]": 8, "dp[i-1]": 5, "dp[i-2]": 3 },
+            header: `<div class="text-xs text-slate-400 font-mono">dp[5] = 5 + 3 = <span class="text-emerald-400 font-bold">8</span></div><div class="text-xs text-emerald-400 font-mono font-bold">🎉 목표 달성</div>`,
+            render: () => renderDP([null, 1, 2, 3, 5, 8], 5, [3, 4])
+          },
+          {
+            line: 7, title: "🎉 최종 dp[5] 반환",
+            desc: "최종적으로 5번째 계단에 도달할 수 있는 경우의 수 8을 반환합니다.",
+            vars: { i: "종료", "dp[5]": 8, "dp[4]": 5, "결과": "RETURN 8" },
+            header: `<div class="text-xs text-emerald-400 font-bold">반환값: 8</div><div class="text-xs text-slate-400">O(N) 단일 루프</div>`,
+            render: () => renderDP([null, 1, 2, 3, 5, 8], 5, [], 5)
+          }
+        ]
       },
-      {
-        step: 3,
-        line: 4,
-        title: "2회차 중간값(Mid) 계산",
-        desc: "left(4) <= right(6) 성립. 새 구간 [4, 6]의 중간값 mid = ⌊(4 + 6) / 2⌋ = 5를 선택합니다. nums[5]의 값은 11입니다.",
-        left: 4,
-        right: 6,
-        mid: 5,
-        comp: "nums[5]=11",
-        rangeText: "[4, 6] (크기: 3개)",
-        activeIndices: [4, 5, 6],
-        foundIndex: null
+
+      'dfs-bfs': {
+        title: "DFS / BFS (너비 우선 탐색)",
+        category: "🔍 탐색 & 정렬",
+        subtitle: "큐(Queue, FIFO)를 활용한 레벨별 최단 경로 탐색 (격자 미로 최단거리)",
+        mathBadges: [
+          { label: "BFS 큐 원리", formula: "FIFO: 먼저 큐에 들어간 노드가 먼저 확장", color: "text-blue-400" },
+          { label: "시간 복잡도", formula: "T(V, E) = O(V + E)", color: "text-emerald-400 font-semibold" },
+          { label: "공간 복잡도", formula: "S(V) = O(V)", color: "text-purple-400 font-semibold" }
+        ],
+        inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 격자</span> (시작: <span class="text-amber-300 font-semibold">(0,0)</span>, 도착: <span class="text-emerald-300 font-semibold">(3,3)</span>)</span>`,
+        outputHtml: `<span class="text-blue-300">int</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">6 (최단 이동 거리)</span>`,
+        code: [
+          "from collections import deque",
+          "def bfs_shortest_path(grid, start, target):",
+          "    queue = deque([(start[0], start[1], 0)])",
+          "    visited = {start}",
+          "    while queue:",
+          "        r, c, dist = queue.popleft()",
+          "        if (r, c) == target: return dist",
+          "        for dr, dc in [(-1,0), (1,0), (0,-1), (0,1)]:",
+          "            nr, nc = r + dr, c + dc",
+          "            if valid(nr, nc) and (nr, nc) not in visited:",
+          "                visited.add((nr, nc))",
+          "                queue.append((nr, nc, dist + 1))"
+        ],
+        steps: [
+          {
+            line: 3, title: "시작 노드 (0,0) 큐에 삽입",
+            desc: "시작 위치 (0,0)과 거리 0을 큐에 넣고 visited에 등록합니다.",
+            vars: { "(r, c)": "(0,0)", dist: 0, "큐 크기": 1, "방문 노드 수": 1 },
+            header: `<div class="text-xs text-blue-400 font-mono font-bold">Start: (0,0)</div><div class="text-xs text-slate-400">Queue: [(0,0, dist=0)]</div>`,
+            render: () => renderBFSGrid([ [1,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", ["(0,0, d=0)"])
+          },
+          {
+            line: 6, title: "1레벨 확장: (1,0) 및 (0,1) 방문",
+            desc: "(0,0)을 큐에서 꺼내고 인접한 두 칸에 거리 1을 부여하며 큐에 삽입합니다.",
+            vars: { "(r, c)": "(0,0)", dist: 0, "큐 크기": 2, "방문 노드 수": 3 },
+            header: `<div class="text-xs text-slate-400">Pop: (0,0)</div><div class="text-xs text-amber-400 font-mono font-bold">Queue: [(1,0), (0,1)]</div>`,
+            render: () => renderBFSGrid([ [2,1,0,0],[1,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", ["(1,0, d=1)", "(0,1, d=1)"])
+          },
+          {
+            line: 12, title: "2레벨 확장: 대각선 방향 전파 (거리 2)",
+            desc: "큐에서 (1,0), (0,1)을 차례로 꺼내며 거리 2 영역으로 물결처럼 확장합니다.",
+            vars: { "(r, c)": "(1,1)", dist: 2, "큐 크기": 3, "방문 노드 수": 6 },
+            header: `<div class="text-xs text-blue-400 font-mono">레벨 2 파동 전파</div><div class="text-xs text-slate-400 font-mono">Queue 크기: 3</div>`,
+            render: () => renderBFSGrid([ [2,2,1,0],[2,1,0,0],[1,0,0,0],[0,0,0,0] ], "(1,1)", ["(2,0, d=2)", "(1,1, d=2)", "(0,2, d=2)"])
+          },
+          {
+            line: 7, title: "🎉 목적지 (3,3) 도달! 최단거리 반환",
+            desc: "큐에서 목표 지점 (3,3)이 꺼내졌습니다. 최초 도달 거리가 무조건 최단거리이므로 6을 반환합니다.",
+            vars: { "(r, c)": "(3,3)", dist: 6, "큐 크기": "-", "결과": "RETURN 6" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 목적지 (3,3) 도착!</div><div class="text-xs text-emerald-400 font-bold">최단거리: 6</div>`,
+            render: () => renderBFSGrid([ [2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,3] ], "(3,3)", ["(3,3, d=6)"])
+          }
+        ]
       },
-      {
-        step: 4,
-        line: 10,
-        title: "비교 및 오른쪽 구간 탈락 (Right 이동)",
-        desc: "nums[mid]=11 > target(9) 이므로, 타겟은 5번 인덱스보다 왼쪽에 있습니다. 5~6번 구간을 탈락시키고 right = mid - 1 = 4로 이동합니다.",
-        left: 4,
-        right: 4,
-        mid: 5,
-        comp: "11 > 9 (R = mid - 1)",
-        rangeText: "[4, 4] (크기: 1개)",
-        activeIndices: [4],
-        foundIndex: null
+
+      'dijkstra': {
+        title: "다익스트라 (Graph & Dijkstra)",
+        category: "🌐 그래프 & 집합",
+        subtitle: "가중치 그래프에서 우선순위 큐(Min-Heap)를 이용한 단일 출발 최단 경로 탐색",
+        mathBadges: [
+          { label: "완화식 (Relaxation)", formula: "dist[v] = min(dist[v], dist[u] + w)", color: "text-blue-400" },
+          { label: "시간 복잡도", formula: "T = O((V + E) log V)", color: "text-emerald-400 font-semibold" },
+          { label: "우선순위 큐", formula: "Min-Heap", color: "text-purple-400 font-semibold" }
+        ],
+        inputHtml: `<span><span class="text-purple-400 font-semibold">graph</span>: <span class="text-blue-300">4개 노드 가중치 그래프</span> | <span class="text-purple-400 font-semibold">start</span>: <span class="text-amber-300 font-semibold">1</span></span>`,
+        outputHtml: `<span class="text-blue-300">dict</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">{1:0, 2:2, 3:3, 4:6}</span>`,
+        code: [
+          "import heapq",
+          "def dijkstra(graph, start):",
+          "    distances = {node: float('inf') for node in graph}",
+          "    distances[start] = 0",
+          "    heap = [(0, start)]",
+          "    while heap:",
+          "        curr_dist, u = heapq.heappop(heap)",
+          "        if curr_dist > distances[u]: continue",
+          "        for v, weight in graph[u]:",
+          "            new_dist = curr_dist + weight",
+          "            if new_dist < distances[v]:",
+          "                distances[v] = new_dist",
+          "                heapq.heappush(heap, (new_dist, v))",
+          "    return distances"
+        ],
+        steps: [
+          {
+            line: 5, title: "시작 노드 거리 0 설정 및 Heap 삽입",
+            desc: "시작 노드 1의 최단거리를 0으로 초기화하고 (0, 1)을 Min-Heap에 삽입합니다.",
+            vars: { u: 1, curr_dist: 0, "heap": "[(0, 1)]", "dist[1]": 0 },
+            header: `<div class="text-xs text-blue-400 font-mono font-bold">Start: 노드 1 (비용 0)</div><div class="text-xs text-slate-400">Heap: [(0, 1)]</div>`,
+            render: () => renderDijkstra({1: 0, 2: "∞", 3: "∞", 4: "∞"}, 1, "(0, 1)")
+          },
+          {
+            line: 7, title: "Min-Heap Pop: 노드 1 인접 노드 완화",
+            desc: "노드 1에서 뻗어나가는 노드 2(비용 2), 노드 3(비용 5)의 최단거리를 갱신하고 Heap에 Push합니다.",
+            vars: { u: 1, curr_dist: 0, "heap": "[(2, 2), (5, 3)]", "dist[2]": 2, "dist[3]": 5 },
+            header: `<div class="text-xs text-slate-400">Relaxing from 1</div><div class="text-xs text-amber-400 font-mono">dist[2]=2, dist[3]=5</div>`,
+            render: () => renderDijkstra({1: 0, 2: 2, 3: 5, 4: "∞"}, 2, "(2, 2)")
+          },
+          {
+            line: 7, title: "Min-Heap Pop: 노드 2 최단거리 확정",
+            desc: "가장 비용이 작은 노드 2(비용 2)를 Pop하여 거리 확정. 노드 2 -> 3(가중치 1)을 거치면 2 + 1 = 3으로 노드 3의 거리가 5에서 3으로 단축!",
+            vars: { u: 2, curr_dist: 2, "heap": "[(3, 3), (9, 4)]", "dist[3]": 3 },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">노드 3 단축: 5 → 3!</div><div class="text-xs text-slate-400">경유지 2 효과</div>`,
+            render: () => renderDijkstra({1: 0, 2: 2, 3: 3, 4: 9}, 3, "(3, 3)")
+          },
+          {
+            line: 14, title: "🎉 모든 노드 최단거리 확정",
+            desc: "노드 3에서 노드 4(가중치 3) 완화: 3 + 3 = 6 < 9. 최종 최단거리 {1:0, 2:2, 3:3, 4:6} 반환.",
+            vars: { u: 4, curr_dist: 6, "heap": "Empty", "dist[4]": 6 },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">최단거리 확정 완료</div><div class="text-xs text-slate-400">노드 4 비용: 6</div>`,
+            render: () => renderDijkstra({1: 0, 2: 2, 3: 3, 4: 6}, 4, "Empty", true)
+          }
+        ]
       },
-      {
-        step: 5,
-        line: 4,
-        title: "3회차 단일 원소 수렴",
-        desc: "left(4) <= right(4) 성립! mid = ⌊(4 + 4) / 2⌋ = 4를 선택합니다. L, R, Mid가 모두 인덱스 4를 가리킵니다.",
-        left: 4,
-        right: 4,
-        mid: 4,
-        comp: "nums[4]=9",
-        rangeText: "[4, 4] (크기: 1개)",
-        activeIndices: [4],
-        foundIndex: null
+
+      'union-find': {
+        title: "서로소 집합 (Union-Find)",
+        category: "🌐 그래프 & 집합",
+        subtitle: "경로 압축(Path Compression)을 통한 트리 평탄화와 실시간 사이클 판별",
+        mathBadges: [
+          { label: "아커만 역함수", formula: "T(M, N) = O(M · α(N)) ≈ O(1)", color: "text-blue-400" },
+          { label: "경로 압축", formula: "parent[x] = find(parent[x])", color: "text-emerald-400 font-semibold" }
+        ],
+        inputHtml: `<span><span class="text-purple-400 font-semibold">n</span>: 4, <span class="text-purple-400 font-semibold">edges</span>: <span class="text-amber-300 font-semibold">[(1,2), (2,3), (1,3)]</span></span>`,
+        outputHtml: `<span class="text-blue-300">bool</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">True (사이클 감지)</span>`,
+        code: [
+          "def has_cycle(n: int, edges: list[tuple]) -> bool:",
+          "    parent = [i for i in range(n + 1)]",
+          "    def find(x):",
+          "        if parent[x] != x:",
+          "            parent[x] = find(parent[x])",
+          "        return parent[x]",
+          "    for u, v in edges:",
+          "        root_u, root_v = find(u), find(v)",
+          "        if root_u == root_v: return True",
+          "        parent[root_u] = root_v",
+          "    return False"
+        ],
+        steps: [
+          {
+            line: 2, title: "초기 부모 배열: 자기 자신 가리킴",
+            desc: "모든 노드 1, 2, 3, 4가 독립된 집합으로 부모가 자기 자신(parent[i]=i)입니다.",
+            vars: { parent: "[0, 1, 2, 3, 4]", edge: "-", "사이클 여부": "False" },
+            header: `<div class="text-xs text-blue-400 font-mono">초기화: 4개 독립 집합</div>`,
+            render: () => renderUnionFind([0, 1, 2, 3, 4], null, false)
+          },
+          {
+            line: 10, title: "간선 (1, 2) 병합",
+            desc: "find(1)=1, find(2)=2. 루트가 다르므로 parent[1] = 2로 연결합니다.",
+            vars: { parent: "[0, 2, 2, 3, 4]", edge: "(1, 2)", "사이클 여부": "False" },
+            header: `<div class="text-xs text-amber-400 font-mono">Union(1, 2) 성공</div>`,
+            render: () => renderUnionFind([0, 2, 2, 3, 4], "(1, 2)", false)
+          },
+          {
+            line: 10, title: "간선 (2, 3) 병합",
+            desc: "find(2)=2, find(3)=3. 루트가 다르므로 parent[2] = 3으로 연결합니다.",
+            vars: { parent: "[0, 2, 3, 3, 4]", edge: "(2, 3)", "사이클 여부": "False" },
+            header: `<div class="text-xs text-amber-400 font-mono">Union(2, 3) 성공</div>`,
+            render: () => renderUnionFind([0, 2, 3, 3, 4], "(2, 3)", false)
+          },
+          {
+            line: 9, title: "⚠️ 간선 (1, 3) 검사: 사이클 발생!",
+            desc: "find(1)=3, find(3)=3. 두 노드의 루트가 이미 '3'으로 같습니다! 즉, 이미 연결된 두 노드를 또 이으므로 사이클 발생! True 반환.",
+            vars: { parent: "[0, 3, 3, 3, 4]", edge: "(1, 3)", "사이클 감지": "TRUE!" },
+            header: `<div class="text-xs text-rose-400 font-mono font-bold">⚠️ Cycle Detected: (1, 3)</div><div class="text-xs text-emerald-400 font-bold">Return True</div>`,
+            render: () => renderUnionFind([0, 3, 3, 3, 4], "(1, 3)", true)
+          }
+        ]
       },
-      {
-        step: 6,
-        line: 6,
-        title: "🎉 Target 일치! 반환 (Found)",
-        desc: "nums[mid]=9 == target(9) 일치! 탐색 성공. 찾은 인덱스 4를 즉시 반환하고 함수를 종료합니다.",
-        left: 4,
-        right: 4,
-        mid: 4,
-        comp: "9 == 9 (MATCH!)",
-        rangeText: "발견 완료 (Index 4)",
-        activeIndices: [4],
-        foundIndex: 4
+
+      'greedy': {
+        title: "그리디 (Greedy - 탐욕법)",
+        category: "⚡ 최적화 & 탐욕",
+        subtitle: "현재 시점에서 가장 좋아 보이는 선택(종료 시간이 가장 빠른 회의)을 반복",
+        mathBadges: [
+          { label: "탐욕적 선택 속성", formula: "Earliest End-Time First", color: "text-blue-400" },
+          { label: "시간 복잡도", formula: "T(N) = O(N log N) (정렬)", color: "text-emerald-400 font-semibold" }
+        ],
+        inputHtml: `<span><span class="text-purple-400 font-semibold">meetings</span>: <span class="text-amber-300 font-semibold">[[1,4], [3,5], [0,6], [5,7]]</span></span>`,
+        outputHtml: `<span class="text-blue-300">int</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">2 (최대 진행 회의 수)</span>`,
+        code: [
+          "def max_meetings(intervals: list[list[int]]) -> int:",
+          "    intervals.sort(key=lambda x: x[1])  # 종료 시간 기준 정렬",
+          "    count, last_end = 0, 0",
+          "    for start, end in intervals:",
+          "        if start >= last_end:",
+          "            count += 1",
+          "            last_end = end",
+          "    return count"
+        ],
+        steps: [
+          {
+            line: 2, title: "종료 시간 기준 정렬",
+            desc: "빨리 끝나는 회의를 먼저 배치하기 위해 종료 시간을 기준으로 정렬: [1,4], [3,5], [0,6], [5,7].",
+            vars: { count: 0, last_end: 0, "현재 회의": "-" },
+            header: `<div class="text-xs text-blue-400 font-mono">정렬 완료: 4개 회의</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], null, [])
+          },
+          {
+            line: 6, title: "1번째 회의 [1, 4] 선택 🌟",
+            desc: "start(1) >= last_end(0) 성립. 첫 번째 회의를 수락하고 last_end = 4로 갱신합니다.",
+            vars: { count: 1, last_end: 4, "선택": "[1, 4]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">회의 1 채택 [1, 4]</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 0, [0])
+          },
+          {
+            line: 5, title: "2번째 회의 [3, 5] 탈락",
+            desc: "start(3) < last_end(4) 충돌! 회의가 겹치므로 버립니다.",
+            vars: { count: 1, last_end: 4, "탈락": "[3, 5] (겹침)" },
+            header: `<div class="text-xs text-rose-400 font-mono">충돌 탈락: [3, 5]</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 1, [0])
+          },
+          {
+            line: 6, title: "4번째 회의 [5, 7] 선택 🌟",
+            desc: "start(5) >= last_end(4) 성립! 두 번째 회의 채택, last_end = 7, count = 2.",
+            vars: { count: 2, last_end: 7, "선택": "[5, 7]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">회의 2 채택 [5, 7]</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 3, [0, 3])
+          },
+          {
+            line: 8, title: "🎉 최대 회의 수 2 반환",
+            desc: "모든 인터벌 검사 완료. 최종 채택된 회의 수 2를 반환합니다.",
+            vars: { count: 2, last_end: 7, "결과": "RETURN 2" },
+            header: `<div class="text-xs text-emerald-400 font-bold">최종 회의 수: 2</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], null, [0, 3], true)
+          }
+        ]
+      },
+
+      'hash-map': {
+        title: "해시 맵 (Hash Map)",
+        category: "📦 핵심 자료구조",
+        subtitle: "Key-Value 매핑을 통해 O(1)에 보수(Complement)를 즉시 조회하는 1-Pass Two Sum",
+        mathBadges: [
+          { label: "보수 조회식", formula: "complement = target - num ∈ Hash?", color: "text-blue-400" },
+          { label: "시간 복잡도", formula: "T(N) = O(N)", color: "text-emerald-400 font-semibold" },
+          { label: "공간 복잡도", formula: "S(N) = O(N)", color: "text-purple-400 font-semibold" }
+        ],
+        inputHtml: `<span><span class="text-purple-400 font-semibold">nums</span>: <span class="text-amber-300 font-semibold">[2, 11, 7, 15]</span> | <span class="text-purple-400 font-semibold">target</span>: <span class="text-amber-300 font-semibold">9</span></span>`,
+        outputHtml: `<span class="text-blue-300">list[int]</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">[0, 2] (2와 7의 인덱스)</span>`,
+        code: [
+          "def two_sum_hash(nums: list[int], target: int) -> list[int]:",
+          "    seen = {}  # { 값 : 인덱스 }",
+          "    for i, num in enumerate(nums):",
+          "        complement = target - num",
+          "        if complement in seen:",
+          "            return [seen[complement], i]",
+          "        seen[num] = i",
+          "    return []"
+        ],
+        steps: [
+          {
+            line: 2, title: "빈 해시 맵 초기화",
+            desc: "이전에 등장한 숫자와 그 인덱스를 기억할 빈 딕셔너리 seen = {}을 준비합니다.",
+            vars: { i: "-", num: "-", complement: "-", "seen": "{}" },
+            header: `<div class="text-xs text-blue-400 font-mono font-bold">Target: 9</div><div class="text-xs text-slate-400">seen: {}</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], null, {}, null)
+          },
+          {
+            line: 7, title: "i = 0 (값 2): seen에 등록",
+            desc: "complement = 9 - 2 = 7. seen에 7이 없으므로 seen[2] = 0 등록.",
+            vars: { i: 0, num: 2, complement: 7, "seen": "{ 2: 0 }" },
+            header: `<div class="text-xs text-slate-400 font-mono">보수 7 없음 → seen[2]=0 저장</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], 0, {2: 0}, 7)
+          },
+          {
+            line: 7, title: "i = 1 (값 11): seen에 등록",
+            desc: "complement = 9 - 11 = -2. seen에 -2가 없으므로 seen[11] = 1 등록.",
+            vars: { i: 1, num: 11, complement: -2, "seen": "{ 2: 0, 11: 1 }" },
+            header: `<div class="text-xs text-slate-400 font-mono">보수 -2 없음 → seen[11]=1 저장</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], 1, {2: 0, 11: 1}, -2)
+          },
+          {
+            line: 6, title: "i = 2 (값 7): 🎉 보수 2 발견! O(1) 즉시 매칭",
+            desc: "complement = 9 - 7 = 2. seen에 2가 이미 존재합니다 (인덱스 0)! 즉시 [0, 2] 반환.",
+            vars: { i: 2, num: 7, complement: 2, "결과": "MATCH [0, 2]!" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 complement 2 in seen! (idx 0)</div><div class="text-xs text-emerald-400 font-bold">반환값: [0, 2]</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], 2, {2: 0, 11: 1}, 2, [0, 2])
+          }
+        ]
+      },
+
+      'tree-heap': {
+        title: "트리 & 힙 (Tree & Heap)",
+        category: "📦 핵심 자료구조",
+        subtitle: "완전 이진 트리 기반의 Min-Heap에서 Sift-up을 통한 O(log N) 원소 삽입",
+        mathBadges: [
+          { label: "부모 인덱스 관계", formula: "parent = ⌊(i - 1) / 2⌋", color: "text-blue-400" },
+          { label: "힙 불변식", formula: "Heap[parent] ≤ Heap[child]", color: "text-emerald-400 font-semibold" },
+          { label: "삽입 복잡도", formula: "T(N) = O(log N)", color: "text-purple-400 font-semibold" }
+        ],
+        inputHtml: `<span><span class="text-purple-400 font-semibold">heap</span>: <span class="text-amber-300 font-semibold">[3, 5, 8, 7]</span>, <span class="text-purple-400 font-semibold">insert</span>: <span class="text-emerald-400 font-semibold">1</span></span>`,
+        outputHtml: `<span class="text-blue-300">list[int]</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">[1, 3, 8, 7, 5] (루트 1 수렴)</span>`,
+        code: [
+          "def heap_push(heap: list[int], val: int):",
+          "    heap.append(val)",
+          "    curr = len(heap) - 1",
+          "    while curr > 0:",
+          "        parent = (curr - 1) // 2",
+          "        if heap[curr] < heap[parent]:",
+          "            heap[curr], heap[parent] = heap[parent], heap[curr]",
+          "            curr = parent",
+          "        else: break"
+        ],
+        steps: [
+          {
+            line: 2, title: "맨 끝 위치에 원소 1 삽입",
+            desc: "완전 이진 트리의 마지막 리프 위치(인덱스 4)에 새 원소 1을 삽입합니다.",
+            vars: { curr: 4, parent: "-", "heap[curr]": 1, "heap": "[3, 5, 8, 7, 1]" },
+            header: `<div class="text-xs text-blue-400 font-mono">삽입: 리프 위치 (인덱스 4)</div>`,
+            render: () => renderHeap([3, 5, 8, 7, 1], 4, 1)
+          },
+          {
+            line: 7, title: "1차 Sift-Up: 부모(5)와 교환",
+            desc: "부모 parent(1) = 5 > curr(4) = 1 이므로 힙 불변식을 만족하기 위해 1과 5를 교환합니다.",
+            vars: { curr: 1, parent: 1, "교환": "1 <-> 5", "heap": "[3, 1, 8, 7, 5]" },
+            header: `<div class="text-xs text-amber-400 font-mono font-bold">1차 스왑: 1과 5 교환</div>`,
+            render: () => renderHeap([3, 1, 8, 7, 5], 1, 0)
+          },
+          {
+            line: 7, title: "2차 Sift-Up: 루트(3)와 교환 🌟",
+            desc: "부모 parent(0) = 3 > curr(1) = 1 이므로 다시 교환! 1이 힙의 루트(최솟값)로 등극합니다.",
+            vars: { curr: 0, parent: 0, "교환": "1 <-> 3", "heap": "[1, 3, 8, 7, 5]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 루트 등극: 최솟값 1 정착</div>`,
+            render: () => renderHeap([1, 3, 8, 7, 5], 0, null, true)
+          }
+        ]
+      },
+
+      'array-string': {
+        title: "배열 테크닉 (Array & String)",
+        category: "👉 포인터 & 윈도우",
+        subtitle: "추가 메모리 없이 O(1) 공간에서 0을 맨 뒤로 이동시키는 In-Place 투 포인터",
+        mathBadges: [
+          { label: "공간 불변식", formula: "In-Place Swap: Extra Memory O(1)", color: "text-blue-400" },
+          { label: "시간 복잡도", formula: "T(N) = O(N)", color: "text-emerald-400 font-semibold" }
+        ],
+        inputHtml: `<span><span class="text-purple-400 font-semibold">nums</span>: <span class="text-amber-300 font-semibold">[0, 1, 0, 3, 12]</span></span>`,
+        outputHtml: `<span class="text-blue-300">list[int]</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">[1, 3, 12, 0, 0] (In-Place)</span>`,
+        code: [
+          "def move_zeroes(nums: list[int]) -> None:",
+          "    write_ptr = 0",
+          "    for read_ptr in range(len(nums)):",
+          "        if nums[read_ptr] != 0:",
+          "            nums[write_ptr], nums[read_ptr] = nums[read_ptr], nums[write_ptr]",
+          "            write_ptr += 1"
+        ],
+        steps: [
+          {
+            line: 2, title: "쓰기(Write) 및 읽기(Read) 포인터 0 배치",
+            desc: "0이 아닌 숫자를 채워 넣을 write_ptr=0과 탐색용 read_ptr=0을 준비합니다.",
+            vars: { write_ptr: 0, read_ptr: 0, "nums[r]": 0, "nums": "[0, 1, 0, 3, 12]" },
+            header: `<div class="text-xs text-blue-400 font-mono">초기화: W=0, R=0</div>`,
+            render: () => renderMoveZeroes([0, 1, 0, 3, 12], 0, 0)
+          },
+          {
+            line: 5, title: "R = 1 (값 1): 0이 아니므로 W=0과 스왑 🌟",
+            desc: "nums[1]=1 != 0 성립. nums[0]과 nums[1]을 맞바꾸고 write_ptr을 1로 전진시킵니다.",
+            vars: { write_ptr: 1, read_ptr: 1, "스왑": "0과 1 교환", "nums": "[1, 0, 0, 3, 12]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">1을 앞으로 이동: [1, 0, 0, 3, 12]</div>`,
+            render: () => renderMoveZeroes([1, 0, 0, 3, 12], 1, 1)
+          },
+          {
+            line: 5, title: "R = 3 (값 3): 0이 아니므로 W=1과 스왑 🌟",
+            desc: "nums[3]=3 != 0 성립. nums[1]의 0과 nums[3]의 3을 맞바꾸고 write_ptr을 2로 전진시킵니다.",
+            vars: { write_ptr: 2, read_ptr: 3, "스왑": "0과 3 교환", "nums": "[1, 3, 0, 0, 12]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">3을 앞으로 이동: [1, 3, 0, 0, 12]</div>`,
+            render: () => renderMoveZeroes([1, 3, 0, 0, 12], 2, 3)
+          },
+          {
+            line: 5, title: "R = 4 (값 12): 0이 아니므로 W=2와 스왑 🌟",
+            desc: "nums[4]=12 != 0 성립. nums[2]의 0과 nums[4]의 12를 맞바꾸고 write_ptr을 3으로 전진시킵니다.",
+            vars: { write_ptr: 3, read_ptr: 4, "스왑": "0과 12 교환", "nums": "[1, 3, 12, 0, 0]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 완료: [1, 3, 12, 0, 0]</div>`,
+            render: () => renderMoveZeroes([1, 3, 12, 0, 0], 3, 4, true)
+          }
+        ]
       }
-    ];
+    };
 
-    let currentStep = 0;
+    // State Variables
+    let currentAlgoKey = 'binary-search';
+    let currentStepIndex = 0;
     let isPlaying = false;
     let playInterval = null;
 
-    const arrayContainer = document.getElementById('arrayContainer');
-    const stepSlider = document.getElementById('stepSlider');
-    const stepBadge = document.getElementById('stepBadge');
-    const explanationTitle = document.getElementById('explanationTitle');
-    const explanationText = document.getElementById('explanationText');
-    const searchRangeText = document.getElementById('searchRangeText');
-    const varLeft = document.getElementById('varLeft');
-    const varRight = document.getElementById('varRight');
-    const varMid = document.getElementById('varMid');
-    const varComp = document.getElementById('varComp');
-    const activeLineBadge = document.getElementById('activeLineBadge');
-    const btnPlay = document.getElementById('btnPlay');
-    const playIcon = document.getElementById('playIcon');
-    const playText = document.getElementById('playText');
+    // Canvas Render Helpers
+    function renderArray(arr, L, R, M, activeIndices, foundIdx) {
+      return `
+        <div class="grid grid-cols-7 gap-2 max-w-xl mx-auto">
+          ${arr.map((val, idx) => {
+            const isActive = activeIndices.includes(idx);
+            const isFound = idx === foundIdx;
+            const isMid = idx === M;
+            let valBg = 'bg-[#090d16] text-white border-[#1e293b]';
+            if (isFound) valBg = 'bg-emerald-500/20 text-emerald-400 border-emerald-500 border-2 shadow-lg shadow-emerald-500/30';
+            else if (isMid) valBg = 'bg-amber-500/20 text-amber-300 border-amber-500 border-2';
+            else if (!isActive) valBg = 'bg-[#090d16]/30 text-slate-600 border-transparent';
 
-    function renderArrayCards() {
-      arrayContainer.innerHTML = '';
-      nums.forEach((val, idx) => {
-        const card = document.createElement('div');
-        card.id = `card-${idx}`;
-        card.className = 'card-transition flex flex-col items-center p-2 rounded-xl border border-[#1e293b] bg-[#0f172a]';
-        card.innerHTML = `
-          <span class="text-[10px] text-[#94a3b8] font-mono mb-1">idx ${idx}</span>
-          <div id="card-val-${idx}" class="w-full py-2.5 rounded-lg font-mono font-bold text-center text-sm sm:text-base bg-[#090d16] border border-[#1e293b] text-white">
-            ${val}
-          </div>
-          <div id="card-badges-${idx}" class="mt-2 min-h-[22px] flex items-center gap-1 flex-wrap justify-center text-[10px] font-mono font-bold">
-          </div>
-        `;
-        arrayContainer.appendChild(card);
-      });
+            return `
+              <div class="card-transition flex flex-col items-center p-2 rounded-xl border border-[#1e293b] bg-[#0f172a] ${!isActive ? 'opacity-25 grayscale' : ''}">
+                <span class="text-[10px] text-[#94a3b8] font-mono mb-1">idx ${idx}</span>
+                <div class="w-full py-2.5 rounded-lg font-mono font-bold text-center text-sm border ${valBg}">
+                  ${val}
+                </div>
+                <div class="mt-2 min-h-[22px] flex items-center gap-1 flex-wrap justify-center text-[10px] font-mono font-bold">
+                  ${idx === L ? '<span class="px-1.5 py-0.5 rounded bg-blue-500 text-white">L</span>' : ''}
+                  ${idx === M ? '<span class="px-1.5 py-0.5 rounded bg-amber-500 text-black">M</span>' : ''}
+                  ${idx === R ? '<span class="px-1.5 py-0.5 rounded bg-purple-500 text-white">R</span>' : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
     }
 
-    function updateStep(stepIndex) {
-      currentStep = stepIndex;
-      const s = traceSteps[stepIndex];
+    function renderTwoPointer(arr, L, R, sumVal, matchIdxs) {
+      return `
+        <div class="grid grid-cols-4 gap-3 max-w-md mx-auto">
+          ${arr.map((val, idx) => {
+            const isL = idx === L;
+            const isR = idx === R;
+            const isMatch = matchIdxs && matchIdxs.includes(idx);
+            let border = isMatch ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 border-2' : (isL ? 'border-blue-500 bg-blue-500/10' : (isR ? 'border-purple-500 bg-purple-500/10' : 'border-[#1e293b] text-slate-500'));
+            return `
+              <div class="card-transition p-3 rounded-xl border ${border} bg-[#0f172a] text-center">
+                <span class="text-[10px] text-[#94a3b8] font-mono">idx ${idx}</span>
+                <div class="text-lg font-bold font-mono py-2 text-white">${val}</div>
+                <div class="min-h-[22px] flex justify-center gap-1 font-mono font-bold text-xs">
+                  ${isL ? '<span class="px-2 py-0.5 rounded bg-blue-500 text-white">L</span>' : ''}
+                  ${isR ? '<span class="px-2 py-0.5 rounded bg-purple-500 text-white">R</span>' : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
 
-      stepSlider.value = stepIndex;
-      stepBadge.innerText = `${stepIndex} / ${traceSteps.length - 1}`;
-      activeLineBadge.innerText = `Line ${s.line}`;
-      explanationTitle.innerText = s.title;
-      explanationText.innerText = s.desc;
-      searchRangeText.innerText = s.rangeText;
+    function renderSlidingWindow(arr, start, end, winSum, maxVal, isDone) {
+      return `
+        <div class="grid grid-cols-6 gap-2 max-w-lg mx-auto">
+          ${arr.map((val, idx) => {
+            const inWin = idx >= start && idx <= end;
+            return `
+              <div class="card-transition p-2 rounded-xl border ${inWin ? 'border-amber-500 bg-amber-500/10 shadow-lg shadow-amber-500/10' : 'border-[#1e293b] opacity-40'} bg-[#0f172a] text-center">
+                <span class="text-[10px] text-[#94a3b8] font-mono">idx ${idx}</span>
+                <div class="text-base font-bold font-mono py-2 ${inWin ? 'text-amber-300' : 'text-slate-400'}">${val}</div>
+                <div class="text-[10px] font-mono font-semibold text-amber-400">${inWin ? 'Window' : '-'}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
 
-      varLeft.innerText = s.left !== null ? s.left : '-';
-      varRight.innerText = s.right !== null ? s.right : '-';
-      varMid.innerText = s.mid !== null ? s.mid : '-';
-      varComp.innerText = s.comp;
+    function renderDP(dpArr, activeI, sourceIdxs, isDone) {
+      return `
+        <div class="grid grid-cols-5 gap-2 max-w-md mx-auto">
+          ${[1,2,3,4,5].map(i => {
+            const isCurr = i === activeI;
+            const isSrc = sourceIdxs && sourceIdxs.includes(i);
+            const val = dpArr[i] !== 0 ? dpArr[i] : '?';
+            return `
+              <div class="card-transition p-2 rounded-xl border ${isCurr ? 'border-emerald-500 bg-emerald-500/20' : (isSrc ? 'border-blue-500 bg-blue-500/10' : 'border-[#1e293b]')} bg-[#0f172a] text-center">
+                <span class="text-[10px] text-[#94a3b8] font-mono">dp[${i}]</span>
+                <div class="text-lg font-bold font-mono py-2 ${dpArr[i] !== 0 ? 'text-white' : 'text-slate-600'}">${val}</div>
+                <span class="text-[10px] font-mono ${isCurr ? 'text-emerald-400 font-bold' : (isSrc ? 'text-blue-400' : 'text-slate-600')}">
+                  ${isCurr ? '현재' : (isSrc ? '더하기' : '-')}
+                </span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
 
+    function renderBFSGrid(grid, currPos, queueItems) {
+      return `
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <div class="grid grid-cols-4 gap-1.5 p-2 rounded-xl bg-[#0f172a] border border-[#1e293b]">
+            ${grid.flatMap((row, r) => row.map((val, c) => {
+              const isStart = r===0 && c===0;
+              const isGoal = r===3 && c===3;
+              let bg = 'bg-[#090d16] text-slate-600';
+              if (val === 1) bg = 'bg-blue-500/20 text-blue-300 border border-blue-500/40';
+              if (val === 2) bg = 'bg-blue-600/40 text-white border border-blue-400';
+              if (val === 3) bg = 'bg-emerald-500/30 text-emerald-300 border-2 border-emerald-400 font-bold';
+              return `
+                <div class="w-10 h-10 rounded-lg flex flex-col items-center justify-center text-[10px] font-mono ${bg}">
+                  <span>${isStart ? 'S' : (isGoal ? 'G' : '')}</span>
+                  <span class="text-[9px] opacity-70">${r},${c}</span>
+                </div>
+              `;
+            })).join('')}
+          </div>
+          <div class="bg-[#090d16] p-3 rounded-xl border border-[#1e293b] text-xs font-mono w-44">
+            <div class="text-[#94a3b8] mb-2 font-semibold">Queue (FIFO):</div>
+            <div class="space-y-1">
+              ${queueItems.map(item => `<div class="p-1 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20">▶ ${item}</div>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDijkstra(distMap, activeNode, heapTop, isDone) {
+      return `
+        <div class="grid grid-cols-4 gap-3 max-w-md mx-auto">
+          ${[1, 2, 3, 4].map(node => {
+            const isCurr = node === activeNode;
+            return `
+              <div class="card-transition p-3 rounded-xl border ${isCurr ? 'border-amber-500 bg-amber-500/20' : 'border-[#1e293b]'} bg-[#0f172a] text-center">
+                <span class="text-[10px] text-[#94a3b8] font-mono">Node ${node}</span>
+                <div class="text-xl font-bold font-mono py-1.5 text-white">${distMap[node]}</div>
+                <div class="text-[10px] font-mono ${isCurr ? 'text-amber-400 font-bold' : 'text-slate-500'}">
+                  ${isCurr ? '검사 중' : '비용'}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderUnionFind(parentArr, activeEdge, isCycle) {
+      return `
+        <div class="flex flex-col items-center gap-3">
+          <div class="grid grid-cols-4 gap-2 max-w-sm w-full">
+            ${[1, 2, 3, 4].map(i => `
+              <div class="card-transition p-2.5 rounded-xl border ${isCycle && (i===1||i===3) ? 'border-rose-500 bg-rose-500/20 text-rose-300' : 'border-[#1e293b] bg-[#0f172a]'} text-center">
+                <div class="text-[10px] text-[#94a3b8] font-mono">Node ${i}</div>
+                <div class="text-base font-bold font-mono py-1 text-white">Root: ${parentArr[i]}</div>
+              </div>
+            `).join('')}
+          </div>
+          ${isCycle ? '<div class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/40 text-xs font-bold animate-pulse">⚠️ Cycle Detected: (1, 3) 루트 동일 (3)</div>' : ''}
+        </div>
+      `;
+    }
+
+    function renderGreedy(meetings, activeIdx, acceptedIdxs, isDone) {
+      return `
+        <div class="space-y-2 max-w-md mx-auto w-full">
+          ${meetings.map((m, idx) => {
+            const isAccepted = acceptedIdxs.includes(idx);
+            const isCurr = idx === activeIdx;
+            let bg = isAccepted ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300' : (isCurr ? 'bg-rose-500/20 border-rose-500 text-rose-300' : 'bg-[#0f172a] border-[#1e293b] text-slate-500');
+            return `
+              <div class="card-transition p-2 rounded-xl border ${bg} flex items-center justify-between text-xs font-mono">
+                <span>[${m[0]}, ${m[1]}] (시작: ${m[0]}시, 종료: ${m[1]}시)</span>
+                <span class="font-bold">${isAccepted ? '✅ 채택' : (isCurr ? '❌ 충돌 탈락' : '대기')}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderHashMap(nums, activeIdx, seenMap, complement, matchIdxs) {
+      return `
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <div class="flex gap-2">
+            ${nums.map((n, idx) => {
+              const isMatch = matchIdxs && matchIdxs.includes(idx);
+              const isCurr = idx === activeIdx;
+              return `
+                <div class="card-transition p-2.5 rounded-xl border ${isMatch ? 'border-emerald-500 bg-emerald-500/20' : (isCurr ? 'border-blue-500 bg-blue-500/20' : 'border-[#1e293b]')} bg-[#0f172a] text-center w-14">
+                  <div class="text-[10px] text-[#94a3b8] font-mono">i=${idx}</div>
+                  <div class="text-base font-bold font-mono py-1 text-white">${n}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="bg-[#090d16] p-3 rounded-xl border border-[#1e293b] text-xs font-mono w-48">
+            <div class="text-[#94a3b8] mb-1 font-semibold">Seen Hash Map:</div>
+            <div class="space-y-1">
+              ${Object.keys(seenMap).length === 0 ? '<span class="text-slate-600">{} (비어있음)</span>' : ''}
+              ${Object.entries(seenMap).map(([k, v]) => `
+                <div class="p-1 rounded bg-[#0f172a] border border-[#1e293b] text-emerald-400 flex justify-between">
+                  <span>key: ${k}</span> <span>idx: ${v}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHeap(heapArr, currIdx, parentIdx, isDone) {
+      return `
+        <div class="flex flex-col items-center gap-3">
+          <div class="flex gap-2">
+            ${heapArr.map((v, idx) => {
+              const isCurr = idx === currIdx;
+              const isParent = idx === parentIdx;
+              return `
+                <div class="card-transition p-2 rounded-xl border ${isCurr ? 'border-emerald-500 bg-emerald-500/20' : (isParent ? 'border-amber-500 bg-amber-500/20' : 'border-[#1e293b]')} bg-[#0f172a] text-center w-14">
+                  <span class="text-[10px] text-[#94a3b8] font-mono">idx ${idx}</span>
+                  <div class="text-base font-bold font-mono py-1 text-white">${v}</div>
+                  <span class="text-[9px] font-mono ${isCurr ? 'text-emerald-400 font-bold' : 'text-slate-500'}">${isCurr ? 'Curr' : (isParent ? 'Parent' : '')}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMoveZeroes(arr, W, R, isDone) {
+      return `
+        <div class="grid grid-cols-5 gap-2 max-w-md mx-auto">
+          ${arr.map((v, idx) => {
+            const isW = idx === W;
+            const isR = idx === R;
+            return `
+              <div class="card-transition p-2 rounded-xl border ${isDone ? 'border-emerald-500 bg-emerald-500/10' : 'border-[#1e293b]'} bg-[#0f172a] text-center">
+                <span class="text-[10px] text-[#94a3b8] font-mono">idx ${idx}</span>
+                <div class="text-base font-bold font-mono py-1.5 ${v !== 0 ? 'text-white' : 'text-slate-600'}">${v}</div>
+                <div class="min-h-[20px] flex justify-center gap-1 text-[10px] font-mono font-bold">
+                  ${isW ? '<span class="px-1 rounded bg-blue-500 text-white">W</span>' : ''}
+                  ${isR ? '<span class="px-1 rounded bg-amber-500 text-black">R</span>' : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // Engine Core Functions
+    function loadAlgorithm(key) {
+      if (!ALGORITHMS[key]) key = 'binary-search';
+      currentAlgoKey = key;
+      currentStepIndex = 0;
+      pause();
+
+      const data = ALGORITHMS[key];
+
+      // Update Header & Category
+      document.getElementById('algoTitle').innerText = data.title;
+      document.getElementById('algoCategoryBadge').innerText = data.category;
+      document.getElementById('algoSubtitle').innerText = data.subtitle;
+
+      // Update Math Badges
+      const mathBox = document.getElementById('mathBox');
+      mathBox.innerHTML = data.mathBadges.map((b, idx) => `
+        ${idx > 0 ? '<div class="h-4 w-px bg-[#1e293b]"></div>' : ''}
+        <div class="text-xs">
+          <span class="text-[#94a3b8] font-medium">${b.label}: </span>
+          <span class="math-font text-sm ${b.color}">${b.formula}</span>
+        </div>
+      `).join('');
+
+      // Update I/O Contract Spec
+      document.getElementById('inputSpecContent').innerHTML = data.inputHtml;
+      document.getElementById('outputSpecContent').innerHTML = data.outputHtml;
+
+      // Render Code Lines
+      const codeLinesContainer = document.getElementById('codeLines');
+      codeLinesContainer.innerHTML = data.code.map((line, idx) => `
+        <div data-line="${idx + 1}" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
+          <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">${idx + 1}</span>
+          <span class="code-text">${escapeHtml(line)}</span>
+        </div>
+      `).join('');
+
+      // Update Slider max
+      const slider = document.getElementById('stepSlider');
+      slider.max = data.steps.length - 1;
+      slider.value = 0;
+
+      // Update Dropdown value
+      document.getElementById('algoSelect').value = key;
+      window.location.hash = '#' + key;
+
+      // Render Step 0
+      renderStep(0);
+    }
+
+    function renderStep(stepIndex) {
+      currentStepIndex = stepIndex;
+      const data = ALGORITHMS[currentAlgoKey];
+      const s = data.steps[stepIndex];
+
+      // Slider & Badge
+      document.getElementById('stepSlider').value = stepIndex;
+      document.getElementById('stepBadge').innerText = `${stepIndex} / ${data.steps.length - 1}`;
+      document.getElementById('activeLineBadge').innerText = `Line ${s.line}`;
+      document.getElementById('explanationTitle').innerText = s.title;
+      document.getElementById('explanationText').innerText = s.desc;
+
+      // Update Canvas Subheader & Visual
+      document.getElementById('canvasSubheader').innerHTML = s.header;
+      document.getElementById('visualCanvas').innerHTML = s.render();
+
+      // Update Code Line Highlight
       document.querySelectorAll('#codeLines > div').forEach(div => {
         const lineNum = parseInt(div.getAttribute('data-line'));
         if (lineNum === s.line) {
@@ -476,63 +1255,42 @@
         }
       });
 
-      nums.forEach((val, idx) => {
-        const card = document.getElementById(`card-${idx}`);
-        const cardVal = document.getElementById(`card-val-${idx}`);
-        const cardBadges = document.getElementById(`card-badges-${idx}`);
-
-        cardBadges.innerHTML = '';
-
-        if (idx === s.left) {
-          cardBadges.innerHTML += `<span class="px-1.5 py-0.5 rounded bg-blue-500 text-white shadow-xs">L</span>`;
-        }
-        if (idx === s.mid) {
-          cardBadges.innerHTML += `<span class="px-1.5 py-0.5 rounded bg-amber-500 text-black shadow-xs">M</span>`;
-        }
-        if (idx === s.right) {
-          cardBadges.innerHTML += `<span class="px-1.5 py-0.5 rounded bg-purple-500 text-white shadow-xs">R</span>`;
-        }
-
-        const isActive = s.activeIndices.includes(idx);
-        if (!isActive) {
-          card.classList.add('opacity-25', 'grayscale');
-          cardVal.className = 'w-full py-2.5 rounded-lg font-mono text-center text-sm sm:text-base bg-[#090d16]/40 border border-transparent text-[#94a3b8]';
-        } else {
-          card.classList.remove('opacity-25', 'grayscale');
-          if (idx === s.foundIndex) {
-            cardVal.className = 'w-full py-2.5 rounded-lg font-mono font-bold text-center text-sm sm:text-base bg-emerald-500/20 border-2 border-emerald-500 text-emerald-400 shadow-lg shadow-emerald-500/20';
-          } else if (idx === s.mid) {
-            cardVal.className = 'w-full py-2.5 rounded-lg font-mono font-bold text-center text-sm sm:text-base bg-amber-500/20 border-2 border-amber-500 text-amber-300';
-          } else {
-            cardVal.className = 'w-full py-2.5 rounded-lg font-mono font-bold text-center text-sm sm:text-base bg-[#090d16] border border-blue-500/40 text-slate-100';
-          }
-        }
-      });
+      // Update Variable Watcher Grid
+      const varGrid = document.getElementById('varWatcherGrid');
+      varGrid.innerHTML = Object.entries(s.vars).map(([k, v]) => `
+        <div class="p-2.5 rounded-lg bg-[#0f172a] border border-[#1e293b]">
+          <div class="text-[11px] text-[#94a3b8] mb-0.5 truncate">${k}</div>
+          <div class="font-mono text-sm sm:text-base font-bold text-blue-400 truncate">${v}</div>
+        </div>
+      `).join('');
     }
 
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // Playback Controls
     function togglePlay() {
-      if (isPlaying) {
-        pause();
-      } else {
-        play();
-      }
+      if (isPlaying) pause();
+      else play();
     }
 
     function play() {
       isPlaying = true;
-      playIcon.innerText = '⏸';
-      playText.innerText = '일시 정지';
-      btnPlay.classList.replace('bg-blue-600', 'bg-amber-600');
-      btnPlay.classList.replace('hover:bg-blue-500', 'hover:bg-amber-500');
+      document.getElementById('playIcon').innerText = '⏸';
+      document.getElementById('playText').innerText = '일시 정지';
+      document.getElementById('btnPlay').classList.replace('bg-blue-600', 'bg-amber-600');
+      document.getElementById('btnPlay').classList.replace('hover:bg-blue-500', 'hover:bg-amber-500');
 
-      if (currentStep >= traceSteps.length - 1) {
-        currentStep = 0;
-        updateStep(0);
+      const data = ALGORITHMS[currentAlgoKey];
+      if (currentStepIndex >= data.steps.length - 1) {
+        currentStepIndex = 0;
+        renderStep(0);
       }
 
       playInterval = setInterval(() => {
-        if (currentStep < traceSteps.length - 1) {
-          updateStep(currentStep + 1);
+        if (currentStepIndex < data.steps.length - 1) {
+          renderStep(currentStepIndex + 1);
         } else {
           pause();
         }
@@ -541,42 +1299,62 @@
 
     function pause() {
       isPlaying = false;
-      playIcon.innerText = '▶';
-      playText.innerText = '자동 재생';
-      btnPlay.classList.replace('bg-amber-600', 'bg-blue-600');
-      btnPlay.classList.replace('hover:bg-amber-500', 'hover:bg-blue-500');
+      document.getElementById('playIcon').innerText = '▶';
+      document.getElementById('playText').innerText = '자동 재생';
+      document.getElementById('btnPlay').classList.replace('bg-amber-600', 'bg-blue-600');
+      document.getElementById('btnPlay').classList.replace('hover:bg-amber-500', 'hover:bg-blue-500');
       if (playInterval) clearInterval(playInterval);
     }
 
+    // Event Listeners
+    document.getElementById('algoSelect').addEventListener('change', (e) => {
+      loadAlgorithm(e.target.value);
+    });
+
     document.getElementById('btnNext').addEventListener('click', () => {
       pause();
-      if (currentStep < traceSteps.length - 1) updateStep(currentStep + 1);
+      const data = ALGORITHMS[currentAlgoKey];
+      if (currentStepIndex < data.steps.length - 1) renderStep(currentStepIndex + 1);
     });
 
     document.getElementById('btnPrev').addEventListener('click', () => {
       pause();
-      if (currentStep > 0) updateStep(currentStep - 1);
+      if (currentStepIndex > 0) renderStep(currentStepIndex - 1);
     });
 
     document.getElementById('btnFirst').addEventListener('click', () => {
       pause();
-      updateStep(0);
+      renderStep(0);
     });
 
     document.getElementById('btnReset').addEventListener('click', () => {
       pause();
-      updateStep(0);
+      renderStep(0);
     });
 
-    btnPlay.addEventListener('click', togglePlay);
+    document.getElementById('btnPlay').addEventListener('click', togglePlay);
 
-    stepSlider.addEventListener('input', (e) => {
+    document.getElementById('stepSlider').addEventListener('input', (e) => {
       pause();
-      updateStep(parseInt(e.target.value));
+      renderStep(parseInt(e.target.value));
     });
 
-    renderArrayCards();
-    updateStep(0);
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && ALGORITHMS[hash] && hash !== currentAlgoKey) {
+        loadAlgorithm(hash);
+      }
+    });
+
+    // Initial App Load
+    window.addEventListener('DOMContentLoaded', () => {
+      const initialHash = window.location.hash.replace('#', '');
+      if (initialHash && ALGORITHMS[initialHash]) {
+        loadAlgorithm(initialHash);
+      } else {
+        loadAlgorithm('binary-search');
+      }
+    });
   </script>
 </body>
 </html>
