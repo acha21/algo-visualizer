@@ -716,52 +716,138 @@
         ],
         steps: [
           {
-            line: 2, title: "양 끝 포인터 초기화",
-            desc: "가장 작은 값(left=0, 값 2)과 가장 큰 값(right=3, 값 15)에 포인터를 배치합니다.",
-            vars: { left: 0, right: 3, current_sum: "-", "비교 vs 9": "시작" },
-            header: `<div class="text-xs text-slate-400 font-mono">Target: <span class="text-amber-400 font-bold">9</span></div><div class="text-xs text-blue-400 font-mono">초기 구간 [0, 3]</div>`,
+            line: 2,
+            isCheckpoint: true,
+            title: "1. 양 끝 포인터 초기화 [Checkpoint 1/4]",
+            desc: "오름차순 배열에서 가장 작은 값(left=0, 값 2)과 가장 큰 값(right=3, 값 15)의 인덱스로 포인터를 초기화합니다.",
+            vars: { left: 0, right: 3, current_sum: "-", target: 9, condition: "초기화 [0, 3]" },
+            header: `<div class="text-xs text-slate-400 font-mono">Target: <span class="text-amber-400 font-bold">9</span></div><div class="text-xs text-blue-400 font-mono font-bold">초기 구간 [0, 3] (2와 15)</div>`,
             render: () => renderTwoPointer([2, 7, 11, 15], 0, 3, null, null)
           },
           {
-            line: 4, title: "1회차 두 수의 합 계산",
-            desc: "current_sum = numbers[0] + numbers[3] = 2 + 15 = 17을 계산합니다.",
-            vars: { left: 0, right: 3, current_sum: 17, "비교 vs 9": "17 > 9" },
-            header: `<div class="text-xs text-slate-400 font-mono">합: <span class="text-amber-400 font-bold">17</span> (Target: 9)</div><div class="text-xs text-purple-400 font-mono">초과! R 축소 필요</div>`,
+            line: 3,
+            isCheckpoint: false,
+            title: "루프 진입 조건 평가 (while left < right)",
+            desc: "현재 left(0) < right(3) 조건이 참(True)이므로 1회차 합산 루프로 진입합니다.",
+            vars: { left: 0, right: 3, current_sum: "-", target: 9, condition: "0 < 3 (True)" },
+            header: `<div class="text-xs text-slate-400 font-mono">Target: <span class="text-amber-400 font-bold">9</span></div><div class="text-xs text-blue-400 font-mono">1회차 조건 성립: 0 < 3</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 3, null, null)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "두 수의 합 계산 (current_sum = nums[L] + nums[R])",
+            desc: "current_sum = numbers[0](2) + numbers[3](15) = 17을 계산합니다.",
+            vars: { left: 0, right: 3, current_sum: 17, target: 9, condition: "2 + 15 = 17" },
+            header: `<div class="text-xs text-slate-400 font-mono">합: <span class="text-amber-400 font-bold font-mono">17</span> (Target: 9)</div><div class="text-xs text-purple-400 font-mono">합 계산 완료: 17</div>`,
             render: () => renderTwoPointer([2, 7, 11, 15], 0, 3, 17, null)
           },
           {
-            line: 10, title: "합이 너무 큼 -> Right 포인터 좌측 이동",
-            desc: "17 > 9 이므로 합을 줄이기 위해 가장 큰 원소(15)를 포기하고 right -= 1 (인덱스 2)로 이동합니다.",
-            vars: { left: 0, right: 2, current_sum: 17, "비교 vs 9": "right = 2" },
-            header: `<div class="text-xs text-slate-400 font-mono">R 이동 완료</div><div class="text-xs text-blue-400 font-mono">새 구간 [0, 2]</div>`,
+            line: 5,
+            isCheckpoint: false,
+            title: "목표 합 일치 여부 비교 (if current_sum == target)",
+            desc: "17 == 9 인지 검사합니다. 17 != 9 (False)이므로 elif 분기로 이동합니다.",
+            vars: { left: 0, right: 3, current_sum: 17, target: 9, condition: "17 == 9 (False)" },
+            header: `<div class="text-xs text-slate-400 font-mono">비교: 17 == 9</div><div class="text-xs text-rose-400 font-mono font-bold">17 != 9 불일치</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 3, 17, null)
+          },
+          {
+            line: 7,
+            isCheckpoint: false,
+            title: "합의 크기 비교 (elif current_sum < target)",
+            desc: "17 < 9 인지 검사합니다. 17 < 9는 거짓(False)이므로 else 블록으로 진입하여 right 포인터를 줄입니다.",
+            vars: { left: 0, right: 3, current_sum: 17, target: 9, condition: "17 < 9 (False) -> else" },
+            header: `<div class="text-xs text-slate-400 font-mono">17 > 9 (초과)</div><div class="text-xs text-purple-400 font-mono">else 진입 (R 감소 결정)</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 3, 17, null)
+          },
+          {
+            line: 10,
+            isCheckpoint: true,
+            title: "2. 합 초과로 최대 원소 15 영구 배제 [Checkpoint 2/4]",
+            desc: "배열이 정렬되어 있으므로 가장 작은 2와 더해도 17 > 9입니다. 15는 절대 답의 일부가 될 수 없으므로 right -= 1 (인덱스 2)로 이동합니다.",
+            vars: { left: 0, right: 2, current_sum: 17, target: 9, condition: "right -= 1 (right = 2)" },
+            header: `<div class="text-xs text-slate-400 font-mono">15 탈락!</div><div class="text-xs text-amber-400 font-mono font-bold">축소 구간 [0, 2]</div>`,
             render: () => renderTwoPointer([2, 7, 11, 15], 0, 2, null, null)
           },
           {
-            line: 4, title: "2회차 두 수의 합 계산",
-            desc: "current_sum = numbers[0] + numbers[2] = 2 + 11 = 13을 계산합니다.",
-            vars: { left: 0, right: 2, current_sum: 13, "비교 vs 9": "13 > 9" },
-            header: `<div class="text-xs text-slate-400 font-mono">합: <span class="text-amber-400 font-bold">13</span> (Target: 9)</div><div class="text-xs text-purple-400 font-mono">초과! R 축소 필요</div>`,
+            line: 3,
+            isCheckpoint: false,
+            title: "2회차 루프 조건 평가 (while left < right)",
+            desc: "left(0) < right(2) 조건이 참(True)이므로 2회차 검증으로 진입합니다.",
+            vars: { left: 0, right: 2, current_sum: "-", target: 9, condition: "0 < 2 (True)" },
+            header: `<div class="text-xs text-slate-400 font-mono">Target: 9</div><div class="text-xs text-blue-400 font-mono">2회차 조건 성립: 0 < 2</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 2, null, null)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "2회차 두 수의 합 계산 (current_sum)",
+            desc: "current_sum = numbers[0](2) + numbers[2](11) = 13을 계산합니다.",
+            vars: { left: 0, right: 2, current_sum: 13, target: 9, condition: "2 + 11 = 13" },
+            header: `<div class="text-xs text-slate-400 font-mono">합: <span class="text-amber-400 font-bold font-mono">13</span> (Target: 9)</div><div class="text-xs text-purple-400 font-mono">합 계산: 13</div>`,
             render: () => renderTwoPointer([2, 7, 11, 15], 0, 2, 13, null)
           },
           {
-            line: 10, title: "합이 여전히 큼 -> Right 포인터 좌측 이동",
-            desc: "13 > 9 이므로 다시 right -= 1 (인덱스 1)로 이동합니다.",
-            vars: { left: 0, right: 1, current_sum: 13, "비교 vs 9": "right = 1" },
-            header: `<div class="text-xs text-slate-400 font-mono">R 이동 완료</div><div class="text-xs text-blue-400 font-mono">새 구간 [0, 1]</div>`,
+            line: 5,
+            isCheckpoint: false,
+            title: "2회차 목표 합 일치 여부 비교",
+            desc: "13 == 9 인지 검사합니다. 13 != 9 (False)이므로 elif 분기로 이동합니다.",
+            vars: { left: 0, right: 2, current_sum: 13, target: 9, condition: "13 == 9 (False)" },
+            header: `<div class="text-xs text-slate-400 font-mono">비교: 13 == 9</div><div class="text-xs text-rose-400 font-mono font-bold">13 != 9 불일치</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 2, 13, null)
+          },
+          {
+            line: 7,
+            isCheckpoint: false,
+            title: "2회차 대소 비교 분기",
+            desc: "13 < 9는 거짓(False)입니다. 여전히 합이 목표치 9보다 크므로 else 블록으로 진입합니다.",
+            vars: { left: 0, right: 2, current_sum: 13, target: 9, condition: "13 < 9 (False) -> else" },
+            header: `<div class="text-xs text-slate-400 font-mono">13 > 9 (초과)</div><div class="text-xs text-purple-400 font-mono">else 진입 (R 추가 감소)</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 2, 13, null)
+          },
+          {
+            line: 10,
+            isCheckpoint: true,
+            title: "3. 합 초과로 원소 11 영구 배제 [Checkpoint 3/4]",
+            desc: "13 > 9 이므로 원소 11도 탈락시킵니다. right -= 1 (인덱스 1)로 이동하여 구간이 [0, 1]로 압축됩니다.",
+            vars: { left: 0, right: 1, current_sum: 13, target: 9, condition: "right -= 1 (right = 1)" },
+            header: `<div class="text-xs text-slate-400 font-mono">11 탈락!</div><div class="text-xs text-amber-400 font-mono font-bold">축소 구간 [0, 1]</div>`,
             render: () => renderTwoPointer([2, 7, 11, 15], 0, 1, null, null)
           },
           {
-            line: 4, title: "3회차 두 수의 합 계산",
-            desc: "current_sum = numbers[0] + numbers[1] = 2 + 7 = 9를 계산합니다.",
-            vars: { left: 0, right: 1, current_sum: 9, "비교 vs 9": "9 == 9 (일치!)" },
-            header: `<div class="text-xs text-slate-400 font-mono">합: <span class="text-emerald-400 font-bold">9</span> (Target: 9)</div><div class="text-xs text-emerald-400 font-mono font-bold">🎉 MATCH!</div>`,
+            line: 3,
+            isCheckpoint: false,
+            title: "3회차 루프 조건 평가 (while left < right)",
+            desc: "left(0) < right(1) 조건이 참(True)이므로 마지막 남은 쌍을 검증합니다.",
+            vars: { left: 0, right: 1, current_sum: "-", target: 9, condition: "0 < 1 (True)" },
+            header: `<div class="text-xs text-slate-400 font-mono">Target: 9</div><div class="text-xs text-blue-400 font-mono">3회차 조건 성립: 0 < 1</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 1, null, null)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "3회차 두 수의 합 계산 (current_sum)",
+            desc: "current_sum = numbers[0](2) + numbers[1](7) = 9를 계산합니다.",
+            vars: { left: 0, right: 1, current_sum: 9, target: 9, condition: "2 + 7 = 9" },
+            header: `<div class="text-xs text-slate-400 font-mono">합: <span class="text-emerald-400 font-bold font-mono">9</span> (Target: 9)</div><div class="text-xs text-emerald-400 font-mono font-bold">🎉 두 수의 합 9 포착!</div>`,
+            render: () => renderTwoPointer([2, 7, 11, 15], 0, 1, 9, null)
+          },
+          {
+            line: 5,
+            isCheckpoint: true,
+            title: "4. 🎉 Target 일치 발견! [Checkpoint 4/4]",
+            desc: "current_sum(9) == target(9) 완벽히 일치! if 조건문이 참(True)이 되어 return [left, right]로 분기합니다.",
+            vars: { left: 0, right: 1, current_sum: 9, target: 9, condition: "9 == 9 (MATCH!)" },
+            header: `<div class="text-xs text-emerald-400 font-bold">MATCH! [0, 1]</div><div class="text-xs text-slate-300">2 + 7 = 9 일치</div>`,
             render: () => renderTwoPointer([2, 7, 11, 15], 0, 1, 9, [0, 1])
           },
           {
-            line: 6, title: "🎉 정답 인덱스 쌍 반환",
-            desc: "current_sum == target 성립! 인덱스 쌍 [0, 1]을 반환하고 종료합니다.",
-            vars: { left: 0, right: 1, current_sum: 9, "비교 vs 9": "RETURN [0, 1]" },
-            header: `<div class="text-xs text-emerald-400 font-bold">반환값: [0, 1]</div><div class="text-xs text-slate-400">값: 2 + 7 = 9</div>`,
+            line: 6,
+            isCheckpoint: true,
+            title: "정답 인덱스 쌍 [0, 1] 반환 및 종료",
+            desc: "인덱스 쌍 [0, 1]을 반환하며 단 3번의 포인터 좁히기(O(N))로 탐색을 성공적으로 종료합니다.",
+            vars: { left: 0, right: 1, current_sum: 9, target: 9, condition: "RETURN [0, 1]" },
+            header: `<div class="text-xs text-emerald-400 font-bold">반환값: [0, 1]</div><div class="text-xs text-emerald-400 font-mono font-bold">탐색 완료 (O(N))</div>`,
             render: () => renderTwoPointer([2, 7, 11, 15], 0, 1, 9, [0, 1])
           }
         ]
@@ -794,38 +880,111 @@
         ],
         steps: [
           {
-            line: 2, title: "첫 번째 윈도우(k=3) 형성",
-            desc: "초기 윈도우 [0..2]의 원소 2 + 1 + 5 = 8을 계산합니다.",
-            vars: { i: "-", window_sum: 8, max_sum: 8, "윈도우 범위": "[0, 2]" },
-            header: `<div class="text-xs text-blue-400 font-mono font-bold">윈도우 합: 8</div><div class="text-xs text-amber-400 font-mono">현재 최대합: 8</div>`,
+            line: 2,
+            isCheckpoint: true,
+            title: "1. 초기 윈도우(k=3) 형성 및 합산 [Checkpoint 1/4]",
+            desc: "초기 윈도우 [0..2]의 원소 2 + 1 + 5 = 8을 O(K)에 합산하여 window_sum에 저장합니다.",
+            vars: { i: "-", window_sum: 8, max_sum: "-", k: 3, "윈도우": "[2, 1, 5]" },
+            header: `<div class="text-xs text-blue-400 font-mono font-bold">초기 윈도우 합: 8</div><div class="text-xs text-slate-400 font-mono">구간 [0, 2] (3개 원소)</div>`,
             render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 0, 2, 8, 8)
           },
           {
-            line: 5, title: "윈도우 1칸 우측 슬라이딩 (i = 3)",
-            desc: "새 원소 nums[3]=1 추가(+), 빠지는 원소 nums[0]=2 제외(-). 8 - 2 + 1 = 7.",
-            vars: { i: 3, window_sum: 7, max_sum: 8, "윈도우 범위": "[1, 3]" },
-            header: `<div class="text-xs text-slate-400 font-mono">8 - 2 + 1 = <span class="text-blue-400 font-bold">7</span></div><div class="text-xs text-amber-400 font-mono">최대합 8 유지</div>`,
+            line: 3,
+            isCheckpoint: false,
+            title: "초기 최댓값 설정 (max_sum = window_sum)",
+            desc: "현재까지의 최대 부분합 max_sum을 첫 윈도우 합 8로 초기화합니다.",
+            vars: { i: "-", window_sum: 8, max_sum: 8, k: 3, "윈도우": "[2, 1, 5]" },
+            header: `<div class="text-xs text-blue-400 font-mono">window_sum: 8</div><div class="text-xs text-amber-400 font-mono font-bold">max_sum = 8 초기화</div>`,
+            render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 0, 2, 8, 8)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "슬라이딩 루프 진입 (for i in range(3, 6))",
+            desc: "새 원소 인덱스 i = 3부터 배열 끝(인덱스 5)까지 1칸씩 밀기 위해 반복문으로 진입합니다.",
+            vars: { i: 3, window_sum: 8, max_sum: 8, k: 3, "루프": "i = 3 진입" },
+            header: `<div class="text-xs text-slate-400 font-mono">새 원소: nums[3]=1</div><div class="text-xs text-blue-400 font-mono">i = 3 루프 시작</div>`,
+            render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 0, 2, 8, 8)
+          },
+          {
+            line: 5,
+            isCheckpoint: true,
+            title: "2. 윈도우 1칸 우측 슬라이딩 (i = 3) [Checkpoint 2/4]",
+            desc: "새 원소 nums[3]=1 추가(+), 빠지는 원소 nums[0]=2 제외(-). 8 + 1 - 2 = 7 (O(1) 갱신).",
+            vars: { i: 3, window_sum: 7, max_sum: 8, k: 3, "갱신식": "+1(진입) -2(이탈) = 7" },
+            header: `<div class="text-xs text-slate-400 font-mono">8 - 2 + 1 = <span class="text-blue-400 font-bold">7</span></div><div class="text-xs text-amber-400 font-mono">새 윈도우 [1, 3]</div>`,
             render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 1, 3, 7, 8)
           },
           {
-            line: 5, title: "윈도우 1칸 우측 슬라이딩 (i = 4) 🌟",
-            desc: "새 원소 nums[4]=3 추가(+), 빠지는 원소 nums[1]=1 제외(-). 7 - 1 + 3 = 9. 최대합 9로 갱신!",
-            vars: { i: 4, window_sum: 9, max_sum: 9, "윈도우 범위": "[2, 4]" },
-            header: `<div class="text-xs text-slate-400 font-mono">7 - 1 + 3 = <span class="text-emerald-400 font-bold">9</span></div><div class="text-xs text-emerald-400 font-mono font-bold">🎉 최대합 9 갱신!</div>`,
+            line: 6,
+            isCheckpoint: false,
+            title: "최대합 갱신 비교 (max(max_sum, window_sum))",
+            desc: "max_sum(8)과 window_sum(7) 비교. 8 >= 7이므로 기존 최대합 8을 유지합니다.",
+            vars: { i: 3, window_sum: 7, max_sum: 8, k: 3, "비교": "max(8, 7) = 8 유지" },
+            header: `<div class="text-xs text-slate-400 font-mono">max(8, 7)</div><div class="text-xs text-amber-400 font-mono">최대합 8 유지</div>`,
+            render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 1, 3, 7, 8)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "다음 원소 루프 진행 (i = 4)",
+            desc: "다음 슬라이딩을 위해 루프 인덱스 i = 4로 이동합니다.",
+            vars: { i: 4, window_sum: 7, max_sum: 8, k: 3, "루프": "i = 4 진입" },
+            header: `<div class="text-xs text-slate-400 font-mono">새 원소: nums[4]=3</div><div class="text-xs text-blue-400 font-mono">i = 4 루프 진행</div>`,
+            render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 1, 3, 7, 8)
+          },
+          {
+            line: 5,
+            isCheckpoint: true,
+            title: "3. 윈도우 1칸 우측 슬라이딩 (i = 4) 🌟 [Checkpoint 3/4]",
+            desc: "새 원소 nums[4]=3 추가(+), 빠지는 원소 nums[1]=1 제외(-). 7 + 3 - 1 = 9. 역대 최고합 형성!",
+            vars: { i: 4, window_sum: 9, max_sum: 8, k: 3, "갱신식": "+3(진입) -1(이탈) = 9" },
+            header: `<div class="text-xs text-slate-400 font-mono">7 - 1 + 3 = <span class="text-emerald-400 font-bold">9</span></div><div class="text-xs text-emerald-400 font-mono font-bold">구간 [2, 4] 합: 9</div>`,
+            render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 2, 4, 9, 8)
+          },
+          {
+            line: 6,
+            isCheckpoint: true,
+            title: "🎉 역대 최대 부분합 9 갱신!",
+            desc: "window_sum(9) > max_sum(8) 성립! max_sum을 9로 갱신합니다.",
+            vars: { i: 4, window_sum: 9, max_sum: 9, k: 3, "비교": "max(8, 9) = 9 갱신" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 최대합 9 갱신!</div><div class="text-xs text-emerald-400 font-bold">max_sum = 9</div>`,
             render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 2, 4, 9, 9)
           },
           {
-            line: 5, title: "윈도우 1칸 우측 슬라이딩 (i = 5)",
-            desc: "새 원소 nums[5]=2 추가(+), 빠지는 원소 nums[2]=5 제외(-). 9 - 5 + 2 = 6. 최대합 9 유지.",
-            vars: { i: 5, window_sum: 6, max_sum: 9, "윈도우 범위": "[3, 5]" },
-            header: `<div class="text-xs text-slate-400 font-mono">9 - 5 + 2 = <span class="text-blue-400 font-bold">6</span></div><div class="text-xs text-emerald-400 font-mono">최대합 9 유지</div>`,
+            line: 4,
+            isCheckpoint: false,
+            title: "마지막 원소 루프 진행 (i = 5)",
+            desc: "배열의 마지막 원소 처리를 위해 i = 5로 이동합니다.",
+            vars: { i: 5, window_sum: 9, max_sum: 9, k: 3, "루프": "i = 5 진입 (마지막)" },
+            header: `<div class="text-xs text-slate-400 font-mono">새 원소: nums[5]=2</div><div class="text-xs text-blue-400 font-mono">i = 5 루프 진행</div>`,
+            render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 2, 4, 9, 9)
+          },
+          {
+            line: 5,
+            isCheckpoint: false,
+            title: "마지막 윈도우 슬라이딩 (i = 5)",
+            desc: "새 원소 nums[5]=2 추가(+), 빠지는 원소 nums[2]=5 제외(-). 9 + 2 - 5 = 6.",
+            vars: { i: 5, window_sum: 6, max_sum: 9, k: 3, "갱신식": "+2(진입) -5(이탈) = 6" },
+            header: `<div class="text-xs text-slate-400 font-mono">9 - 5 + 2 = <span class="text-blue-400 font-bold">6</span></div><div class="text-xs text-slate-400 font-mono">새 윈도우 [3, 5]</div>`,
             render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 3, 5, 6, 9)
           },
           {
-            line: 7, title: "🎉 최종 최댓값 반환",
-            desc: "배열 끝까지 탐색 완료. 최종 최댓값 9를 반환합니다.",
-            vars: { i: "종료", window_sum: 6, max_sum: 9, "윈도우 범위": "완료" },
-            header: `<div class="text-xs text-emerald-400 font-mono font-bold">반환값: 9</div><div class="text-xs text-slate-400">구간 [5, 1, 3]</div>`,
+            line: 6,
+            isCheckpoint: false,
+            title: "최종 최대합 비교 (max(9, 6))",
+            desc: "max_sum(9) >= window_sum(6)이므로 기존 최댓값 9를 안전하게 보존합니다.",
+            vars: { i: 5, window_sum: 6, max_sum: 9, k: 3, "비교": "max(9, 6) = 9 유지" },
+            header: `<div class="text-xs text-slate-400 font-mono">max(9, 6)</div><div class="text-xs text-emerald-400 font-mono">최대합 9 유지</div>`,
+            render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 3, 5, 6, 9)
+          },
+          {
+            line: 7,
+            isCheckpoint: true,
+            title: "4. 🎉 최종 최대 부분합 9 반환 [Checkpoint 4/4]",
+            desc: "배열 순회를 O(N)만에 완료했습니다. 최적의 윈도우 [5, 1, 3]의 합인 9를 최종 반환합니다.",
+            vars: { i: "종료", window_sum: 6, max_sum: 9, k: 3, "결과": "RETURN 9" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">반환값: 9</div><div class="text-xs text-slate-300">구간 [5, 1, 3]</div>`,
             render: () => renderSlidingWindow([2, 1, 5, 1, 3, 2], 2, 4, 9, 9, true)
           }
         ]
@@ -856,38 +1015,93 @@
         ],
         steps: [
           {
-            line: 4, title: "기저 조건(Base Cases) 초기화",
-            desc: "1계단을 오르는 방법 1가지, 2계단을 오르는 방법 2가지를 DP 테이블에 미리 채워둡니다.",
-            vars: { i: "-", "dp[1]": 1, "dp[2]": 2, "계산 식": "Base Cases" },
-            header: `<div class="text-xs text-blue-400 font-mono">dp[1]=1, dp[2]=2</div><div class="text-xs text-slate-400 font-mono">목표: dp[5]</div>`,
+            line: 2,
+            isCheckpoint: false,
+            title: "기저 조건 빠른 반환 검사 (if n <= 2)",
+            desc: "n = 5 이므로 n <= 2 조건은 거짓(False)입니다. 빠른 반환을 건너뛰고 DP 테이블 할당으로 이동합니다.",
+            vars: { n: 5, i: "-", "dp": "미할당", condition: "5 <= 2 (False)" },
+            header: `<div class="text-xs text-slate-400 font-mono">입력 n: <span class="text-amber-400 font-bold">5</span></div><div class="text-xs text-blue-400 font-mono">기저 검사 통과 (n > 2)</div>`,
+            render: () => renderDP([null, 0, 0, 0, 0, 0], null, null)
+          },
+          {
+            line: 3,
+            isCheckpoint: false,
+            title: "DP 메모이제이션 테이블 할당 (dp = [0] * 6)",
+            desc: "0번부터 5번 계단까지의 경우의 수를 기록할 크기 6의 DP 테이블을 0으로 초기화합니다.",
+            vars: { n: 5, i: "-", "dp": "[0, 0, 0, 0, 0, 0]", condition: "테이블 할당" },
+            header: `<div class="text-xs text-slate-400 font-mono">크기: 6 배열</div><div class="text-xs text-blue-400 font-mono">dp[0..5] 생성 완료</div>`,
+            render: () => renderDP([null, 0, 0, 0, 0, 0], null, null)
+          },
+          {
+            line: 4,
+            isCheckpoint: true,
+            title: "1. 기저 조건(Base Cases) 초기화 [Checkpoint 1/4]",
+            desc: "1계단 오르는 방법 1가지(dp[1]=1), 2계단 오르는 방법 2가지(dp[2]=2)를 테이블에 기록합니다.",
+            vars: { n: 5, i: "-", "dp[1]": 1, "dp[2]": 2, condition: "dp[1]=1, dp[2]=2" },
+            header: `<div class="text-xs text-blue-400 font-mono font-bold">Base Cases 기록</div><div class="text-xs text-emerald-400 font-mono font-bold">dp[1]=1, dp[2]=2</div>`,
             render: () => renderDP([null, 1, 2, 0, 0, 0], 2, [1, 2])
           },
           {
-            line: 6, title: "i = 3 계산: dp[3] = dp[2] + dp[1]",
-            desc: "3번째 계단은 2번 계단에서 1칸 오르거나, 1번 계단에서 2칸 뛰는 방법의 합: 2 + 1 = 3.",
-            vars: { i: 3, "dp[i]": 3, "dp[i-1]": 2, "dp[i-2]": 1 },
-            header: `<div class="text-xs text-slate-400 font-mono">dp[3] = 2 + 1 = <span class="text-amber-400 font-bold">3</span></div><div class="text-xs text-blue-400 font-mono">i = 3 완료</div>`,
+            line: 5,
+            isCheckpoint: false,
+            title: "바텀업 루프 진입 (for i in range(3, 6))",
+            desc: "작은 부분 문제의 해를 조합하여 큰 문제를 풀기 위해 i = 3부터 5까지 상향식(Bottom-Up) 순회를 시작합니다.",
+            vars: { n: 5, i: 3, "dp[1]": 1, "dp[2]": 2, condition: "i = 3 루프 진입" },
+            header: `<div class="text-xs text-slate-400 font-mono">목표: dp[5]</div><div class="text-xs text-blue-400 font-mono">i = 3 반복문 진입</div>`,
+            render: () => renderDP([null, 1, 2, 0, 0, 0], 3, [1, 2])
+          },
+          {
+            line: 6,
+            isCheckpoint: true,
+            title: "2. i = 3 계단 점화식 계산 (dp[3] = 3) [Checkpoint 2/4]",
+            desc: "3번 계단 = dp[2](2) + dp[1](1) = 3가지. 2번에서 1칸 오르거나 1번에서 2칸 뛰는 방법의 합산입니다.",
+            vars: { n: 5, i: 3, "dp[3]": 3, "dp[2]": 2, "dp[1]": 1, condition: "dp[3] = 2 + 1 = 3" },
+            header: `<div class="text-xs text-slate-400 font-mono">dp[3] = 2 + 1 = <span class="text-amber-400 font-bold font-mono">3</span></div><div class="text-xs text-blue-400 font-mono">i = 3 계산 완료</div>`,
             render: () => renderDP([null, 1, 2, 3, 0, 0], 3, [1, 2])
           },
           {
-            line: 6, title: "i = 4 계산: dp[4] = dp[3] + dp[2]",
-            desc: "4번째 계단 도달 경우의 수 = dp[3] + dp[2] = 3 + 2 = 5.",
-            vars: { i: 4, "dp[i]": 5, "dp[i-1]": 3, "dp[i-2]": 2 },
-            header: `<div class="text-xs text-slate-400 font-mono">dp[4] = 3 + 2 = <span class="text-amber-400 font-bold">5</span></div><div class="text-xs text-blue-400 font-mono">i = 4 완료</div>`,
+            line: 5,
+            isCheckpoint: false,
+            title: "다음 계단 루프 진행 (i = 4)",
+            desc: "4번째 계단 계산을 위해 i = 4로 이동합니다.",
+            vars: { n: 5, i: 4, "dp[3]": 3, "dp[2]": 2, condition: "i = 4 루프 진행" },
+            header: `<div class="text-xs text-slate-400 font-mono">이전 값: dp[3]=3, dp[2]=2</div><div class="text-xs text-blue-400 font-mono">i = 4 진행</div>`,
+            render: () => renderDP([null, 1, 2, 3, 0, 0], 4, [2, 3])
+          },
+          {
+            line: 6,
+            isCheckpoint: false,
+            title: "i = 4 계단 점화식 계산 (dp[4] = 5)",
+            desc: "4번 계단 = dp[3](3) + dp[2](2) = 5가지 경우의 수가 도출됩니다.",
+            vars: { n: 5, i: 4, "dp[4]": 5, "dp[3]": 3, "dp[2]": 2, condition: "dp[4] = 3 + 2 = 5" },
+            header: `<div class="text-xs text-slate-400 font-mono">dp[4] = 3 + 2 = <span class="text-amber-400 font-bold font-mono">5</span></div><div class="text-xs text-blue-400 font-mono">i = 4 계산 완료</div>`,
             render: () => renderDP([null, 1, 2, 3, 5, 0], 4, [2, 3])
           },
           {
-            line: 6, title: "i = 5 계산: dp[5] = dp[4] + dp[3]",
-            desc: "5번째 계단 도달 경우의 수 = dp[4] + dp[3] = 5 + 3 = 8.",
-            vars: { i: 5, "dp[i]": 8, "dp[i-1]": 5, "dp[i-2]": 3 },
-            header: `<div class="text-xs text-slate-400 font-mono">dp[5] = 5 + 3 = <span class="text-emerald-400 font-bold">8</span></div><div class="text-xs text-emerald-400 font-mono font-bold">🎉 목표 달성</div>`,
+            line: 5,
+            isCheckpoint: false,
+            title: "최종 목표 계단 루프 진행 (i = 5)",
+            desc: "최종 목표인 5번째 계단 계산을 위해 i = 5로 이동합니다.",
+            vars: { n: 5, i: 5, "dp[4]": 5, "dp[3]": 3, condition: "i = 5 최종 루프" },
+            header: `<div class="text-xs text-slate-400 font-mono">이전 값: dp[4]=5, dp[3]=3</div><div class="text-xs text-blue-400 font-mono">i = 5 최종 단계</div>`,
+            render: () => renderDP([null, 1, 2, 3, 5, 0], 5, [3, 4])
+          },
+          {
+            line: 6,
+            isCheckpoint: true,
+            title: "3. 🎉 i = 5 최종 점화식 계산 (dp[5] = 8) [Checkpoint 3/4]",
+            desc: "5번 계단 = dp[4](5) + dp[3](3) = 8가지! 목표 계단의 모든 경우의 수가 O(N)만에 완성되었습니다.",
+            vars: { n: 5, i: 5, "dp[5]": 8, "dp[4]": 5, "dp[3]": 3, condition: "dp[5] = 5 + 3 = 8" },
+            header: `<div class="text-xs text-slate-400 font-mono">dp[5] = 5 + 3 = <span class="text-emerald-400 font-bold font-mono">8</span></div><div class="text-xs text-emerald-400 font-mono font-bold">🎉 목표 해 도출 완료</div>`,
             render: () => renderDP([null, 1, 2, 3, 5, 8], 5, [3, 4])
           },
           {
-            line: 7, title: "🎉 최종 dp[5] 반환",
-            desc: "최종적으로 5번째 계단에 도달할 수 있는 경우의 수 8을 반환합니다.",
-            vars: { i: "종료", "dp[5]": 8, "dp[4]": 5, "결과": "RETURN 8" },
-            header: `<div class="text-xs text-emerald-400 font-bold">반환값: 8</div><div class="text-xs text-slate-400">O(N) 단일 루프</div>`,
+            line: 7,
+            isCheckpoint: true,
+            title: "4. 최종 경우의 수 8 반환 [Checkpoint 4/4]",
+            desc: "테이블에 기록된 최적해 dp[5] = 8을 즉시 반환하며 바텀업 DP 알고리즘을 성공적으로 종료합니다.",
+            vars: { n: 5, i: "종료", "dp[5]": 8, condition: "RETURN 8 (완료)" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">반환값: 8</div><div class="text-xs text-slate-300">시간 복잡도 O(N) 완수</div>`,
             render: () => renderDP([null, 1, 2, 3, 5, 8], 5, [], 5)
           }
         ]
@@ -957,31 +1171,93 @@
             ],
             steps: [
               {
-                line: 4, title: "시작 노드 (0,0) 큐에 삽입",
-                desc: "시작 위치 (0,0)과 거리 0을 큐에 넣고 visited에 등록합니다.",
+                line: 4,
+                isCheckpoint: true,
+                title: "1. 시작 노드 (0,0) 큐 초기화 [Checkpoint 1/4]",
+                desc: "시작 좌표 (0,0)과 시작 거리 0을 큐에 삽입합니다.",
                 vars: { "(r, c)": "(0,0)", dist: 0, "큐 크기": 1, "방문 노드 수": 1 },
-                header: `<div class="text-xs text-blue-400 font-mono font-bold">Start: (0,0)</div><div class="text-xs text-slate-400">Queue: [(0,0, dist=0)]</div>`,
+                header: `<div class="text-xs text-blue-400 font-mono font-bold">Start: (0,0)</div><div class="text-xs text-slate-400 font-mono">Queue: [(0,0, d=0)]</div>`,
                 render: () => renderBFSGrid([ [1,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", ["(0,0, d=0)"])
               },
               {
-                line: 7, title: "1레벨 확장: (1,0) 및 (0,1) 방문",
-                desc: "(0,0)을 큐에서 꺼내고 인접한 두 칸에 거리 1을 부여하며 큐에 삽입합니다.",
+                line: 5,
+                isCheckpoint: false,
+                title: "시작 노드 방문 집합(visited) 등록",
+                desc: "시작 노드 (0,0)을 visited 집합에 등록하여 중복 진입을 방지합니다.",
+                vars: { "(r, c)": "(0,0)", dist: 0, "visited": "{(0,0)}", condition: "방문 등록" },
+                header: `<div class="text-xs text-slate-400 font-mono">visited 등록</div><div class="text-xs text-blue-400 font-mono font-bold">(0,0) 방문 마킹</div>`,
+                render: () => renderBFSGrid([ [1,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", ["(0,0, d=0)"])
+              },
+              {
+                line: 6,
+                isCheckpoint: false,
+                title: "BFS 큐 루프 진입 (while queue)",
+                desc: "큐에 탐색할 노드가 남아있는 동안 레벨 순회 루프를 수행합니다.",
+                vars: { "queue": "[(0,0, 0)]", "큐 크기": 1, condition: "queue is not empty" },
+                header: `<div class="text-xs text-slate-400 font-mono">큐 크기: 1</div><div class="text-xs text-blue-400 font-mono">1회차 루프 시작</div>`,
+                render: () => renderBFSGrid([ [1,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", ["(0,0, d=0)"])
+              },
+              {
+                line: 7,
+                isCheckpoint: false,
+                title: "노드 디큐 (r, c, dist = queue.popleft())",
+                desc: "FIFO 큐의 맨 앞에서 현재 탐색 노드 (0,0, 거리 0)을 꺼냅니다.",
+                vars: { "(r, c)": "(0,0)", dist: 0, "큐 남은 크기": 0, condition: "popleft()" },
+                header: `<div class="text-xs text-amber-400 font-mono font-bold">Pop: (0,0, d=0)</div><div class="text-xs text-slate-400 font-mono">인접 4방향 검사 시작</div>`,
+                render: () => renderBFSGrid([ [2,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", [])
+              },
+              {
+                line: 8,
+                isCheckpoint: false,
+                title: "목적지 도착 여부 검사 (if (r, c) == target)",
+                desc: "현재 노드 (0,0)이 목적지 (3,3)인지 검사합니다. 불일치하므로 인접 노드 탐색으로 진행합니다.",
+                vars: { "(r, c)": "(0,0)", target: "(3,3)", condition: "(0,0) != (3,3)" },
+                header: `<div class="text-xs text-slate-400 font-mono">목적지 검사</div><div class="text-xs text-blue-400 font-mono">(0,0) != (3,3) 통과</div>`,
+                render: () => renderBFSGrid([ [2,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", [])
+              },
+              {
+                line: 12,
+                isCheckpoint: true,
+                title: "2. 1레벨 동심원 전파 (거리 1) [Checkpoint 2/4]",
+                desc: "(0,0)의 인접 통로인 (1,0)과 (0,1)에 거리 1을 부여하고 큐에 삽입합니다.",
                 vars: { "(r, c)": "(0,0)", dist: 0, "큐 크기": 2, "방문 노드 수": 3 },
-                header: `<div class="text-xs text-slate-400">Pop: (0,0)</div><div class="text-xs text-amber-400 font-mono font-bold">Queue: [(1,0), (0,1)]</div>`,
+                header: `<div class="text-xs text-slate-400 font-mono">레벨 1 확장</div><div class="text-xs text-amber-400 font-mono font-bold">Queue: [(1,0), (0,1)]</div>`,
                 render: () => renderBFSGrid([ [2,1,0,0],[1,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", ["(1,0, d=1)", "(0,1, d=1)"])
               },
               {
-                line: 13, title: "2레벨 확장: 대각선 방향 전파 (거리 2)",
-                desc: "큐에서 (1,0), (0,1)을 차례로 꺼내며 거리 2 영역으로 물결처럼 확장합니다.",
-                vars: { "(r, c)": "(1,1)", dist: 2, "큐 크기": 3, "방문 노드 수": 6 },
-                header: `<div class="text-xs text-blue-400 font-mono">레벨 2 파동 전파</div><div class="text-xs text-slate-400 font-mono">Queue 크기: 3</div>`,
+                line: 6,
+                isCheckpoint: false,
+                title: "2회차 큐 루프 지속 (while queue)",
+                desc: "큐에 레벨 1 노드들이 들어있으므로 계속해서 파동 탐색을 진행합니다.",
+                vars: { "큐 크기": 2, condition: "queue is not empty" },
+                header: `<div class="text-xs text-slate-400 font-mono">레벨 1 처리</div><div class="text-xs text-blue-400 font-mono">FIFO 순환</div>`,
+                render: () => renderBFSGrid([ [2,1,0,0],[1,0,0,0],[0,0,0,0],[0,0,0,0] ], "(1,0)", ["(0,1, d=1)"])
+              },
+              {
+                line: 7,
+                isCheckpoint: false,
+                title: "레벨 1 노드 순차 디큐",
+                desc: "큐에서 (1,0)과 (0,1)을 차례대로 꺼내어 다음 거리 2 영역으로 물결을 전파합니다.",
+                vars: { "(r, c)": "(1,1)", dist: 2, condition: "레벨 1 노드 확장" },
+                header: `<div class="text-xs text-slate-400 font-mono">레벨 1 노드 확장</div><div class="text-xs text-blue-400 font-mono">차기 레벨 준비</div>`,
                 render: () => renderBFSGrid([ [2,2,1,0],[2,1,0,0],[1,0,0,0],[0,0,0,0] ], "(1,1)", ["(2,0, d=2)", "(1,1, d=2)", "(0,2, d=2)"])
               },
               {
-                line: 8, title: "🎉 목적지 (3,3) 도달! 최단거리 반환",
-                desc: "큐에서 목표 지점 (3,3)이 꺼내졌습니다. 최초 도달 거리가 무조건 최단거리이므로 6을 반환합니다.",
-                vars: { "(r, c)": "(3,3)", dist: 6, "큐 크기": "-", "결과": "RETURN 6" },
-                header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 목적지 (3,3) 도착!</div><div class="text-xs text-emerald-400 font-bold">최단거리: 6</div>`,
+                line: 13,
+                isCheckpoint: true,
+                title: "3. 2레벨 대각 방향 전파 (거리 2) [Checkpoint 3/4]",
+                desc: "거리 2에 해당하는 (2,0), (1,1), (0,2) 노드들이 큐에 등록되며 동심원이 넓어집니다.",
+                vars: { "(r, c)": "(1,1)", dist: 2, "큐 크기": 3, "방문 노드 수": 6 },
+                header: `<div class="text-xs text-blue-400 font-mono font-bold">거리 2 파동 전파</div><div class="text-xs text-slate-400 font-mono">Queue 크기: 3</div>`,
+                render: () => renderBFSGrid([ [2,2,1,0],[2,1,0,0],[1,0,0,0],[0,0,0,0] ], "(1,1)", ["(2,0, d=2)", "(1,1, d=2)", "(0,2, d=2)"])
+              },
+              {
+                line: 8,
+                isCheckpoint: true,
+                title: "4. 🎉 목적지 (3,3) 도착! 최단거리 6 반환 [Checkpoint 4/4]",
+                desc: "큐에서 목적지 (3,3)이 최초로 꺼내졌습니다! BFS 특성에 의해 최초 발견 거리가 무조건 최단거리(6)이므로 즉시 반환합니다.",
+                vars: { "(r, c)": "(3,3)", dist: 6, "큐 크기": "-", condition: "RETURN 6 (최단거리)" },
+                header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 목적지 (3,3) 도착!</div><div class="text-xs text-emerald-400 font-bold">최단거리: 6칸</div>`,
                 render: () => renderBFSGrid([ [2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,3] ], "(3,3)", ["(3,3, d=6)"])
               }
             ]
@@ -1018,52 +1294,129 @@
             ],
             steps: [
               {
-                line: 1, title: "시작점 (0,0) 선택 및 경로(Path) 초기화",
-                desc: "시작 좌표 (0,0)을 방문 집합에 넣고 path 리스트에 추가합니다. 깊이 우선으로 직진 탐색을 시작합니다.",
-                vars: { "(r, c)": "(0,0)", "호출 깊이": "Depth 0", "path": "[(0,0)]", "스택 상태": "dfs(0,0)" },
+                line: 1,
+                isCheckpoint: true,
+                title: "1. 시작점 (0,0) 선택 및 재귀 함수 진입 [Checkpoint 1/5]",
+                desc: "시작 좌표 (0,0)을 방문 집합과 path에 담고 dfs_backtrack을 최초 호출합니다. (호출 깊이: Depth 0)",
+                vars: { "(r, c)": "(0,0)", "호출 깊이": "Depth 0", "path": "[(0,0)]", "스택": "dfs(0,0)" },
                 header: `<div class="text-xs text-blue-400 font-mono font-bold">Start: (0,0) 진입</div><div class="text-xs text-slate-400 font-mono">Depth: 0 (Choose)</div>`,
                 render: () => renderDFSGrid([[0,0]], [[0,0]], null, null, "🟢 시작점 (0,0) 선택")
               },
               {
-                line: 8, title: "외길 깊이 탐색: 아래 방향 (1,0) 전진",
-                desc: "첫 번째 탐색 방향인 아래(dr=1, dc=0)로 이동하여 (1,0)을 선택하고 path에 추가합니다.",
-                vars: { "(r, c)": "(1,0)", "호출 깊이": "Depth 1", "path": "[(0,0), (1,0)]", "스택 상태": "dfs(1,0)" },
-                header: `<div class="text-xs text-blue-400 font-mono">아래로 전진: (1,0)</div><div class="text-xs text-slate-400 font-mono">Depth: 1</div>`,
+                line: 2,
+                isCheckpoint: false,
+                title: "기저 조건 검사 (if (r, c) == target)",
+                desc: "(0,0) == (3,3) 목적지 일치 여부를 검사합니다. 아직 목표에 도달하지 않았으므로(False) 이웃 노드 탐색 루프로 이동합니다.",
+                vars: { "(r, c)": "(0,0)", target: "(3,3)", condition: "(0,0) != (3,3)" },
+                header: `<div class="text-xs text-slate-400 font-mono">목적지 검사</div><div class="text-xs text-blue-400 font-mono">불일치 -> 방향 탐색 진행</div>`,
+                render: () => renderDFSGrid([[0,0]], [[0,0]], null, null, "🟢 시작점 (0,0) 선택")
+              },
+              {
+                line: 5,
+                isCheckpoint: false,
+                title: "방향 순회 루프 (dr=1, dc=0 아래 방향)",
+                desc: "첫 번째 탐색 방향인 아래쪽(dr=1, dc=0)으로 이동할 좌표 nr=1, nc=0을 산출합니다.",
+                vars: { "(r, c)": "(0,0)", "dr, dc": "(1, 0)", "nr, nc": "(1, 0)" },
+                header: `<div class="text-xs text-slate-400 font-mono">방향 탐색</div><div class="text-xs text-blue-400 font-mono">아래쪽 (1,0) 검사</div>`,
+                render: () => renderDFSGrid([[0,0]], [[0,0]], null, null, "🟢 시작점 (0,0) 선택")
+              },
+              {
+                line: 7,
+                isCheckpoint: false,
+                title: "격자 경계 및 통로 유효성 판정",
+                desc: "(1,0)은 격자 내부(0<=nr<4, 0<=nc<4)이고, grid[1][0]==0(통로)이며, 미방문 상태입니다.",
+                vars: { "(nr, nc)": "(1,0)", "grid[1][0]": 0, "visited": "미방문", condition: "유효 통로 (True)" },
+                header: `<div class="text-xs text-slate-400 font-mono">통로 유효 검사</div><div class="text-xs text-emerald-400 font-mono font-bold">(1,0) 유효 통로 승인</div>`,
+                render: () => renderDFSGrid([[0,0]], [[0,0]], null, null, "🟢 시작점 (0,0) 선택")
+              },
+              {
+                line: 8,
+                isCheckpoint: true,
+                title: "2. 외길 깊이 탐색: (1,0) 상태 선택 (Choose) [Checkpoint 2/5]",
+                desc: "visited.add((1,0)) 및 path.append((1,0))을 수행하여 선택(Choose)을 확정하고 깊이 탐색을 개시합니다.",
+                vars: { "(r, c)": "(1,0)", "호출 깊이": "Depth 1", "path": "[(0,0), (1,0)]", "스택": "dfs(1,0)" },
+                header: `<div class="text-xs text-blue-400 font-mono font-bold">아래로 전진: (1,0)</div><div class="text-xs text-slate-400 font-mono">Depth: 1 (Choose)</div>`,
                 render: () => renderDFSGrid([[0,0], [1,0]], [[0,0], [1,0]], null, null, "➡️ 깊이 탐색 전진: (1,0)")
               },
               {
-                line: 8, title: "외길 깊이 탐색: 아래 방향 (2,0) 추가 전진",
-                desc: "계속해서 아래 방향으로 직진하여 (2,0)을 선택하고 path에 추가합니다.",
-                vars: { "(r, c)": "(2,0)", "호출 깊이": "Depth 2", "path": "[(0,0), (1,0), (2,0)]", "스택 상태": "dfs(2,0)" },
-                header: `<div class="text-xs text-amber-400 font-mono">아래로 전진: (2,0)</div><div class="text-xs text-slate-400 font-mono">Depth: 2</div>`,
+                line: 10,
+                isCheckpoint: false,
+                title: "재귀 호출: dfs_backtrack(grid, 1, 0, ...) (Explore)",
+                desc: "(1,0) 좌표에서 더 깊은 해를 찾기 위해 자기 자신을 재귀 호출합니다.",
+                vars: { "(r, c)": "(1,0)", "호출 깊이": "Depth 1", "동작": "재귀 호출 (Explore)" },
+                header: `<div class="text-xs text-slate-400 font-mono">재귀 호출</div><div class="text-xs text-blue-400 font-mono">dfs(1,0) 스택 프레임 생성</div>`,
+                render: () => renderDFSGrid([[0,0], [1,0]], [[0,0], [1,0]], null, null, "➡️ 깊이 탐색 전진: (1,0)")
+              },
+              {
+                line: 8,
+                isCheckpoint: false,
+                title: "추가 직진 탐색: (2,0) 상태 선택 (Choose, Depth 2)",
+                desc: "계속해서 아래쪽 방향으로 직진하여 (2,0)을 선택하고 path에 누적합니다.",
+                vars: { "(r, c)": "(2,0)", "호출 깊이": "Depth 2", "path": "[(0,0), (1,0), (2,0)]", "스택": "dfs(2,0)" },
+                header: `<div class="text-xs text-amber-400 font-mono font-bold">직진 전진: (2,0)</div><div class="text-xs text-slate-400 font-mono">Depth: 2 (Choose)</div>`,
                 render: () => renderDFSGrid([[0,0], [1,0], [2,0]], [[0,0], [1,0], [2,0]], null, null, "➡️ 깊이 탐색 전진: (2,0)")
               },
               {
-                line: 7, title: "⚠️ 막다른 길(Dead End) 봉착: 진행 불가!",
-                desc: "(2,0)에서 아래는 벽(3,0), 우측은 벽(2,1), 위는 이미 방문한 (1,0)입니다. 모든 방향이 막혀 더 이상 탐색이 불가능합니다.",
-                vars: { "(r, c)": "(2,0)", "호출 깊이": "Depth 2", "진행 불가": "사방 폐쇄 (Dead End)", "스택 상태": "막힘 ❌" },
-                header: `<div class="text-xs text-rose-400 font-mono font-bold">❌ 막다른 길 도달 (Dead End)</div><div class="text-xs text-rose-400 font-bold">진행 불가</div>`,
+                line: 7,
+                isCheckpoint: true,
+                title: "3. ⚠️ 막다른 길(Dead End) 봉착: 사방 차단 [Checkpoint 3/5]",
+                desc: "(2,0)에서 아래는 벽(3,0), 우측도 벽(2,1), 위는 방문지(1,0)입니다. 모든 방향의 유효 조건이 거짓(False)이 되어 진행이 불가합니다.",
+                vars: { "(r, c)": "(2,0)", "벽": "(3,0), (2,1)", "진행 상태": "사방 차단 (Dead End)" },
+                header: `<div class="text-xs text-rose-400 font-mono font-bold">❌ 막다른 길 도달 (Dead End)</div><div class="text-xs text-rose-400 font-bold">진행 불가 봉착</div>`,
                 render: () => renderDFSGrid([[0,0], [1,0], [2,0]], [[0,0], [1,0], [2,0]], [2,0], null, "❌ 사방 폐쇄! 막다른 길 도달")
               },
               {
-                line: 12, title: "⏪ [백트래킹 발동]: 선택 취소 및 상태 복원!",
-                desc: "path.pop()으로 (2,0)을 제거하고, visited.remove((2,0))으로 도장도 지웁니다! 이전 갈림길 Depth 1인 (1,0)으로 완벽히 복원됩니다.",
-                vars: { "(r, c)": "(1,0)", "호출 깊이": "Depth 1", "path": "[(0,0), (1,0)]", "백트래킹": "path.pop() 성공" },
-                header: `<div class="text-xs text-amber-400 font-mono font-bold">⏪ 백트래킹 발동: 상태 복원</div><div class="text-xs text-emerald-400 font-bold">path.pop() & visited.remove()</div>`,
+                line: 14,
+                isCheckpoint: false,
+                title: "재귀 실패 반환 (return False)",
+                desc: "더 이상 진행할 수 없으므로 dfs(2,0) 호출이 False를 반환하며 직전 호출인 dfs(1,0)의 10번 줄로 되돌아갑니다.",
+                vars: { "(r, c)": "(2,0)", "결과": "False 반환", "스택 복귀": "dfs(1,0)으로 복귀" },
+                header: `<div class="text-xs text-rose-400 font-mono">실패 반환: False</div><div class="text-xs text-slate-400 font-mono">직전 분기로 복귀 준비</div>`,
+                render: () => renderDFSGrid([[0,0], [1,0], [2,0]], [[0,0], [1,0], [2,0]], [2,0], null, "❌ 사방 폐쇄! 막다른 길 도달")
+              },
+              {
+                line: 12,
+                isCheckpoint: true,
+                title: "4. ⏪ [백트래킹 발동]: path.pop() & 상태 원상복구 [Checkpoint 4/5]",
+                desc: "막다른 길(2,0)을 path.pop()으로 경로에서 제거하고, visited.remove((2,0))으로 방문 도장을 완벽히 복원(Undo)합니다! 갈림길 (1,0)으로 복귀 성공.",
+                vars: { "(r, c)": "(1,0)", "호출 깊이": "Depth 1", "path": "[(0,0), (1,0)]", "백트래킹": "path.pop() & visited.remove() 완수" },
+                header: `<div class="text-xs text-amber-400 font-mono font-bold">⏪ 백트래킹 발동: 상태 복원</div><div class="text-xs text-emerald-400 font-bold">path.pop() 성공 (Undo)</div>`,
                 render: () => renderDFSGrid([[0,0], [1,0]], [[0,0], [1,0]], null, [2,0], "⏪ 백트래킹: (2,0) 발자국 지우고 복귀")
               },
               {
-                line: 8, title: "우회로 분기 개척: 우측 (1,1) 선택",
-                desc: "되돌아온 갈림길 (1,0)에서 다음 유효 방향인 우측 (1,1)을 선택하여 새로운 경로를 개척합니다.",
-                vars: { "(r, c)": "(1,1)", "호출 깊이": "Depth 2", "path": "[(0,0), (1,0), (1,1)]", "스택 상태": "dfs(1,1)" },
-                header: `<div class="text-xs text-blue-400 font-mono font-bold">새 분기 탐색: (1,1) 진입</div><div class="text-xs text-slate-400 font-mono">Depth: 2</div>`,
+                line: 5,
+                isCheckpoint: false,
+                title: "갈림길 (1,0)에서 다음 방향 탐색 (dr=0, dc=1 우측)",
+                desc: "되돌아온 (1,0)에서 다음 for 루프 방향인 우측(dr=0, dc=1)으로 새 후보 (1,1)을 확인합니다.",
+                vars: { "(r, c)": "(1,0)", "dr, dc": "(0, 1)", "nr, nc": "(1, 1)" },
+                header: `<div class="text-xs text-slate-400 font-mono">새 방향 탐색</div><div class="text-xs text-blue-400 font-mono">우측 (1,1) 유효</div>`,
+                render: () => renderDFSGrid([[0,0], [1,0]], [[0,0], [1,0]], null, null, "➡️ 다음 방향 확인: (1,1)")
+              },
+              {
+                line: 8,
+                isCheckpoint: false,
+                title: "우회로 분기 개척: (1,1) 선택 (Choose, Depth 2)",
+                desc: "유효 통로인 우측 (1,1)을 새 경로로 채택하여 깊이 탐색을 재개합니다.",
+                vars: { "(r, c)": "(1,1)", "호출 깊이": "Depth 2", "path": "[(0,0), (1,0), (1,1)]", "스택": "dfs(1,1)" },
+                header: `<div class="text-xs text-blue-400 font-mono font-bold">새 분기 진입: (1,1)</div><div class="text-xs text-slate-400 font-mono">Depth: 2 (Choose)</div>`,
                 render: () => renderDFSGrid([[0,0], [1,0], [1,1]], [[0,0], [1,0], [1,1]], null, null, "✨ 새로운 우회로 분기 진입")
               },
               {
-                line: 3, title: "🎉 목적지 (3,3) 도달 성공! 최종 경로 반환",
-                desc: "우회로를 거쳐 (3,3)에 성공적으로 도달했습니다! 수집된 최종 유효 경로 전체를 반환하며 탐색을 종료합니다.",
-                vars: { "(r, c)": "(3,3)", "호출 깊이": "Depth 6", "결과": "True (경로 완성)", "스택 상태": "Return True" },
-                header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 목적지 (3,3) 도달 성공!</div><div class="text-xs text-emerald-400 font-bold">유효 경로 반환</div>`,
+                line: 2,
+                isCheckpoint: true,
+                title: "5. 🎉 목적지 (3,3) 도달 성공! 기저 조건 달성 [Checkpoint 5/5]",
+                desc: "(1,1) -> (1,2) -> (2,2) -> (3,2) -> (3,3) 우회로를 따라 목적지 (3,3)에 성공적으로 도달했습니다!",
+                vars: { "(r, c)": "(3,3)", target: "(3,3)", "호출 깊이": "Depth 6", condition: "(r, c) == target (True)" },
+                header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 목적지 (3,3) 도달 성공!</div><div class="text-xs text-emerald-400 font-bold">if (r,c) == target 참</div>`,
+                render: () => renderDFSGrid([[0,0], [1,0], [1,1], [1,2], [2,2], [3,2], [3,3]], [[0,0], [1,0], [1,1], [1,2], [2,2], [3,2], [3,3]], null, null, "🎉 목적지 (3,3) 도달 성공!", true)
+              },
+              {
+                line: 3,
+                isCheckpoint: true,
+                title: "최종 유효 경로 반환 및 탐색 성공 종료",
+                desc: "return True를 반환하며 호출 스택을 거슬러 올라가 완성된 최종 탐색 경로 7칸을 성공적으로 반환합니다.",
+                vars: { "최종 경로": "[(0,0), (1,0), (1,1), (1,2), (2,2), (3,2), (3,3)]", "결과": "True 반환" },
+                header: `<div class="text-xs text-emerald-400 font-mono font-bold">최종 경로 완성! (7칸)</div><div class="text-xs text-slate-300">return True 성공</div>`,
                 render: () => renderDFSGrid([[0,0], [1,0], [1,1], [1,2], [2,2], [3,2], [3,3]], [[0,0], [1,0], [1,1], [1,2], [2,2], [3,2], [3,3]], null, null, "🎉 목적지 (3,3) 도달 성공!", true)
               }
             ]
@@ -1103,31 +1456,111 @@
         ],
         steps: [
           {
-            line: 5, title: "시작 노드 거리 0 설정 및 Heap 삽입",
-            desc: "시작 노드 1의 최단거리를 0으로 초기화하고 (0, 1)을 Min-Heap에 삽입합니다.",
-            vars: { u: 1, curr_dist: 0, "heap": "[(0, 1)]", "dist[1]": 0 },
-            header: `<div class="text-xs text-blue-400 font-mono font-bold">Start: 노드 1 (비용 0)</div><div class="text-xs text-slate-400">Heap: [(0, 1)]</div>`,
+            line: 3,
+            isCheckpoint: false,
+            title: "최단거리 테이블 무한대(inf) 초기화",
+            desc: "모든 노드까지의 거리를 float('inf')로 초기화합니다: distances = {1: ∞, 2: ∞, 3: ∞, 4: ∞}.",
+            vars: { u: "-", curr_dist: "-", "distances": "{1: ∞, 2: ∞, 3: ∞, 4: ∞}", condition: "초기화" },
+            header: `<div class="text-xs text-slate-400 font-mono">시작 노드: 1</div><div class="text-xs text-blue-400 font-mono">거리 테이블 무한대 할당</div>`,
+            render: () => renderDijkstra({1: "∞", 2: "∞", 3: "∞", 4: "∞"}, null, "Empty")
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "출발점 거리 0 설정 (distances[start] = 0)",
+            desc: "시작 노드 1의 최단거리를 자기 자신이므로 0으로 설정합니다: distances[1] = 0.",
+            vars: { u: 1, curr_dist: 0, "distances[1]": 0, condition: "distances[1] = 0" },
+            header: `<div class="text-xs text-slate-400 font-mono">Start: 노드 1</div><div class="text-xs text-emerald-400 font-mono font-bold">distances[1] = 0</div>`,
+            render: () => renderDijkstra({1: 0, 2: "∞", 3: "∞", 4: "∞"}, 1, "Empty")
+          },
+          {
+            line: 5,
+            isCheckpoint: true,
+            title: "1. Min-Heap 초기화 및 시작점 삽입 [Checkpoint 1/4]",
+            desc: "heap = [(0, 1)]로 우선순위 큐를 생성하여 (비용 0, 노드 1)을 삽입합니다.",
+            vars: { u: 1, curr_dist: 0, "heap": "[(0, 1)]", "distances[1]": 0 },
+            header: `<div class="text-xs text-blue-400 font-mono font-bold">Start: 노드 1 (비용 0)</div><div class="text-xs text-slate-400 font-mono">Heap: [(0, 1)]</div>`,
             render: () => renderDijkstra({1: 0, 2: "∞", 3: "∞", 4: "∞"}, 1, "(0, 1)")
           },
           {
-            line: 7, title: "Min-Heap Pop: 노드 1 인접 노드 완화",
-            desc: "노드 1에서 뻗어나가는 노드 2(비용 2), 노드 3(비용 5)의 최단거리를 갱신하고 Heap에 Push합니다.",
+            line: 6,
+            isCheckpoint: false,
+            title: "힙 루프 진입 (while heap)",
+            desc: "Min-Heap에 처리할 노드가 남아있는 동안 가장 누적 비용이 작은 노드를 꺼내기 위해 루프로 진입합니다.",
+            vars: { "heap": "[(0, 1)]", condition: "heap is not empty" },
+            header: `<div class="text-xs text-slate-400 font-mono">힙 크기: 1</div><div class="text-xs text-blue-400 font-mono">1회차 루프 시작</div>`,
+            render: () => renderDijkstra({1: 0, 2: "∞", 3: "∞", 4: "∞"}, 1, "(0, 1)")
+          },
+          {
+            line: 7,
+            isCheckpoint: false,
+            title: "최소 비용 노드 디큐 (heappop: u = 1)",
+            desc: "힙의 최상단에서 가장 비용이 작은 (0, 1)을 꺼냅니다. 현재 노드 u = 1, 누적 비용 = 0.",
+            vars: { u: 1, curr_dist: 0, "distances[1]": 0, condition: "heappop -> (0, 1)" },
+            header: `<div class="text-xs text-amber-400 font-mono font-bold">Pop: (0, 노드 1)</div><div class="text-xs text-slate-400 font-mono">인접 간선 완화 준비</div>`,
+            render: () => renderDijkstra({1: 0, 2: "∞", 3: "∞", 4: "∞"}, 1, "(0, 1)")
+          },
+          {
+            line: 11,
+            isCheckpoint: false,
+            title: "인접 간선 완화(Relaxation) 검사",
+            desc: "1번 노드에서 갈 수 있는 노드 2(가중치 2)와 노드 3(가중치 5)에 대해 0 + weight < distances[v] 검사를 통과합니다.",
+            vars: { "간선 1->2": "0 + 2 = 2 < ∞", "간선 1->3": "0 + 5 = 5 < ∞" },
+            header: `<div class="text-xs text-slate-400 font-mono">Relaxing from 1</div><div class="text-xs text-blue-400 font-mono">거리 단축 가능 확인</div>`,
+            render: () => renderDijkstra({1: 0, 2: "∞", 3: "∞", 4: "∞"}, 1, "(0, 1)")
+          },
+          {
+            line: 12,
+            isCheckpoint: true,
+            title: "2. 인접 노드 2, 3 최단거리 갱신 및 힙 Push [Checkpoint 2/4]",
+            desc: "distances[2]=2, distances[3]=5로 갱신하고 heap에 (2, 2), (5, 3)을 삽입합니다.",
             vars: { u: 1, curr_dist: 0, "heap": "[(2, 2), (5, 3)]", "dist[2]": 2, "dist[3]": 5 },
-            header: `<div class="text-xs text-slate-400">Relaxing from 1</div><div class="text-xs text-amber-400 font-mono">dist[2]=2, dist[3]=5</div>`,
+            header: `<div class="text-xs text-slate-400 font-mono">1차 완화 완료</div><div class="text-xs text-amber-400 font-mono font-bold">dist[2]=2, dist[3]=5</div>`,
             render: () => renderDijkstra({1: 0, 2: 2, 3: 5, 4: "∞"}, 2, "(2, 2)")
           },
           {
-            line: 7, title: "Min-Heap Pop: 노드 2 최단거리 확정",
-            desc: "가장 비용이 작은 노드 2(비용 2)를 Pop하여 거리 확정. 노드 2 -> 3(가중치 1)을 거치면 2 + 1 = 3으로 노드 3의 거리가 5에서 3으로 단축!",
-            vars: { u: 2, curr_dist: 2, "heap": "[(3, 3), (9, 4)]", "dist[3]": 3 },
-            header: `<div class="text-xs text-emerald-400 font-mono font-bold">노드 3 단축: 5 → 3!</div><div class="text-xs text-slate-400">경유지 2 효과</div>`,
+            line: 7,
+            isCheckpoint: false,
+            title: "최소 비용 노드 2 디큐 (u = 2, 비용 2 확정)",
+            desc: "남은 힙 [(2, 2), (5, 3)] 중 최솟값인 노드 2(비용 2)를 heappop하여 거리를 확정합니다.",
+            vars: { u: 2, curr_dist: 2, "distances[2]": 2, condition: "노드 2 최단거리 확정" },
+            header: `<div class="text-xs text-amber-400 font-mono font-bold">Pop: (2, 노드 2)</div><div class="text-xs text-blue-400 font-mono">경유지 2를 통한 완화 검사</div>`,
+            render: () => renderDijkstra({1: 0, 2: 2, 3: 5, 4: "∞"}, 2, "(2, 2)")
+          },
+          {
+            line: 11,
+            isCheckpoint: true,
+            title: "3. 노드 2 경유로 노드 3 최단거리 단축 (5 → 3)! [Checkpoint 3/4]",
+            desc: "경유지 2 -> 3(가중치 1): 2 + 1 = 3 < distances[3](5)! 직행 5보다 2를 거친 3이 더 빠름을 발견하고 갱신합니다.",
+            vars: { u: 2, "경유 경로": "1->2->3 (비용 3)", "dist[3]": 3, "heap": "[(3, 3), (9, 4)]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">노드 3 단축: 5 → 3!</div><div class="text-xs text-slate-300 font-mono">경유지 2 효과 입증</div>`,
             render: () => renderDijkstra({1: 0, 2: 2, 3: 3, 4: 9}, 3, "(3, 3)")
           },
           {
-            line: 14, title: "🎉 모든 노드 최단거리 확정",
-            desc: "노드 3에서 노드 4(가중치 3) 완화: 3 + 3 = 6 < 9. 최종 최단거리 {1:0, 2:2, 3:3, 4:6} 반환.",
-            vars: { u: 4, curr_dist: 6, "heap": "Empty", "dist[4]": 6 },
-            header: `<div class="text-xs text-emerald-400 font-mono font-bold">최단거리 확정 완료</div><div class="text-xs text-slate-400">노드 4 비용: 6</div>`,
+            line: 7,
+            isCheckpoint: false,
+            title: "노드 3 디큐 (u = 3, 비용 3 확정)",
+            desc: "힙 최상단 (3, 3)을 꺼내어 노드 3의 최단거리를 3으로 최종 확정합니다.",
+            vars: { u: 3, curr_dist: 3, "distances[3]": 3, condition: "노드 3 확정" },
+            header: `<div class="text-xs text-amber-400 font-mono font-bold">Pop: (3, 노드 3)</div><div class="text-xs text-slate-400 font-mono">노드 4 방향 완화 검사</div>`,
+            render: () => renderDijkstra({1: 0, 2: 2, 3: 3, 4: 9}, 3, "(3, 3)")
+          },
+          {
+            line: 12,
+            isCheckpoint: false,
+            title: "노드 4 최단거리 단축 (9 → 6)",
+            desc: "노드 3 -> 4(가중치 3): 3 + 3 = 6 < distances[4](9). 노드 4의 거리를 6으로 단축합니다.",
+            vars: { u: 3, "경유 경로": "1->2->3->4 (비용 6)", "dist[4]": 6 },
+            header: `<div class="text-xs text-slate-400 font-mono">노드 4 단축</div><div class="text-xs text-emerald-400 font-mono font-bold">dist[4] = 6 갱신</div>`,
+            render: () => renderDijkstra({1: 0, 2: 2, 3: 3, 4: 6}, 4, "(6, 4)")
+          },
+          {
+            line: 14,
+            isCheckpoint: true,
+            title: "4. 🎉 모든 노드 최단거리 확정 및 반환 [Checkpoint 4/4]",
+            desc: "힙의 모든 노드 처리가 완료되었습니다. 최종 최단거리 딕셔너리 {1:0, 2:2, 3:3, 4:6}을 반환합니다.",
+            vars: { "최종 결과": "{1: 0, 2: 2, 3: 3, 4: 6}", condition: "O((V+E)logV) 완수" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">최단거리 확정 완료!</div><div class="text-xs text-slate-300">{1:0, 2:2, 3:3, 4:6}</div>`,
             render: () => renderDijkstra({1: 0, 2: 2, 3: 3, 4: 6}, 4, "Empty", true)
           }
         ]
@@ -1161,30 +1594,110 @@
         ],
         steps: [
           {
-            line: 2, title: "초기 부모 배열: 자기 자신 가리킴",
-            desc: "모든 노드 1, 2, 3, 4가 독립된 집합으로 부모가 자기 자신(parent[i]=i)입니다.",
+            line: 2,
+            isCheckpoint: true,
+            title: "1. 부모 배열 초기화 (parent[i] = i) [Checkpoint 1/4]",
+            desc: "모든 노드 1, 2, 3, 4가 독립된 상호 배타 집합으로 각자 자신을 부모로 가리킵니다: parent = [0, 1, 2, 3, 4].",
             vars: { parent: "[0, 1, 2, 3, 4]", edge: "-", "사이클 여부": "False" },
-            header: `<div class="text-xs text-blue-400 font-mono">초기화: 4개 독립 집합</div>`,
+            header: `<div class="text-xs text-blue-400 font-mono font-bold">초기화: 4개 독립 집합</div><div class="text-xs text-slate-400">parent: [0, 1, 2, 3, 4]</div>`,
             render: () => renderUnionFind([0, 1, 2, 3, 4], null, false)
           },
           {
-            line: 10, title: "간선 (1, 2) 병합",
-            desc: "find(1)=1, find(2)=2. 루트가 다르므로 parent[1] = 2로 연결합니다.",
+            line: 7,
+            isCheckpoint: false,
+            title: "첫 번째 간선 (1, 2) 순회 시작",
+            desc: "간선 목록에서 첫 번째 간선 u=1, v=2를 꺼내 두 노드의 연결을 시도합니다.",
+            vars: { u: 1, v: 2, parent: "[0, 1, 2, 3, 4]" },
+            header: `<div class="text-xs text-slate-400 font-mono">간선 꺼내기</div><div class="text-xs text-blue-400 font-mono">u=1, v=2</div>`,
+            render: () => renderUnionFind([0, 1, 2, 3, 4], "(1, 2)", false)
+          },
+          {
+            line: 8,
+            isCheckpoint: false,
+            title: "find(1)과 find(2) 루트 조회",
+            desc: "find(1) = 1, find(2) = 2. 노드 1의 루트는 1, 노드 2의 루트는 2입니다.",
+            vars: { root_u: 1, root_v: 2, "동일 루트?": "1 != 2 (False)" },
+            header: `<div class="text-xs text-slate-400 font-mono">루트 탐색</div><div class="text-xs text-amber-300 font-mono">root_u=1, root_v=2</div>`,
+            render: () => renderUnionFind([0, 1, 2, 3, 4], "(1, 2)", false)
+          },
+          {
+            line: 9,
+            isCheckpoint: false,
+            title: "루트 일치 여부 판별 (root_u == root_v)",
+            desc: "root_u(1) != root_v(2)이므로 사이클이 아닙니다. 두 집합을 병합하기 위해 진행합니다.",
+            vars: { condition: "1 == 2 → False", action: "Union(1, 2) 진행" },
+            header: `<div class="text-xs text-slate-400 font-mono">사이클 검사</div><div class="text-xs text-emerald-400 font-mono">1 != 2 (안전)</div>`,
+            render: () => renderUnionFind([0, 1, 2, 3, 4], "(1, 2)", false)
+          },
+          {
+            line: 10,
+            isCheckpoint: true,
+            title: "2. 간선 (1, 2) 병합: parent[1] = 2 [Checkpoint 2/4]",
+            desc: "노드 1의 루트 부모를 2로 지정하여 집합 {1}과 {2}를 성공적으로 병합했습니다.",
             vars: { parent: "[0, 2, 2, 3, 4]", edge: "(1, 2)", "사이클 여부": "False" },
-            header: `<div class="text-xs text-amber-400 font-mono">Union(1, 2) 성공</div>`,
+            header: `<div class="text-xs text-amber-400 font-mono font-bold">Union(1, 2) 성공</div><div class="text-xs text-emerald-400">parent[1] = 2</div>`,
             render: () => renderUnionFind([0, 2, 2, 3, 4], "(1, 2)", false)
           },
           {
-            line: 10, title: "간선 (2, 3) 병합",
-            desc: "find(2)=2, find(3)=3. 루트가 다르므로 parent[2] = 3으로 연결합니다.",
+            line: 7,
+            isCheckpoint: false,
+            title: "두 번째 간선 (2, 3) 순회",
+            desc: "간선 목록에서 두 번째 간선 u=2, v=3을 꺼내 연결을 검사합니다.",
+            vars: { u: 2, v: 3, parent: "[0, 2, 2, 3, 4]" },
+            header: `<div class="text-xs text-slate-400 font-mono">간선 꺼내기</div><div class="text-xs text-blue-400 font-mono">u=2, v=3</div>`,
+            render: () => renderUnionFind([0, 2, 2, 3, 4], "(2, 3)", false)
+          },
+          {
+            line: 8,
+            isCheckpoint: false,
+            title: "find(2)와 find(3) 루트 조회",
+            desc: "find(2) = 2, find(3) = 3. 서로 다른 루트 2와 3을 반환받았습니다.",
+            vars: { root_u: 2, root_v: 3, "동일 루트?": "2 != 3 (False)" },
+            header: `<div class="text-xs text-slate-400 font-mono">루트 탐색</div><div class="text-xs text-amber-300 font-mono">root_u=2, root_v=3</div>`,
+            render: () => renderUnionFind([0, 2, 2, 3, 4], "(2, 3)", false)
+          },
+          {
+            line: 9,
+            isCheckpoint: false,
+            title: "사이클 판별: 2 == 3 검사",
+            desc: "root_u(2) != root_v(3)이므로 사이클이 발생하지 않습니다.",
+            vars: { condition: "2 == 3 → False", action: "Union(2, 3) 진행" },
+            header: `<div class="text-xs text-slate-400 font-mono">사이클 검사</div><div class="text-xs text-emerald-400 font-mono">2 != 3 (안전)</div>`,
+            render: () => renderUnionFind([0, 2, 2, 3, 4], "(2, 3)", false)
+          },
+          {
+            line: 10,
+            isCheckpoint: true,
+            title: "3. 간선 (2, 3) 병합: parent[2] = 3 [Checkpoint 3/4]",
+            desc: "노드 2의 루트 부모를 3으로 지정: parent[2] = 3. 이제 노드 1, 2, 3이 하나의 집합 {1, 2, 3}이 되었습니다.",
             vars: { parent: "[0, 2, 3, 3, 4]", edge: "(2, 3)", "사이클 여부": "False" },
-            header: `<div class="text-xs text-amber-400 font-mono">Union(2, 3) 성공</div>`,
+            header: `<div class="text-xs text-amber-400 font-mono font-bold">Union(2, 3) 성공</div><div class="text-xs text-emerald-400">parent[2] = 3</div>`,
             render: () => renderUnionFind([0, 2, 3, 3, 4], "(2, 3)", false)
           },
           {
-            line: 9, title: "⚠️ 간선 (1, 3) 검사: 사이클 발생!",
-            desc: "find(1)=3, find(3)=3. 두 노드의 루트가 이미 '3'으로 같습니다! 즉, 이미 연결된 두 노드를 또 이으므로 사이클 발생! True 반환.",
-            vars: { parent: "[0, 3, 3, 3, 4]", edge: "(1, 3)", "사이클 감지": "TRUE!" },
+            line: 7,
+            isCheckpoint: false,
+            title: "세 번째 간선 (1, 3) 순회",
+            desc: "간선 목록에서 세 번째 간선 u=1, v=3을 꺼내 연결을 검사합니다.",
+            vars: { u: 1, v: 3, parent: "[0, 2, 3, 3, 4]" },
+            header: `<div class="text-xs text-slate-400 font-mono">간선 꺼내기</div><div class="text-xs text-rose-400 font-mono">u=1, v=3</div>`,
+            render: () => renderUnionFind([0, 2, 3, 3, 4], "(1, 3)", false)
+          },
+          {
+            line: 8,
+            isCheckpoint: false,
+            title: "경로 압축 find(1) 및 find(3) 호출",
+            desc: "find(1): parent[1]은 2, parent[2]는 3 → 최종 루트 3! 경로 압축으로 parent[1]=3 갱신. find(3)=3.",
+            vars: { root_u: 3, root_v: 3, "경로 압축": "parent[1]=3 갱신 완료", parent: "[0, 3, 3, 3, 4]" },
+            header: `<div class="text-xs text-amber-300 font-mono">경로 압축 find(1)→3</div><div class="text-xs text-rose-400 font-bold">root_u=3, root_v=3!</div>`,
+            render: () => renderUnionFind([0, 3, 3, 3, 4], "(1, 3)", false)
+          },
+          {
+            line: 9,
+            isCheckpoint: true,
+            title: "4. ⚠️ root_u == root_v (3 == 3): 사이클 감지! [Checkpoint 4/4]",
+            desc: "두 노드의 루트가 이미 3으로 동일합니다! 이미 연결된 두 노드 사이에 또 간선을 추가하려 하므로 사이클이 감지되었습니다. return True.",
+            vars: { root_u: 3, root_v: 3, "사이클 감지": "TRUE!", edge: "(1, 3)" },
             header: `<div class="text-xs text-rose-400 font-mono font-bold">⚠️ Cycle Detected: (1, 3)</div><div class="text-xs text-emerald-400 font-bold">Return True</div>`,
             render: () => renderUnionFind([0, 3, 3, 3, 4], "(1, 3)", true)
           }
@@ -1216,38 +1729,120 @@
         ],
         steps: [
           {
-            line: 2, title: "종료 시간 기준 정렬",
-            desc: "빨리 끝나는 회의를 먼저 배치하기 위해 종료 시간을 기준으로 정렬: [1,4], [3,5], [0,6], [5,7].",
-            vars: { count: 0, last_end: 0, "현재 회의": "-" },
-            header: `<div class="text-xs text-blue-400 font-mono">정렬 완료: 4개 회의</div>`,
+            line: 2,
+            isCheckpoint: true,
+            title: "1. 회의 종료 시간(end) 기준 오름차순 정렬 [Checkpoint 1/4]",
+            desc: "탐욕적 선택 속성에 따라 가장 빨리 끝나는 회의를 선점하기 위해 종료 시간 기준으로 정렬: [[1,4], [3,5], [0,6], [5,7]].",
+            vars: { "정렬된 회의": "[[1,4], [3,5], [0,6], [5,7]]", count: 0, last_end: 0 },
+            header: `<div class="text-xs text-blue-400 font-mono font-bold">정렬 완료: 4개 회의</div><div class="text-xs text-slate-400">종료 시간 순 정렬</div>`,
             render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], null, [])
           },
           {
-            line: 6, title: "1번째 회의 [1, 4] 선택 🌟",
-            desc: "start(1) >= last_end(0) 성립. 첫 번째 회의를 수락하고 last_end = 4로 갱신합니다.",
-            vars: { count: 1, last_end: 4, "선택": "[1, 4]" },
-            header: `<div class="text-xs text-emerald-400 font-mono font-bold">회의 1 채택 [1, 4]</div>`,
+            line: 3,
+            isCheckpoint: false,
+            title: "변수 count=0, last_end=0 초기화",
+            desc: "진행된 회의 수를 셀 count와 마지막 회의의 종료 시간을 기록할 last_end를 0으로 초기화합니다.",
+            vars: { count: 0, last_end: 0 },
+            header: `<div class="text-xs text-slate-400 font-mono">초기화</div><div class="text-xs text-emerald-400 font-mono">count=0, last_end=0</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], null, [])
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "1번째 회의 [1, 4] 검사 시작",
+            desc: "인터벌 목록의 첫 번째 회의 [start=1, end=4]를 확인합니다.",
+            vars: { start: 1, end: 4, last_end: 0, count: 0 },
+            header: `<div class="text-xs text-slate-400 font-mono">현재 회의</div><div class="text-xs text-blue-400 font-mono">[1, 4] (start=1, end=4)</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 0, [])
+          },
+          {
+            line: 5,
+            isCheckpoint: false,
+            title: "회의 시작 조건 검사 (start >= last_end)",
+            desc: "start(1) >= last_end(0) 조건이 참(True)입니다! 이전 회의와 겹치지 않습니다.",
+            vars: { condition: "1 >= 0 (True)", action: "회의 채택 진행" },
+            header: `<div class="text-xs text-slate-400 font-mono">충돌 여부 검사</div><div class="text-xs text-emerald-400 font-mono">1 >= 0 (가능)</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 0, [])
+          },
+          {
+            line: 6,
+            isCheckpoint: true,
+            title: "2. 1번째 회의 [1, 4] 채택 (count=1, last_end=4) [Checkpoint 2/4]",
+            desc: "첫 번째 회의를 수락하여 count를 1로 증가시키고, 종료 시간 last_end를 4시로 갱신합니다.",
+            vars: { count: 1, last_end: 4, "선택 회의": "[1, 4]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">회의 1 채택 [1, 4]</div><div class="text-xs text-emerald-300">count=1, last_end=4</div>`,
             render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 0, [0])
           },
           {
-            line: 5, title: "2번째 회의 [3, 5] 탈락",
-            desc: "start(3) < last_end(4) 충돌! 회의가 겹치므로 버립니다.",
-            vars: { count: 1, last_end: 4, "탈락": "[3, 5] (겹침)" },
-            header: `<div class="text-xs text-rose-400 font-mono">충돌 탈락: [3, 5]</div>`,
+            line: 4,
+            isCheckpoint: false,
+            title: "2번째 회의 [3, 5] 검사",
+            desc: "다음 회의 [start=3, end=5]를 검사합니다.",
+            vars: { start: 3, end: 5, last_end: 4, count: 1 },
+            header: `<div class="text-xs text-slate-400 font-mono">현재 회의</div><div class="text-xs text-blue-400 font-mono">[3, 5] (start=3, end=5)</div>`,
             render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 1, [0])
           },
           {
-            line: 6, title: "4번째 회의 [5, 7] 선택 🌟",
-            desc: "start(5) >= last_end(4) 성립! 두 번째 회의 채택, last_end = 7, count = 2.",
-            vars: { count: 2, last_end: 7, "선택": "[5, 7]" },
-            header: `<div class="text-xs text-emerald-400 font-mono font-bold">회의 2 채택 [5, 7]</div>`,
+            line: 5,
+            isCheckpoint: false,
+            title: "충돌 검사 (start >= last_end) → False",
+            desc: "start(3) < last_end(4)이므로 조건 불만족! 이전 회의가 4시에 끝나는데 3시에 시작하므로 충돌 탈락합니다.",
+            vars: { condition: "3 >= 4 (False)", decision: "충돌로 건너뜀" },
+            header: `<div class="text-xs text-rose-400 font-mono">충돌 탈락: 3 < 4</div><div class="text-xs text-slate-400">버림</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 1, [0])
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "3번째 회의 [0, 6] 검사",
+            desc: "세 번째 회의 [start=0, end=6]을 검사합니다.",
+            vars: { start: 0, end: 6, last_end: 4, count: 1 },
+            header: `<div class="text-xs text-slate-400 font-mono">현재 회의</div><div class="text-xs text-blue-400 font-mono">[0, 6] (start=0, end=6)</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 2, [0])
+          },
+          {
+            line: 5,
+            isCheckpoint: false,
+            title: "충돌 검사 (start >= last_end) → False",
+            desc: "start(0) < last_end(4) 충돌! 회의가 이미 진행 중인 시간대이므로 버립니다.",
+            vars: { condition: "0 >= 4 (False)", decision: "충돌로 건너뜀" },
+            header: `<div class="text-xs text-rose-400 font-mono">충돌 탈락: 0 < 4</div><div class="text-xs text-slate-400">버림</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 2, [0])
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "4번째 회의 [5, 7] 검사",
+            desc: "네 번째 회의 [start=5, end=7]을 검사합니다.",
+            vars: { start: 5, end: 7, last_end: 4, count: 1 },
+            header: `<div class="text-xs text-slate-400 font-mono">현재 회의</div><div class="text-xs text-blue-400 font-mono">[5, 7] (start=5, end=7)</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 3, [0])
+          },
+          {
+            line: 5,
+            isCheckpoint: false,
+            title: "회의 시작 조건 검사 (start >= last_end) → True",
+            desc: "start(5) >= last_end(4) 조건 만족! 이전 회의(4시 종료) 이후에 시작하므로 채택 가능합니다.",
+            vars: { condition: "5 >= 4 (True)", action: "회의 채택 진행" },
+            header: `<div class="text-xs text-slate-400 font-mono">충돌 여부 검사</div><div class="text-xs text-emerald-400 font-mono">5 >= 4 (가능)</div>`,
+            render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 3, [0])
+          },
+          {
+            line: 6,
+            isCheckpoint: true,
+            title: "3. 4번째 회의 [5, 7] 채택 (count=2, last_end=7) [Checkpoint 3/4]",
+            desc: "두 번째 회의를 성공적으로 채택하여 count=2, last_end=7시로 갱신되었습니다.",
+            vars: { count: 2, last_end: 7, "선택 회의": "[1, 4], [5, 7]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">회의 2 채택 [5, 7]</div><div class="text-xs text-emerald-300">count=2, last_end=7</div>`,
             render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], 3, [0, 3])
           },
           {
-            line: 8, title: "🎉 최대 회의 수 2 반환",
-            desc: "모든 인터벌 검사 완료. 최종 채택된 회의 수 2를 반환합니다.",
-            vars: { count: 2, last_end: 7, "결과": "RETURN 2" },
-            header: `<div class="text-xs text-emerald-400 font-bold">최종 회의 수: 2</div>`,
+            line: 8,
+            isCheckpoint: true,
+            title: "4. 🎉 최대 진행 회의 수 2 반환 [Checkpoint 4/4]",
+            desc: "모든 인터벌 순회가 끝났습니다. 겹치지 않고 진행할 수 있는 최대 회의 수 count=2를 반환합니다.",
+            vars: { "최종 count": 2, "채택된 회의들": "[[1, 4], [5, 7]]", return: 2 },
+            header: `<div class="text-xs text-emerald-400 font-bold">최종 회의 수: 2</div><div class="text-xs text-slate-300">탐욕적 선택 최적해 달성</div>`,
             render: () => renderGreedy([[1,4], [3,5], [0,6], [5,7]], null, [0, 3], true)
           }
         ]
@@ -1279,31 +1874,120 @@
         ],
         steps: [
           {
-            line: 2, title: "빈 해시 맵 초기화",
-            desc: "이전에 등장한 숫자와 그 인덱스를 기억할 빈 딕셔너리 seen = {}을 준비합니다.",
-            vars: { i: "-", num: "-", complement: "-", "seen": "{}" },
+            line: 2,
+            isCheckpoint: true,
+            title: "1. 빈 해시 맵(seen = {}) 초기화 [Checkpoint 1/3]",
+            desc: "이전에 등장한 숫자와 그 인덱스를 상수 시간 O(1)에 조회하기 위한 빈 딕셔너리 seen = {}을 준비합니다.",
+            vars: { seen: "{}", target: 9, i: "-", num: "-", complement: "-" },
             header: `<div class="text-xs text-blue-400 font-mono font-bold">Target: 9</div><div class="text-xs text-slate-400">seen: {}</div>`,
             render: () => renderHashMap([2, 11, 7, 15], null, {}, null)
           },
           {
-            line: 7, title: "i = 0 (값 2): seen에 등록",
-            desc: "complement = 9 - 2 = 7. seen에 7이 없으므로 seen[2] = 0 등록.",
-            vars: { i: 0, num: 2, complement: 7, "seen": "{ 2: 0 }" },
-            header: `<div class="text-xs text-slate-400 font-mono">보수 7 없음 → seen[2]=0 저장</div>`,
+            line: 3,
+            isCheckpoint: false,
+            title: "i = 0, num = 2 순회 시작",
+            desc: "첫 번째 원소 i=0, num=2에 대한 보수 검사를 시작합니다.",
+            vars: { i: 0, num: 2, seen: "{}" },
+            header: `<div class="text-xs text-slate-400 font-mono">원소 조회</div><div class="text-xs text-blue-400 font-mono">i=0, num=2</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], 0, {}, null)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "보수(complement) 계산: 9 - 2 = 7",
+            desc: "target(9) - num(2) = 7. 합해서 9가 되기 위해 필요한 보수 숫자는 7입니다.",
+            vars: { i: 0, num: 2, complement: 7, formula: "9 - 2 = 7" },
+            header: `<div class="text-xs text-slate-400 font-mono">보수 계산</div><div class="text-xs text-amber-300 font-mono">complement = 7</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], 0, {}, 7)
+          },
+          {
+            line: 5,
+            isCheckpoint: false,
+            title: "보수 7 조회: 7 in seen? → False",
+            desc: "seen에 7이 아직 존재하지 않습니다 (해시 조회 O(1)). 현재 숫자를 seen에 등록해야 합니다.",
+            vars: { "7 in seen": "False", action: "seen[2] = 0 저장 예정" },
+            header: `<div class="text-xs text-slate-400 font-mono">해시 조회 O(1)</div><div class="text-xs text-slate-400">7 없음</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], 0, {}, 7)
+          },
+          {
+            line: 7,
+            isCheckpoint: true,
+            title: "2. seen[2] = 0 해시 맵 등록 [Checkpoint 2/3]",
+            desc: "값 2와 인덱스 0을 해시 맵에 저장: seen = { 2: 0 }.",
+            vars: { seen: "{ 2: 0 }", registered: "2 -> idx 0" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">seen 등록</div><div class="text-xs text-emerald-300">seen[2] = 0</div>`,
             render: () => renderHashMap([2, 11, 7, 15], 0, {2: 0}, 7)
           },
           {
-            line: 7, title: "i = 1 (값 11): seen에 등록",
-            desc: "complement = 9 - 11 = -2. seen에 -2가 없으므로 seen[11] = 1 등록.",
-            vars: { i: 1, num: 11, complement: -2, "seen": "{ 2: 0, 11: 1 }" },
-            header: `<div class="text-xs text-slate-400 font-mono">보수 -2 없음 → seen[11]=1 저장</div>`,
+            line: 3,
+            isCheckpoint: false,
+            title: "i = 1, num = 11 순회",
+            desc: "두 번째 원소 i=1, num=11을 확인합니다.",
+            vars: { i: 1, num: 11, seen: "{ 2: 0 }" },
+            header: `<div class="text-xs text-slate-400 font-mono">원소 조회</div><div class="text-xs text-blue-400 font-mono">i=1, num=11</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], 1, {2: 0}, null)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "보수 계산: 9 - 11 = -2",
+            desc: "target(9) - num(11) = -2. 필요한 보수는 -2입니다.",
+            vars: { i: 1, num: 11, complement: -2, formula: "9 - 11 = -2" },
+            header: `<div class="text-xs text-slate-400 font-mono">보수 계산</div><div class="text-xs text-amber-300 font-mono">complement = -2</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], 1, {2: 0}, -2)
+          },
+          {
+            line: 5,
+            isCheckpoint: false,
+            title: "보수 -2 조회: -2 in seen? → False",
+            desc: "seen {2: 0}에 -2가 존재하지 않습니다.",
+            vars: { "-2 in seen": "False", action: "seen[11] = 1 저장 예정" },
+            header: `<div class="text-xs text-slate-400 font-mono">해시 조회 O(1)</div><div class="text-xs text-slate-400">-2 없음</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], 1, {2: 0}, -2)
+          },
+          {
+            line: 7,
+            isCheckpoint: false,
+            title: "seen[11] = 1 해시 맵 등록",
+            desc: "값 11과 인덱스 1을 등록: seen = { 2: 0, 11: 1 }.",
+            vars: { seen: "{ 2: 0, 11: 1 }", registered: "11 -> idx 1" },
+            header: `<div class="text-xs text-emerald-400 font-mono">seen 등록</div><div class="text-xs text-slate-300">seen[11] = 1</div>`,
             render: () => renderHashMap([2, 11, 7, 15], 1, {2: 0, 11: 1}, -2)
           },
           {
-            line: 6, title: "i = 2 (값 7): 🎉 보수 2 발견! O(1) 즉시 매칭",
-            desc: "complement = 9 - 7 = 2. seen에 2가 이미 존재합니다 (인덱스 0)! 즉시 [0, 2] 반환.",
-            vars: { i: 2, num: 7, complement: 2, "결과": "MATCH [0, 2]!" },
-            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 complement 2 in seen! (idx 0)</div><div class="text-xs text-emerald-400 font-bold">반환값: [0, 2]</div>`,
+            line: 3,
+            isCheckpoint: false,
+            title: "i = 2, num = 7 순회",
+            desc: "세 번째 원소 i=2, num=7을 확인합니다.",
+            vars: { i: 2, num: 7, seen: "{ 2: 0, 11: 1 }" },
+            header: `<div class="text-xs text-slate-400 font-mono">원소 조회</div><div class="text-xs text-blue-400 font-mono">i=2, num=7</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], 2, {2: 0, 11: 1}, null)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "보수 계산: 9 - 7 = 2",
+            desc: "target(9) - num(7) = 2. 필요한 보수는 2입니다.",
+            vars: { i: 2, num: 7, complement: 2, formula: "9 - 7 = 2" },
+            header: `<div class="text-xs text-slate-400 font-mono">보수 계산</div><div class="text-xs text-amber-300 font-mono">complement = 2</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], 2, {2: 0, 11: 1}, 2)
+          },
+          {
+            line: 5,
+            isCheckpoint: false,
+            title: "보수 2 조회: 2 in seen? → True! 🎯",
+            desc: "seen { 2: 0, 11: 1 }에 2가 이미 존재합니다! 키 2의 값은 인덱스 0입니다.",
+            vars: { "2 in seen": "True (발견!)", "seen[2]": 0, "현재 i": 2 },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎯 2 in seen! (idx 0)</div><div class="text-xs text-amber-300 font-bold">보수 쌍 완성!</div>`,
+            render: () => renderHashMap([2, 11, 7, 15], 2, {2: 0, 11: 1}, 2, [0, 2])
+          },
+          {
+            line: 6,
+            isCheckpoint: true,
+            title: "3. 🎉 보수 쌍 발견: return [seen[2], 2] = [0, 2] [Checkpoint 3/3]",
+            desc: "보수 2의 인덱스 0과 현재 원소 7의 인덱스 2를 묶어 [0, 2]를 즉시 반환합니다. 1회 순회(1-Pass)만으로 O(N) 완수!",
+            vars: { "최종 결과": "[0, 2]", "nums[0] + nums[2]": "2 + 7 = 9" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 반환값: [0, 2]</div><div class="text-xs text-slate-300 font-mono">2 + 7 = 9 (Target)</div>`,
             render: () => renderHashMap([2, 11, 7, 15], 2, {2: 0, 11: 1}, 2, [0, 2])
           }
         ]
@@ -1336,24 +2020,102 @@
         ],
         steps: [
           {
-            line: 2, title: "맨 끝 위치에 원소 1 삽입",
-            desc: "완전 이진 트리의 마지막 리프 위치(인덱스 4)에 새 원소 1을 삽입합니다.",
-            vars: { curr: 4, parent: "-", "heap[curr]": 1, "heap": "[3, 5, 8, 7, 1]" },
-            header: `<div class="text-xs text-blue-400 font-mono">삽입: 리프 위치 (인덱스 4)</div>`,
+            line: 2,
+            isCheckpoint: true,
+            title: "1. 리프 위치에 새 원소 1 삽입: heap.append(1) [Checkpoint 1/3]",
+            desc: "완전 이진 트리의 마지막 위치(인덱스 4)에 새 원소 1을 추가합니다: heap = [3, 5, 8, 7, 1].",
+            vars: { heap: "[3, 5, 8, 7, 1]", val: 1 },
+            header: `<div class="text-xs text-blue-400 font-mono font-bold">원소 삽입</div><div class="text-xs text-slate-400">heap.append(1)</div>`,
+            render: () => renderHeap([3, 5, 8, 7, 1], 4, null)
+          },
+          {
+            line: 3,
+            isCheckpoint: false,
+            title: "현재 인덱스 curr = 4 설정",
+            desc: "curr = len(heap) - 1 = 5 - 1 = 4. 삽입된 원소의 인덱스를 curr에 저장합니다.",
+            vars: { curr: 4, "heap[curr]": 1 },
+            header: `<div class="text-xs text-slate-400 font-mono">인덱스 설정</div><div class="text-xs text-blue-400 font-mono">curr = 4</div>`,
+            render: () => renderHeap([3, 5, 8, 7, 1], 4, null)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "루트 도달 여부 확인: curr > 0",
+            desc: "curr(4) > 0 이므로 아직 루트에 도달하지 않았습니다. 부모와 비교하기 위해 루프에 진입합니다.",
+            vars: { condition: "4 > 0 (True)", curr: 4 },
+            header: `<div class="text-xs text-slate-400 font-mono">루프 조건 검사</div><div class="text-xs text-emerald-400 font-mono">4 > 0 (진행)</div>`,
+            render: () => renderHeap([3, 5, 8, 7, 1], 4, null)
+          },
+          {
+            line: 5,
+            isCheckpoint: false,
+            title: "부모 인덱스 계산: parent = (4 - 1) // 2 = 1",
+            desc: "인덱스 4의 부모 노드는 (4 - 1) // 2 = 1 입니다 (부모 노드 값: heap[1] = 5).",
+            vars: { curr: 4, parent: 1, "heap[curr]": 1, "heap[parent]": 5 },
+            header: `<div class="text-xs text-slate-400 font-mono">부모 인덱스</div><div class="text-xs text-amber-300 font-mono">parent = 1 (값 5)</div>`,
             render: () => renderHeap([3, 5, 8, 7, 1], 4, 1)
           },
           {
-            line: 7, title: "1차 Sift-Up: 부모(5)와 교환",
-            desc: "부모 parent(1) = 5 > curr(4) = 1 이므로 힙 불변식을 만족하기 위해 1과 5를 교환합니다.",
-            vars: { curr: 1, parent: 1, "교환": "1 <-> 5", "heap": "[3, 1, 8, 7, 5]" },
-            header: `<div class="text-xs text-amber-400 font-mono font-bold">1차 스왑: 1과 5 교환</div>`,
+            line: 6,
+            isCheckpoint: false,
+            title: "힙 불변식 검사: heap[curr] < heap[parent]",
+            desc: "heap[4](1) < heap[1](5) 성립! 자식이 부모보다 작으므로 Min-Heap 성질 위반 → 스왑 필요.",
+            vars: { condition: "1 < 5 (True)", action: "Swap(curr, parent)" },
+            header: `<div class="text-xs text-slate-400 font-mono">힙 불변식 검사</div><div class="text-xs text-rose-400 font-mono">1 < 5 (위반! 스왑)</div>`,
+            render: () => renderHeap([3, 5, 8, 7, 1], 4, 1)
+          },
+          {
+            line: 7,
+            isCheckpoint: true,
+            title: "2. 1차 Sift-Up 스왑 및 curr = 1 이동 [Checkpoint 2/3]",
+            desc: "1과 5의 자리를 맞바꾸고 curr를 1로 갱신합니다: heap = [3, 1, 8, 7, 5].",
+            vars: { curr: 1, "교환": "1 <-> 5", heap: "[3, 1, 8, 7, 5]" },
+            header: `<div class="text-xs text-amber-400 font-mono font-bold">1차 스왑 성공</div><div class="text-xs text-slate-300">1 <-> 5 교환, curr = 1</div>`,
+            render: () => renderHeap([3, 1, 8, 7, 5], 1, null)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "루트 도달 여부 재확인: curr > 0",
+            desc: "curr(1) > 0 성립. 상위 레벨 부모와 한 번 더 비교하기 위해 루프를 계속합니다.",
+            vars: { condition: "1 > 0 (True)", curr: 1 },
+            header: `<div class="text-xs text-slate-400 font-mono">루프 조건 검사</div><div class="text-xs text-emerald-400 font-mono">1 > 0 (진행)</div>`,
+            render: () => renderHeap([3, 1, 8, 7, 5], 1, null)
+          },
+          {
+            line: 5,
+            isCheckpoint: false,
+            title: "상위 부모 인덱스 계산: parent = (1 - 1) // 2 = 0",
+            desc: "인덱스 1의 부모는 루트인 (1 - 1) // 2 = 0 입니다 (루트 값: heap[0] = 3).",
+            vars: { curr: 1, parent: 0, "heap[curr]": 1, "heap[parent]": 3 },
+            header: `<div class="text-xs text-slate-400 font-mono">부모 인덱스</div><div class="text-xs text-amber-300 font-mono">parent = 0 (값 3)</div>`,
             render: () => renderHeap([3, 1, 8, 7, 5], 1, 0)
           },
           {
-            line: 7, title: "2차 Sift-Up: 루트(3)와 교환 🌟",
-            desc: "부모 parent(0) = 3 > curr(1) = 1 이므로 다시 교환! 1이 힙의 루트(최솟값)로 등극합니다.",
-            vars: { curr: 0, parent: 0, "교환": "1 <-> 3", "heap": "[1, 3, 8, 7, 5]" },
-            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 루트 등극: 최솟값 1 정착</div>`,
+            line: 6,
+            isCheckpoint: false,
+            title: "힙 불변식 검사: heap[curr] < heap[parent]",
+            desc: "heap[1](1) < heap[0](3) 성립! 여전히 자식이 부모보다 작으므로 루트와 스왑합니다.",
+            vars: { condition: "1 < 3 (True)", action: "Swap(1, 0)" },
+            header: `<div class="text-xs text-slate-400 font-mono">힙 불변식 검사</div><div class="text-xs text-rose-400 font-mono">1 < 3 (위반! 스왑)</div>`,
+            render: () => renderHeap([3, 1, 8, 7, 5], 1, 0)
+          },
+          {
+            line: 7,
+            isCheckpoint: true,
+            title: "3. 🎉 2차 Sift-Up 스왑 및 루트(최솟값 1) 등극 [Checkpoint 3/3]",
+            desc: "1과 3을 교환하고 curr=0이 되었습니다: heap = [1, 3, 8, 7, 5]. 새 원소 1이 힙의 루트(최솟값)에 안착했습니다!",
+            vars: { curr: 0, "교환": "1 <-> 3", heap: "[1, 3, 8, 7, 5]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 루트 등극: 최솟값 1 정착</div><div class="text-xs text-slate-300">Min-Heap 유지 완료</div>`,
+            render: () => renderHeap([1, 3, 8, 7, 5], 0, null, true)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "while 루프 종료 검사: curr > 0 → False",
+            desc: "curr = 0이므로 curr > 0 조건이 거짓(False)이 되어 while 루프가 정상 종료됩니다.",
+            vars: { condition: "0 > 0 (False)", status: "루프 종료 및 힙 정렬 유지 완료" },
+            header: `<div class="text-xs text-slate-400 font-mono">루프 종료</div><div class="text-xs text-emerald-400 font-mono">curr = 0 (루트 도달)</div>`,
             render: () => renderHeap([1, 3, 8, 7, 5], 0, null, true)
           }
         ]
@@ -1382,31 +2144,102 @@
         ],
         steps: [
           {
-            line: 2, title: "쓰기(Write) 및 읽기(Read) 포인터 0 배치",
-            desc: "0이 아닌 숫자를 채워 넣을 write_ptr=0과 탐색용 read_ptr=0을 준비합니다.",
-            vars: { write_ptr: 0, read_ptr: 0, "nums[r]": 0, "nums": "[0, 1, 0, 3, 12]" },
-            header: `<div class="text-xs text-blue-400 font-mono">초기화: W=0, R=0</div>`,
+            line: 2,
+            isCheckpoint: true,
+            title: "1. 포인터 초기화: write_ptr = 0 [Checkpoint 1/4]",
+            desc: "0이 아닌 숫자를 채워 넣을 쓰기 포인터 write_ptr=0을 배열 시작점에 배치합니다: [0, 1, 0, 3, 12].",
+            vars: { write_ptr: 0, read_ptr: "-", nums: "[0, 1, 0, 3, 12]" },
+            header: `<div class="text-xs text-blue-400 font-mono font-bold">초기화: W=0</div><div class="text-xs text-slate-400">write_ptr = 0</div>`,
             render: () => renderMoveZeroes([0, 1, 0, 3, 12], 0, 0)
           },
           {
-            line: 5, title: "R = 1 (값 1): 0이 아니므로 W=0과 스왑 🌟",
-            desc: "nums[1]=1 != 0 성립. nums[0]과 nums[1]을 맞바꾸고 write_ptr을 1로 전진시킵니다.",
-            vars: { write_ptr: 1, read_ptr: 1, "스왑": "0과 1 교환", "nums": "[1, 0, 0, 3, 12]" },
-            header: `<div class="text-xs text-emerald-400 font-mono font-bold">1을 앞으로 이동: [1, 0, 0, 3, 12]</div>`,
+            line: 3,
+            isCheckpoint: false,
+            title: "read_ptr = 0 순회 시작",
+            desc: "탐색 읽기 포인터 read_ptr=0이 nums[0] = 0을 가리킵니다.",
+            vars: { write_ptr: 0, read_ptr: 0, "nums[0]": 0 },
+            header: `<div class="text-xs text-slate-400 font-mono">읽기 포인터</div><div class="text-xs text-blue-400 font-mono">read_ptr = 0 (값 0)</div>`,
+            render: () => renderMoveZeroes([0, 1, 0, 3, 12], 0, 0)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "nums[read_ptr] != 0 검사: 0 != 0 → False",
+            desc: "nums[0]은 0이므로 조건 불만족. 아무 조작 없이 다음 원소로 이동합니다.",
+            vars: { condition: "0 != 0 (False)", action: "스킵" },
+            header: `<div class="text-xs text-slate-400 font-mono">0 검사</div><div class="text-xs text-slate-500 font-mono">0 != 0 (거짓, 스킵)</div>`,
+            render: () => renderMoveZeroes([0, 1, 0, 3, 12], 0, 0)
+          },
+          {
+            line: 3,
+            isCheckpoint: false,
+            title: "read_ptr = 1 이동 (값 1)",
+            desc: "read_ptr이 1로 전진하여 nums[1] = 1을 가리킵니다.",
+            vars: { write_ptr: 0, read_ptr: 1, "nums[1]": 1 },
+            header: `<div class="text-xs text-slate-400 font-mono">읽기 포인터</div><div class="text-xs text-blue-400 font-mono">read_ptr = 1 (값 1)</div>`,
+            render: () => renderMoveZeroes([0, 1, 0, 3, 12], 0, 1)
+          },
+          {
+            line: 5,
+            isCheckpoint: true,
+            title: "2. nums[1]=1 스왑 및 write_ptr 전진 [Checkpoint 2/4]",
+            desc: "nums[1]=1 != 0 성립! nums[0]의 0과 nums[1]의 1을 맞바꾸고 write_ptr을 1로 증가시킵니다: [1, 0, 0, 3, 12].",
+            vars: { write_ptr: 1, read_ptr: 1, "스왑": "nums[0] <-> nums[1]", nums: "[1, 0, 0, 3, 12]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">1을 앞으로 이동: [1, 0, 0, 3, 12]</div><div class="text-xs text-emerald-300">W=1 전진</div>`,
             render: () => renderMoveZeroes([1, 0, 0, 3, 12], 1, 1)
           },
           {
-            line: 5, title: "R = 3 (값 3): 0이 아니므로 W=1과 스왑 🌟",
-            desc: "nums[3]=3 != 0 성립. nums[1]의 0과 nums[3]의 3을 맞바꾸고 write_ptr을 2로 전진시킵니다.",
-            vars: { write_ptr: 2, read_ptr: 3, "스왑": "0과 3 교환", "nums": "[1, 3, 0, 0, 12]" },
-            header: `<div class="text-xs text-emerald-400 font-mono font-bold">3을 앞으로 이동: [1, 3, 0, 0, 12]</div>`,
+            line: 3,
+            isCheckpoint: false,
+            title: "read_ptr = 2 이동 (값 0)",
+            desc: "read_ptr이 2로 전진하여 nums[2] = 0을 가리킵니다.",
+            vars: { write_ptr: 1, read_ptr: 2, "nums[2]": 0 },
+            header: `<div class="text-xs text-slate-400 font-mono">읽기 포인터</div><div class="text-xs text-blue-400 font-mono">read_ptr = 2 (값 0)</div>`,
+            render: () => renderMoveZeroes([1, 0, 0, 3, 12], 1, 2)
+          },
+          {
+            line: 4,
+            isCheckpoint: false,
+            title: "nums[read_ptr] != 0 검사: 0 != 0 → False",
+            desc: "nums[2]는 0이므로 조건 불만족. 건너뜁니다.",
+            vars: { condition: "0 != 0 (False)", action: "스킵" },
+            header: `<div class="text-xs text-slate-400 font-mono">0 검사</div><div class="text-xs text-slate-500 font-mono">0 != 0 (거짓, 스킵)</div>`,
+            render: () => renderMoveZeroes([1, 0, 0, 3, 12], 1, 2)
+          },
+          {
+            line: 3,
+            isCheckpoint: false,
+            title: "read_ptr = 3 이동 (값 3)",
+            desc: "read_ptr이 3으로 전진하여 nums[3] = 3을 가리킵니다.",
+            vars: { write_ptr: 1, read_ptr: 3, "nums[3]": 3 },
+            header: `<div class="text-xs text-slate-400 font-mono">읽기 포인터</div><div class="text-xs text-blue-400 font-mono">read_ptr = 3 (값 3)</div>`,
+            render: () => renderMoveZeroes([1, 3, 0, 0, 12], 1, 3)
+          },
+          {
+            line: 5,
+            isCheckpoint: true,
+            title: "3. nums[3]=3 스왑 및 write_ptr 전진 [Checkpoint 3/4]",
+            desc: "nums[3]=3 != 0 성립! nums[1]의 0과 nums[3]의 3을 맞바꾸고 write_ptr을 2로 증가시킵니다: [1, 3, 0, 0, 12].",
+            vars: { write_ptr: 2, read_ptr: 3, "스왑": "nums[1] <-> nums[3]", nums: "[1, 3, 0, 0, 12]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">3을 앞으로 이동: [1, 3, 0, 0, 12]</div><div class="text-xs text-emerald-300">W=2 전진</div>`,
             render: () => renderMoveZeroes([1, 3, 0, 0, 12], 2, 3)
           },
           {
-            line: 5, title: "R = 4 (값 12): 0이 아니므로 W=2와 스왑 🌟",
-            desc: "nums[4]=12 != 0 성립. nums[2]의 0과 nums[4]의 12를 맞바꾸고 write_ptr을 3으로 전진시킵니다.",
-            vars: { write_ptr: 3, read_ptr: 4, "스왑": "0과 12 교환", "nums": "[1, 3, 12, 0, 0]" },
-            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 완료: [1, 3, 12, 0, 0]</div>`,
+            line: 3,
+            isCheckpoint: false,
+            title: "read_ptr = 4 이동 (값 12)",
+            desc: "read_ptr이 4로 전진하여 nums[4] = 12를 가리킵니다.",
+            vars: { write_ptr: 2, read_ptr: 4, "nums[4]": 12 },
+            header: `<div class="text-xs text-slate-400 font-mono">읽기 포인터</div><div class="text-xs text-blue-400 font-mono">read_ptr = 4 (값 12)</div>`,
+            render: () => renderMoveZeroes([1, 3, 0, 0, 12], 2, 4)
+          },
+          {
+            line: 5,
+            isCheckpoint: true,
+            title: "4. 🎉 nums[4]=12 스왑 완료: [1, 3, 12, 0, 0] [Checkpoint 4/4]",
+            desc: "nums[4]=12 != 0 성립! nums[2]의 0과 nums[4]의 12를 맞바꾸고 write_ptr을 3으로 증가시킵니다. 모든 0이 뒤로 모였습니다!",
+            vars: { write_ptr: 3, read_ptr: 4, "스왑": "nums[2] <-> nums[4]", nums: "[1, 3, 12, 0, 0]" },
+            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 완료: [1, 3, 12, 0, 0]</div><div class="text-xs text-slate-300">In-Place 0 이동 완료</div>`,
             render: () => renderMoveZeroes([1, 3, 12, 0, 0], 3, 4, true)
           }
         ]
