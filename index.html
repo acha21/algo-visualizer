@@ -29,6 +29,16 @@
       white-space: pre !important;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       tab-size: 4;
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
+    #codeLines {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
+    ::selection {
+      background-color: rgba(59, 130, 246, 0.4);
+      color: #ffffff;
     }
     .active-line {
       background: rgba(59, 130, 246, 0.22) !important;
@@ -321,17 +331,23 @@
         <!-- Left: Code Tracer (5 Cols) -->
         <div class="lg:col-span-5 border-r border-[#1e293b] p-4 flex flex-col justify-between bg-[#0b1120]/60">
           <div>
-            <div class="flex items-center justify-between pb-3 border-b border-[#1e293b]/80 mb-2">
-              <span class="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">
-                Python Algorithm Code
-              </span>
-              <span id="activeLineBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold">
+            <div class="flex items-center justify-between pb-3 border-b border-[#1e293b]/80 mb-2 gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider">
+                  Python Code
+                </span>
+                <button id="btnCopyCode" type="button" title="전체 파이썬 코드 클립보드 복사" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#1e293b] hover:bg-blue-600/30 text-slate-300 hover:text-blue-300 border border-[#334155] hover:border-blue-500/50 text-[11px] font-medium transition cursor-pointer active:scale-95 shadow-sm">
+                  <span id="copyIcon">📋</span>
+                  <span id="copyBtnText">코드 복사</span>
+                </button>
+              </div>
+              <span id="activeLineBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold shrink-0">
                 Line 2
               </span>
             </div>
 
-            <!-- Code Lines Container with strict whitespace preservation -->
-            <div id="codeLines" class="font-mono text-xs space-y-0.5 select-none overflow-x-auto pb-2">
+            <!-- Code Lines Container with strict whitespace preservation & selection allowed -->
+            <div id="codeLines" class="font-mono text-xs space-y-0.5 select-text overflow-x-auto pb-2">
               <!-- Rendered by JS -->
             </div>
           </div>
@@ -1772,9 +1788,9 @@
       // Render Code Lines
       const codeLinesContainer = document.getElementById('codeLines');
       codeLinesContainer.innerHTML = data.code.map((line, idx) => `
-        <div data-line="${idx + 1}" class="py-1 px-2 rounded flex items-center text-[#94a3b8]">
-          <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px]">${idx + 1}</span>
-          <span class="code-text">${escapeHtml(line)}</span>
+        <div data-line="${idx + 1}" class="py-1 px-2 rounded flex items-center text-[#94a3b8] select-text">
+          <span class="w-6 text-right pr-3 opacity-40 select-none font-mono text-[11px] cursor-default">${idx + 1}</span>
+          <span class="code-text select-text">${escapeHtml(line)}</span>
         </div>
       `).join('');
 
@@ -2108,6 +2124,55 @@
       pause();
       renderStep(parseInt(e.target.value));
     });
+
+    // Code Copy Button Handler
+    const btnCopyCode = document.getElementById('btnCopyCode');
+    if (btnCopyCode) {
+      btnCopyCode.addEventListener('click', () => {
+        let data = ALGORITHMS[currentAlgoKey];
+        if (currentAlgoKey === 'dfs-bfs' && data && data.submodes) {
+          data = data.submodes[currentDfsBfsMode] || data.submodes['bfs'];
+        }
+        if (!data || !data.code) return;
+
+        const codeText = data.code.join('\n');
+        const showSuccess = () => {
+          const txt = document.getElementById('copyBtnText');
+          const icon = document.getElementById('copyIcon');
+          if (txt) txt.innerText = '복사 완료!';
+          if (icon) icon.innerText = '✅';
+          btnCopyCode.classList.add('bg-emerald-600/30', 'border-emerald-500/50', 'text-emerald-300');
+          setTimeout(() => {
+            if (txt) txt.innerText = '코드 복사';
+            if (icon) icon.innerText = '📋';
+            btnCopyCode.classList.remove('bg-emerald-600/30', 'border-emerald-500/50', 'text-emerald-300');
+          }, 2000);
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(codeText).then(showSuccess).catch(() => fallbackCopy(codeText, showSuccess));
+        } else {
+          fallbackCopy(codeText, showSuccess);
+        }
+      });
+    }
+
+    function fallbackCopy(text, onSuccess) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        if (onSuccess) onSuccess();
+      } catch (err) {
+        console.error('Fallback copy failed:', err);
+      }
+      document.body.removeChild(textarea);
+    }
 
     // Keyboard Shortcuts (ArrowLeft: 이전, ArrowRight: 다음, Space: 재생/정지)
     window.addEventListener('keydown', (e) => {
