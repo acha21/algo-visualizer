@@ -790,11 +790,12 @@
           { label: "DFS 백트래킹", formula: "LIFO Call Stack (Choose ➔ Undo)", color: "text-amber-400 font-semibold" },
           { label: "시간 복잡도", formula: "$T(V, E) = O(V + E)$", color: "text-emerald-400 font-semibold" }
         ],
-        inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 격자</span> | 모드: <span class="text-amber-300 font-semibold">BFS 최단거리 & DFS 백트래킹</span></span>`,
+        inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 격자 (0: 길, 1: 벽)</span> | 모드: <span class="text-amber-300 font-semibold">BFS 최단거리 & DFS 백트래킹</span></span>`,
         outputHtml: `<span class="text-blue-300">result</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">최단거리(6) & 유효경로(7칸)</span>`,
         code: [
           "from collections import deque",
           "def bfs_shortest_path(grid, start, target):",
+          "    R, C = len(grid), len(grid[0])",
           "    queue = deque([(start[0], start[1], 0)])",
           "    visited = {start}",
           "    while queue:",
@@ -802,9 +803,10 @@
           "        if (r, c) == target: return dist",
           "        for dr, dc in [(-1,0), (1,0), (0,-1), (0,1)]:",
           "            nr, nc = r + dr, c + dc",
-          "            if valid(nr, nc) and (nr, nc) not in visited:",
+          "            if 0 <= nr < R and 0 <= nc < C and grid[nr][nc] == 0 and (nr, nc) not in visited:",
           "                visited.add((nr, nc))",
-          "                queue.append((nr, nc, dist + 1))"
+          "                queue.append((nr, nc, dist + 1))",
+          "    return -1"
         ],
         steps: [],
         submodes: {
@@ -820,11 +822,12 @@
               { label: "최단거리 불변식", formula: "First Visited = Shortest Path", color: "text-emerald-400 font-semibold" },
               { label: "시간 복잡도", formula: "$T(V, E) = O(V + E)$", color: "text-purple-400 font-semibold" }
             ],
-            inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 격자</span> (시작: <span class="text-amber-300 font-semibold">(0,0)</span>, 도착: <span class="text-emerald-300 font-semibold">(3,3)</span>)</span>`,
+            inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 격자 (0: 이동가능 통로)</span> (시작: <span class="text-amber-300 font-semibold">(0,0)</span>, 도착: <span class="text-emerald-300 font-semibold">(3,3)</span>)</span>`,
             outputHtml: `<span class="text-blue-300">int</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">6 (최단 이동 칸수)</span>`,
             code: [
               "from collections import deque",
               "def bfs_shortest_path(grid, start, target):",
+              "    R, C = len(grid), len(grid[0])",
               "    queue = deque([(start[0], start[1], 0)])",
               "    visited = {start}",
               "    while queue:",
@@ -832,34 +835,35 @@
               "        if (r, c) == target: return dist",
               "        for dr, dc in [(-1,0), (1,0), (0,-1), (0,1)]:",
               "            nr, nc = r + dr, c + dc",
-              "            if valid(nr, nc) and (nr, nc) not in visited:",
+              "            if 0 <= nr < R and 0 <= nc < C and grid[nr][nc] == 0 and (nr, nc) not in visited:",
               "                visited.add((nr, nc))",
-              "                queue.append((nr, nc, dist + 1))"
+              "                queue.append((nr, nc, dist + 1))",
+              "    return -1"
             ],
             steps: [
               {
-                line: 3, title: "시작 노드 (0,0) 큐에 삽입",
+                line: 4, title: "시작 노드 (0,0) 큐에 삽입",
                 desc: "시작 위치 (0,0)과 거리 0을 큐에 넣고 visited에 등록합니다.",
                 vars: { "(r, c)": "(0,0)", dist: 0, "큐 크기": 1, "방문 노드 수": 1 },
                 header: `<div class="text-xs text-blue-400 font-mono font-bold">Start: (0,0)</div><div class="text-xs text-slate-400">Queue: [(0,0, dist=0)]</div>`,
                 render: () => renderBFSGrid([ [1,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", ["(0,0, d=0)"])
               },
               {
-                line: 6, title: "1레벨 확장: (1,0) 및 (0,1) 방문",
+                line: 7, title: "1레벨 확장: (1,0) 및 (0,1) 방문",
                 desc: "(0,0)을 큐에서 꺼내고 인접한 두 칸에 거리 1을 부여하며 큐에 삽입합니다.",
                 vars: { "(r, c)": "(0,0)", dist: 0, "큐 크기": 2, "방문 노드 수": 3 },
                 header: `<div class="text-xs text-slate-400">Pop: (0,0)</div><div class="text-xs text-amber-400 font-mono font-bold">Queue: [(1,0), (0,1)]</div>`,
                 render: () => renderBFSGrid([ [2,1,0,0],[1,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", ["(1,0, d=1)", "(0,1, d=1)"])
               },
               {
-                line: 12, title: "2레벨 확장: 대각선 방향 전파 (거리 2)",
+                line: 13, title: "2레벨 확장: 대각선 방향 전파 (거리 2)",
                 desc: "큐에서 (1,0), (0,1)을 차례로 꺼내며 거리 2 영역으로 물결처럼 확장합니다.",
                 vars: { "(r, c)": "(1,1)", dist: 2, "큐 크기": 3, "방문 노드 수": 6 },
                 header: `<div class="text-xs text-blue-400 font-mono">레벨 2 파동 전파</div><div class="text-xs text-slate-400 font-mono">Queue 크기: 3</div>`,
                 render: () => renderBFSGrid([ [2,2,1,0],[2,1,0,0],[1,0,0,0],[0,0,0,0] ], "(1,1)", ["(2,0, d=2)", "(1,1, d=2)", "(0,2, d=2)"])
               },
               {
-                line: 7, title: "🎉 목적지 (3,3) 도달! 최단거리 반환",
+                line: 8, title: "🎉 목적지 (3,3) 도달! 최단거리 반환",
                 desc: "큐에서 목표 지점 (3,3)이 꺼내졌습니다. 최초 도달 거리가 무조건 최단거리이므로 6을 반환합니다.",
                 vars: { "(r, c)": "(3,3)", dist: 6, "큐 크기": "-", "결과": "RETURN 6" },
                 header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 목적지 (3,3) 도착!</div><div class="text-xs text-emerald-400 font-bold">최단거리: 6</div>`,
@@ -879,15 +883,16 @@
               { label: "백트래킹 불변식", formula: "Choose ➔ Explore ➔ Undo (복원)", color: "text-amber-400 font-semibold" },
               { label: "공간 절약", formula: "$S(\\text{Depth}) = O(\\text{Depth})$", color: "text-emerald-400 font-semibold" }
             ],
-            inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 미로 (벽: (2,1), (3,0))</span> | 시작: <span class="text-amber-300 font-semibold">(0,0)</span>, 도착: <span class="text-emerald-300 font-semibold">(3,3)</span></span>`,
+            inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 미로 (0: 길, 1: 벽 [(2,1), (3,0)])</span> | 시작: <span class="text-amber-300 font-semibold">(0,0)</span>, 도착: <span class="text-emerald-300 font-semibold">(3,3)</span></span>`,
             outputHtml: `<span class="text-blue-300">list[tuple]</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">[(0,0), (1,0), (1,1), (1,2), (2,2), (3,2), (3,3)]</span>`,
             code: [
               "def dfs_backtrack(grid, r, c, path, visited, target):",
               "    if (r, c) == target:",
               "        return True  # 🌟 목적지 도달 성공!",
+              "    R, C = len(grid), len(grid[0])",
               "    for dr, dc in [(1,0), (0,1), (-1,0), (0,-1)]:",
               "        nr, nc = r + dr, c + dc",
-              "        if valid(nr, nc) and (nr, nc) not in visited:",
+              "        if 0 <= nr < R and 0 <= nc < C and grid[nr][nc] == 0 and (nr, nc) not in visited:",
               "            visited.add((nr, nc))      # 1. 상태 선택 (Choose)",
               "            path.append((nr, nc))",
               "            if dfs_backtrack(grid, nr, nc, path, visited, target):",
@@ -905,42 +910,42 @@
                 render: () => renderDFSGrid([[0,0]], [[0,0]], null, null, "🟢 시작점 (0,0) 선택")
               },
               {
-                line: 7, title: "외길 깊이 탐색: 아래 방향 (1,0) 전진",
+                line: 8, title: "외길 깊이 탐색: 아래 방향 (1,0) 전진",
                 desc: "첫 번째 탐색 방향인 아래(dr=1, dc=0)로 이동하여 (1,0)을 선택하고 path에 추가합니다.",
                 vars: { "(r, c)": "(1,0)", "호출 깊이": "Depth 1", "path": "[(0,0), (1,0)]", "스택 상태": "dfs(1,0)" },
                 header: `<div class="text-xs text-blue-400 font-mono">아래로 전진: (1,0)</div><div class="text-xs text-slate-400 font-mono">Depth: 1</div>`,
                 render: () => renderDFSGrid([[0,0], [1,0]], [[0,0], [1,0]], null, null, "➡️ 깊이 탐색 전진: (1,0)")
               },
               {
-                line: 7, title: "외길 깊이 탐색: 아래 방향 (2,0) 추가 전진",
+                line: 8, title: "외길 깊이 탐색: 아래 방향 (2,0) 추가 전진",
                 desc: "계속해서 아래 방향으로 직진하여 (2,0)을 선택하고 path에 추가합니다.",
                 vars: { "(r, c)": "(2,0)", "호출 깊이": "Depth 2", "path": "[(0,0), (1,0), (2,0)]", "스택 상태": "dfs(2,0)" },
                 header: `<div class="text-xs text-amber-400 font-mono">아래로 전진: (2,0)</div><div class="text-xs text-slate-400 font-mono">Depth: 2</div>`,
                 render: () => renderDFSGrid([[0,0], [1,0], [2,0]], [[0,0], [1,0], [2,0]], null, null, "➡️ 깊이 탐색 전진: (2,0)")
               },
               {
-                line: 6, title: "⚠️ 막다른 길(Dead End) 봉착: 진행 불가!",
+                line: 7, title: "⚠️ 막다른 길(Dead End) 봉착: 진행 불가!",
                 desc: "(2,0)에서 아래는 벽(3,0), 우측은 벽(2,1), 위는 이미 방문한 (1,0)입니다. 모든 방향이 막혀 더 이상 탐색이 불가능합니다.",
                 vars: { "(r, c)": "(2,0)", "호출 깊이": "Depth 2", "진행 불가": "사방 폐쇄 (Dead End)", "스택 상태": "막힘 ❌" },
                 header: `<div class="text-xs text-rose-400 font-mono font-bold">❌ 막다른 길 도달 (Dead End)</div><div class="text-xs text-rose-400 font-bold">진행 불가</div>`,
                 render: () => renderDFSGrid([[0,0], [1,0], [2,0]], [[0,0], [1,0], [2,0]], [2,0], null, "❌ 사방 폐쇄! 막다른 길 도달")
               },
               {
-                line: 11, title: "⏪ [백트래킹 발동]: 선택 취소 및 상태 복원!",
+                line: 12, title: "⏪ [백트래킹 발동]: 선택 취소 및 상태 복원!",
                 desc: "path.pop()으로 (2,0)을 제거하고, visited.remove((2,0))으로 도장도 지웁니다! 이전 갈림길 Depth 1인 (1,0)으로 완벽히 복원됩니다.",
                 vars: { "(r, c)": "(1,0)", "호출 깊이": "Depth 1", "path": "[(0,0), (1,0)]", "백트래킹": "path.pop() 성공" },
                 header: `<div class="text-xs text-amber-400 font-mono font-bold">⏪ 백트래킹 발동: 상태 복원</div><div class="text-xs text-emerald-400 font-bold">path.pop() & visited.remove()</div>`,
                 render: () => renderDFSGrid([[0,0], [1,0]], [[0,0], [1,0]], null, [2,0], "⏪ 백트래킹: (2,0) 발자국 지우고 복귀")
               },
               {
-                line: 7, title: "우회로 분기 개척: 우측 (1,1) 선택",
+                line: 8, title: "우회로 분기 개척: 우측 (1,1) 선택",
                 desc: "되돌아온 갈림길 (1,0)에서 다음 유효 방향인 우측 (1,1)을 선택하여 새로운 경로를 개척합니다.",
                 vars: { "(r, c)": "(1,1)", "호출 깊이": "Depth 2", "path": "[(0,0), (1,0), (1,1)]", "스택 상태": "dfs(1,1)" },
                 header: `<div class="text-xs text-blue-400 font-mono font-bold">새 분기 탐색: (1,1) 진입</div><div class="text-xs text-slate-400 font-mono">Depth: 2</div>`,
                 render: () => renderDFSGrid([[0,0], [1,0], [1,1]], [[0,0], [1,0], [1,1]], null, null, "✨ 새로운 우회로 분기 진입")
               },
               {
-                line: 2, title: "🎉 목적지 (3,3) 도달 성공! 최종 경로 반환",
+                line: 3, title: "🎉 목적지 (3,3) 도달 성공! 최종 경로 반환",
                 desc: "우회로를 거쳐 (3,3)에 성공적으로 도달했습니다! 수집된 최종 유효 경로 전체를 반환하며 탐색을 종료합니다.",
                 vars: { "(r, c)": "(3,3)", "호출 깊이": "Depth 6", "결과": "True (경로 완성)", "스택 상태": "Return True" },
                 header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 목적지 (3,3) 도달 성공!</div><div class="text-xs text-emerald-400 font-bold">유효 경로 반환</div>`,
