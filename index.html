@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AlgoVisualizer - 11 Core Interview Algorithms</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- KaTeX for LaTeX Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
   <style>
     :root {
       --background: #090d16;
@@ -50,6 +54,9 @@
     ::-webkit-scrollbar-track { background: #090d16; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    /* KaTeX math font integration */
+    .katex { font-size: 1.05em; line-height: 1.2; text-rendering: auto; }
+    .katex-display { margin: 0.5em 0; overflow-x: auto; overflow-y: hidden; }
   </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col justify-between">
@@ -414,8 +421,8 @@
               </tr>
               <tr class="hover:bg-slate-800/20">
                 <td class="py-2.5 px-3.5 font-sans font-semibold text-slate-400">공간 복잡도 (메모리)</td>
-                <td class="py-2.5 px-3.5">O(Width) — 한 레벨 전체 노드가 큐에 누적 (메모리 폭발 주의)</td>
-                <td class="py-2.5 px-3.5">O(Depth) — 트리 최대 깊이만큼만 스택 유지 (메모리 극도 절약)</td>
+                <td class="py-2.5 px-3.5 font-mono">$O(\text{Width})$ — 한 레벨 전체 노드가 큐에 누적 (메모리 폭발 주의)</td>
+                <td class="py-2.5 px-3.5 font-mono">$O(\text{Depth})$ — 트리 최대 깊이만큼만 스택 유지 (메모리 극도 절약)</td>
               </tr>
               <tr class="hover:bg-slate-800/20">
                 <td class="py-2.5 px-3.5 font-sans font-semibold text-slate-400">대표 실전 문제</td>
@@ -485,13 +492,13 @@
         title: "이진 탐색 (Binary Search)",
         category: "🔍 탐색 & 정렬",
         subtitle: "정렬된 배열에서 매 스텝마다 탐색 범위를 1/2로 좁히는 최적 탐색",
-        goal: "정렬된 범위에서 중간값(mid)을 확인하여 <strong>매 스텝마다 가망 없는 절반(50%)의 후보를 영구적으로 제거</strong>함으로써, 방대한 데이터(10억 개 이상) 속에서도 원하는 값의 위치나 최적의 결정 경계를 <strong>O(log N)</strong>의 초고속 시간 내에 정확히 찾아내는 것.",
+        goal: "정렬된 범위에서 중간값(mid)을 확인하여 <strong>매 스텝마다 가망 없는 절반(50%)의 후보를 영구적으로 제거</strong>함으로써, 방대한 데이터(10억 개 이상) 속에서도 원하는 값의 위치나 최적의 결정 경계를 <strong>$O(\\log N)$</strong>의 초고속 시간 내에 정확히 찾아내는 것.",
         assumption: "입력 배열 <code>nums</code>는 반드시 <strong>오름차순으로 사전 정렬(Sorted)</strong>되어 있어야 하며, $O(1)$ 임의 접근(Random Access)이 지원되는 연속 메모리(배열)여야 합니다.",
         caution: "정렬되지 않은 배열에 적용 시 엉뚱한 결과가 반환됩니다. 중간값 계산 시 큰 수의 오버플로를 방지하고, 루프 종료 조건(<code>left <= right</code>)과 구간 축소 시 <code>left = mid + 1</code>, <code>right = mid - 1</code>로 중간값을 반드시 배제해야 무한 루프를 방지할 수 있습니다.",
         mathBadges: [
-          { label: "수학적 불변식", formula: "Target ∈ [nums[L], nums[R]]", color: "text-blue-400" },
-          { label: "중간값 계산", formula: "mid = ⌊(L + R) / 2⌋", color: "text-emerald-400" },
-          { label: "시간 복잡도", formula: "T(N) = O(log N)", color: "text-purple-400 font-semibold" }
+          { label: "수학적 불변식", formula: "$\\text{Target} \\in [\\text{nums}[L], \\text{nums}[R]]$", color: "text-blue-400" },
+          { label: "중간값 계산", formula: "$\\text{mid} = \\lfloor(L + R) / 2\\rfloor$", color: "text-emerald-400" },
+          { label: "시간 복잡도", formula: "$T(N) = O(\\log N)$", color: "text-purple-400 font-semibold" }
         ],
         inputHtml: `<span><span class="text-purple-400 font-semibold">nums</span>: <span class="text-blue-300">list[int]</span> = <span class="text-amber-300 font-semibold">[1, 3, 5, 7, 9, 11, 13]</span></span>
                     <span class="text-[#64748b]">|</span>
@@ -566,14 +573,14 @@
       'two-pointer': {
         title: "투 포인터 (Two Pointer)",
         category: "👉 포인터 & 윈도우",
-        subtitle: "정렬된 배열의 양 끝에서 좁혀오며 목표 합(Target Sum)을 O(N)에 탐색",
-        goal: "정렬된 배열의 양 끝(또는 동일 방향)에서 두 개의 포인터를 조건에 따라 전략적으로 좁혀가며, <strong>이중 루프 O(N²) 완전 탐색을 단 한 번의 순회 O(N) 선형 패스로 단축</strong>하여 원하는 원소 쌍이나 유효 범위를 포착하는 것.",
+        subtitle: "정렬된 배열의 양 끝에서 좁혀오며 목표 합(Target Sum)을 $O(N)$에 탐색",
+        goal: "정렬된 배열의 양 끝(또는 동일 방향)에서 두 개의 포인터를 조건에 따라 전략적으로 좁혀가며, <strong>이중 루프 $O(N^2)$ 완전 탐색을 단 한 번의 순회 $O(N)$ 선형 패스로 단축</strong>하여 원하는 원소 쌍이나 유효 범위를 포착하는 것.",
         assumption: "배열 <code>numbers</code>는 반드시 <strong>오름차순으로 사전 정렬(Sorted)</strong>되어 있어야 하며, 포인터 이동에 따른 합의 변화에 <strong>단조성(Monotonicity)</strong>이 수학적으로 보장되어야 합니다.",
         caution: "정렬되지 않은 데이터에는 양 끝 투 포인터를 적용할 수 없습니다(정렬 선행 시 $O(N \\log N)$ 소요). 포인터 종료 조건(<code>left < right</code> vs <code>left <= right</code>)을 문제의 중복 원소 쌍 허용 여부에 맞게 엄격히 설정해야 인덱스 역전이나 무한 루프를 방지할 수 있습니다.",
         mathBadges: [
-          { label: "단조성 불변식", formula: "Sum < Target ⇒ L++, Sum > Target ⇒ R--", color: "text-blue-400" },
-          { label: "시간 복잡도", formula: "T(N) = O(N)", color: "text-emerald-400 font-semibold" },
-          { label: "공간 복잡도", formula: "S(N) = O(1)", color: "text-purple-400 font-semibold" }
+          { label: "단조성 불변식", formula: "$\\text{Sum} < \\text{Target} \\Rightarrow L++,\\ \\text{Sum} > \\text{Target} \\Rightarrow R--$", color: "text-blue-400" },
+          { label: "시간 복잡도", formula: "$T(N) = O(N)$", color: "text-emerald-400 font-semibold" },
+          { label: "공간 복잡도", formula: "$S(N) = O(1)$", color: "text-purple-400 font-semibold" }
         ],
         inputHtml: `<span><span class="text-purple-400 font-semibold">numbers</span>: <span class="text-blue-300">list[int]</span> = <span class="text-amber-300 font-semibold">[2, 7, 11, 15]</span></span>
                     <span class="text-[#64748b]">|</span>
@@ -648,14 +655,14 @@
       'sliding-window': {
         title: "슬라이딩 윈도우 (Sliding Window)",
         category: "👉 포인터 & 윈도우",
-        subtitle: "고정 크기 K의 윈도우를 우측으로 1칸씩 밀며 O(1)에 합을 갱신 (최대 부분합 탐색)",
-        goal: "연속된 부분 배열/문자열을 탐색할 때 매번 구간을 처음부터 다시 합산하지 않고, <strong>새로 진입하는 우측 원소(+)와 벗어나는 좌측 원소(-)만을 O(1)에 갱신</strong>하여 고정/가변 크기 윈도우의 최적값을 <strong>O(N)</strong> 시간 내에 도출하는 것.",
+        subtitle: "고정 크기 $K$의 윈도우를 우측으로 1칸씩 밀며 $O(1)$에 합을 갱신 (최대 부분합 탐색)",
+        goal: "연속된 부분 배열/문자열을 탐색할 때 매번 구간을 처음부터 다시 합산하지 않고, <strong>새로 진입하는 우측 원소(+)와 벗어나는 좌측 원소(-)만을 $O(1)$에 갱신</strong>하여 고정/가변 크기 윈도우의 최적값을 <strong>$O(N)$</strong> 시간 내에 도출하는 것.",
         assumption: "배열의 <strong>연속된 부분 구간(Contiguous Subarray)</strong>을 다루어야 하며, 윈도우 크기 $K$는 $1 \\le K \\le \\text{len}(nums)$ 유효 범위여야 합니다. 양 끝점의 값만으로 구간 상태를 <strong>$O(1)$에 가산(+) 및 감산(-) 갱신</strong>할 수 있어야 합니다.",
         caution: "비연속 부분 수열(Subsequence)에는 슬라이딩 윈도우를 적용할 수 없습니다. 윈도우를 한 칸 밀 때마다 구간 전체를 처음부터 다시 합산하면 $O(N \\cdot K)$로 시간 초과가 발생하므로, 반드시 '빠지는 원소 제외(-) & 새 원소 추가(+)'의 양 끝점 갱신 테크닉을 준수해야 합니다.",
         mathBadges: [
-          { label: "윈도우 갱신식", formula: "Sum = Sum - nums[i - k] + nums[i]", color: "text-blue-400" },
-          { label: "시간 복잡도", formula: "T(N) = O(N)", color: "text-emerald-400 font-semibold" },
-          { label: "공간 복잡도", formula: "S(N) = O(1)", color: "text-purple-400 font-semibold" }
+          { label: "윈도우 갱신식", formula: "$\\text{Sum} = \\text{Sum} - \\text{nums}[i - k] + \\text{nums}[i]$", color: "text-blue-400" },
+          { label: "시간 복잡도", formula: "$T(N) = O(N)$", color: "text-emerald-400 font-semibold" },
+          { label: "공간 복잡도", formula: "$S(N) = O(1)$", color: "text-purple-400 font-semibold" }
         ],
         inputHtml: `<span><span class="text-purple-400 font-semibold">nums</span>: <span class="text-blue-300">list[int]</span> = <span class="text-amber-300 font-semibold">[2, 1, 5, 1, 3, 2]</span></span>
                     <span class="text-[#64748b]">|</span>
@@ -713,13 +720,13 @@
         title: "동적 계획법 (Dynamic Programming)",
         category: "⚡ 최적화 & 탐욕",
         subtitle: "작은 부분 문제의 해를 메모하여 큰 문제의 최적해를 도출 (계단 오르기 / 피보나치)",
-        goal: "복잡한 문제를 작은 부분 문제들로 쪼갠 뒤, <strong>한 번 계산한 부분 문제의 해를 메모리(DP 테이블)에 기록(Memoization/Tabulation)</strong>하여 지수 시간(O(2ⁿ))의 비효율적인 중복 연산을 다항 시간(<strong>O(N) 또는 O(N²)</strong>)으로 단축해 최적해를 도출하는 것.",
-        assumption: "문제가 <strong>최적 부분 구조(Optimal Substructure)</strong>와 <strong>중복 부분 문제(Overlapping Subproblems)</strong> 성질을 반드시 만족해야 하며, 이전 상태의 선택이 미래의 비용에 영향을 주지 않는 <strong>무후구성(Markov Property)</strong>이 성립해야 합니다.",
+        goal: "복잡한 문제를 작은 부분 문제들로 쪼갠 뒤, <strong>한 번 계산한 부분 문제의 해를 메모리(DP 테이블)에 기록(Memoization/Tabulation)</strong>하여 지수 시간($O(2^N)$)의 비효율적인 중복 연산을 다항 시간(<strong>$O(N)$ 또는 $O(N^2)$</strong>)으로 단축해 최적해를 도출하는 것.",
+        assumption: "문제가 <strong>최적 부분 구조(Optimal Substructure)</strong>와 <strong>중복 부분 문제(Overlapping Subproblems)</strong> 성질을 반드시 만족해야 하며, 이전 단계의 선택이 미래의 비용에 영향을 주지 않는 <strong>무후구성(Markov Property)</strong>이 성립해야 합니다.",
         caution: "기저 조건(Base Case, $dp[0], dp[1]$)을 누락하거나 잘못 초기화하면 전체 테이블에 오답이 연쇄 전파됩니다. 재귀(탑다운) 방식 사용 시 파이썬 기본 재귀 깊이(1,000회) 초과로 인한 <code>RecursionError</code>를 주의해야 하며, 필요 시 바텀업(Tabulation)으로 전환해야 합니다.",
         mathBadges: [
-          { label: "점화식 (Recurrence)", formula: "dp[i] = dp[i-1] + dp[i-2]", color: "text-blue-400" },
-          { label: "기저 조건 (Base Case)", formula: "dp[1]=1, dp[2]=2", color: "text-emerald-400" },
-          { label: "시간 복잡도", formula: "T(N) = O(N)", color: "text-purple-400 font-semibold" }
+          { label: "점화식 (Recurrence)", formula: "$dp[i] = dp[i-1] + dp[i-2]$", color: "text-blue-400" },
+          { label: "기저 조건 (Base Case)", formula: "$dp[1]=1,\\ dp[2]=2$", color: "text-emerald-400" },
+          { label: "시간 복잡도", formula: "$T(N) = O(N)$", color: "text-purple-400 font-semibold" }
         ],
         inputHtml: `<span><span class="text-purple-400 font-semibold">n</span>: <span class="text-blue-300">int</span> = <span class="text-amber-300 font-semibold">5</span> (오를 계단의 수)</span>`,
         outputHtml: `<span class="text-blue-300">int</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">8 (도달 가능한 경우의 수)</span>`,
@@ -781,7 +788,7 @@
         mathBadges: [
           { label: "BFS 큐 원리", formula: "FIFO (Level-order Wave)", color: "text-blue-400" },
           { label: "DFS 백트래킹", formula: "LIFO Call Stack (Choose ➔ Undo)", color: "text-amber-400 font-semibold" },
-          { label: "시간 복잡도", formula: "T(V, E) = O(V + E)", color: "text-emerald-400 font-semibold" }
+          { label: "시간 복잡도", formula: "$T(V, E) = O(V + E)$", color: "text-emerald-400 font-semibold" }
         ],
         inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 격자</span> | 모드: <span class="text-amber-300 font-semibold">BFS 최단거리 & DFS 백트래킹</span></span>`,
         outputHtml: `<span class="text-blue-300">result</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">최단거리(6) & 유효경로(7칸)</span>`,
@@ -811,7 +818,7 @@
             mathBadges: [
               { label: "BFS 큐 원리", formula: "FIFO: 먼저 큐에 들어간 노드가 먼저 확장", color: "text-blue-400" },
               { label: "최단거리 불변식", formula: "First Visited = Shortest Path", color: "text-emerald-400 font-semibold" },
-              { label: "시간 복잡도", formula: "T(V, E) = O(V + E)", color: "text-purple-400 font-semibold" }
+              { label: "시간 복잡도", formula: "$T(V, E) = O(V + E)$", color: "text-purple-400 font-semibold" }
             ],
             inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 격자</span> (시작: <span class="text-amber-300 font-semibold">(0,0)</span>, 도착: <span class="text-emerald-300 font-semibold">(3,3)</span>)</span>`,
             outputHtml: `<span class="text-blue-300">int</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">6 (최단 이동 칸수)</span>`,
@@ -870,7 +877,7 @@
             mathBadges: [
               { label: "호출 스택 원리", formula: "Call Stack (LIFO: 재귀 함수)", color: "text-blue-400" },
               { label: "백트래킹 불변식", formula: "Choose ➔ Explore ➔ Undo (복원)", color: "text-amber-400 font-semibold" },
-              { label: "공간 절약", formula: "S(Depth) = O(Depth)", color: "text-emerald-400 font-semibold" }
+              { label: "공간 절약", formula: "$S(\\text{Depth}) = O(\\text{Depth})$", color: "text-emerald-400 font-semibold" }
             ],
             inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 미로 (벽: (2,1), (3,0))</span> | 시작: <span class="text-amber-300 font-semibold">(0,0)</span>, 도착: <span class="text-emerald-300 font-semibold">(3,3)</span></span>`,
             outputHtml: `<span class="text-blue-300">list[tuple]</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">[(0,0), (1,0), (1,1), (1,2), (2,2), (3,2), (3,3)]</span>`,
@@ -948,12 +955,12 @@
         title: "다익스트라 (Graph & Dijkstra)",
         category: "🌐 그래프 & 집합",
         subtitle: "가중치 그래프에서 우선순위 큐(Min-Heap)를 이용한 단일 출발 최단 경로 탐색",
-        goal: "음의 가중치가 없는 그래프에서 <strong>우선순위 큐(Min-Heap)를 통해 매 순간 가장 누적 비용이 작은 노드를 꺼내 최단거리를 확정</strong>하고 인접 간선을 완화(Relaxation)하여, 단일 출발점으로부터 모든 노드까지의 최단 경로를 <strong>O((V+E) log V)</strong>에 완성하는 것.",
+        goal: "음의 가중치가 없는 그래프에서 <strong>우선순위 큐(Min-Heap)를 통해 매 순간 가장 누적 비용이 작은 노드를 꺼내 최단거리를 확정</strong>하고 인접 간선을 완화(Relaxation)하여, 단일 출발점으로부터 모든 노드까지의 최단 경로를 <strong>$O((V+E) \\log V)$</strong>에 완성하는 것.",
         assumption: "그래프의 모든 간선 가중치(Edge Weight)는 <strong>반드시 0 이상의 비음수(Non-negative, $weight \\ge 0$)</strong>여야 하며, 시작 노드가 그래프 내에 유효하게 존재해야 합니다.",
         caution: "음수 가중치가 단 하나라도 존재하면 최단거리 확정 불변식이 붕괴되어 무한 루프나 오답이 발생합니다(벨만-포드 필요). Min-Heap에서 꺼낸 <code>curr_dist</code>가 이미 갱신된 최단거리 <code>distances[u]</code>보다 크면 반드시 <code>continue</code>로 스킵해야 불필요한 연산 낭비를 방지합니다.",
         mathBadges: [
-          { label: "완화식 (Relaxation)", formula: "dist[v] = min(dist[v], dist[u] + w)", color: "text-blue-400" },
-          { label: "시간 복잡도", formula: "T = O((V + E) log V)", color: "text-emerald-400 font-semibold" },
+          { label: "완화식 (Relaxation)", formula: "$\\text{dist}[v] = \\min(\\text{dist}[v], \\text{dist}[u] + w)$", color: "text-blue-400" },
+          { label: "시간 복잡도", formula: "$T = O((V + E) \\log V)$", color: "text-emerald-400 font-semibold" },
           { label: "우선순위 큐", formula: "Min-Heap", color: "text-purple-400 font-semibold" }
         ],
         inputHtml: `<span><span class="text-purple-400 font-semibold">graph</span>: <span class="text-blue-300">4개 노드 가중치 그래프</span> | <span class="text-purple-400 font-semibold">start</span>: <span class="text-amber-300 font-semibold">1</span></span>`,
@@ -1010,12 +1017,12 @@
         title: "서로소 집합 (Union-Find)",
         category: "🌐 그래프 & 집합",
         subtitle: "경로 압축(Path Compression)을 통한 트리 평탄화와 실시간 사이클 판별",
-        goal: "노드 간의 연결 정보를 트리 형태로 관리하여 <strong>두 원소가 같은 집합에 속해 있는지 판별(Find)하고 두 집합을 하나로 병합(Union)</strong>하는 과정을 경로 압축을 통해 거의 O(1)에 처리함으로써, 실시간 연결성 판별과 무향 그래프의 <strong>사이클(Cycle)을 즉각 감지</strong>하는 것.",
+        goal: "노드 간의 연결 정보를 트리 형태로 관리하여 <strong>두 원소가 같은 집합에 속해 있는지 판별(Find)하고 두 집합을 하나로 병합(Union)</strong>하는 과정을 경로 압축을 통해 거의 $O(1)$에 처리함으로써, 실시간 연결성 판별과 무향 그래프의 <strong>사이클(Cycle)을 즉각 감지</strong>하는 것.",
         assumption: "대상 원소들이 $1 \\sim N$ 사이의 고유 정수 ID로 식별되며, 초기 상태에서는 <strong>모든 원소가 각자 독립된 서로소 집합(부모=자기자신)</strong>을 형성하고 간선은 무방향(양방향 연결)이어야 합니다.",
         caution: "<code>find(x)</code>에서 <strong>경로 압축(<code>parent[x] = find(parent[x])</code>)을 빠뜨리면 트리가 한 줄로 길어져 $O(N)$으로 성능이 급격히 퇴화</strong>합니다. 또한 두 노드를 병합할 때 노드 번호 자체가 아니라 반드시 <code>find()</code>로 찾은 루트(대표 노드)끼리 연결해야 합니다.",
         mathBadges: [
-          { label: "아커만 역함수", formula: "T(M, N) = O(M · α(N)) ≈ O(1)", color: "text-blue-400" },
-          { label: "경로 압축", formula: "parent[x] = find(parent[x])", color: "text-emerald-400 font-semibold" }
+          { label: "아커만 역함수", formula: "$T(M, N) = O(M \\cdot \\alpha(N)) \\approx O(1)$", color: "text-blue-400" },
+          { label: "경로 압축", formula: "$\\text{parent}[x] = \\text{find}(\\text{parent}[x])$", color: "text-emerald-400 font-semibold" }
         ],
         inputHtml: `<span><span class="text-purple-400 font-semibold">n</span>: 4, <span class="text-purple-400 font-semibold">edges</span>: <span class="text-amber-300 font-semibold">[(1,2), (2,3), (1,3)]</span></span>`,
         outputHtml: `<span class="text-blue-300">bool</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">True (사이클 감지)</span>`,
@@ -1073,7 +1080,7 @@
         caution: "회의실 배정 문제에서는 '시작 시간'이 아니라 <strong>반드시 '종료 시간($end$)' 기준으로 오름차순 정렬</strong>해야 합니다. 시작 시간 기준으로 정렬하면 24시간 동안 진행되는 긴 회의를 먼저 선택하는 치명적 반례가 발생합니다.",
         mathBadges: [
           { label: "탐욕적 선택 속성", formula: "Earliest End-Time First", color: "text-blue-400" },
-          { label: "시간 복잡도", formula: "T(N) = O(N log N) (정렬)", color: "text-emerald-400 font-semibold" }
+          { label: "시간 복잡도", formula: "$T(N) = O(N \\log N)$ (정렬)", color: "text-emerald-400 font-semibold" }
         ],
         inputHtml: `<span><span class="text-purple-400 font-semibold">meetings</span>: <span class="text-amber-300 font-semibold">[[1,4], [3,5], [0,6], [5,7]]</span></span>`,
         outputHtml: `<span class="text-blue-300">int</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">2 (최대 진행 회의 수)</span>`,
@@ -1129,14 +1136,14 @@
       'hash-map': {
         title: "해시 맵 (Hash Map)",
         category: "📦 핵심 자료구조",
-        subtitle: "Key-Value 매핑을 통해 O(1)에 보수(Complement)를 즉시 조회하는 1-Pass Two Sum",
-        goal: "고유한 키(Key)를 해시 함수로 변환해 메모리 주소에 직접 대응시킴으로써, <strong>원하는 데이터 검색, 삽입, 보수(Complement: target - x) 일치 여부를 평균 O(1)의 상수 시간에 즉시 조회</strong>하여 불필요한 중첩 루프 탐색을 원천 제거하는 것.",
+        subtitle: "Key-Value 매핑을 통해 $O(1)$에 보수(Complement)를 즉시 조회하는 1-Pass Two Sum",
+        goal: "고유한 키(Key)를 해시 함수로 변환해 메모리 주소에 직접 대응시킴으로써, <strong>원하는 데이터 검색, 삽입, 보수(Complement: $target - x$) 일치 여부를 평균 $O(1)$의 상수 시간에 즉시 조회</strong>하여 불필요한 중첩 루프 탐색을 원천 제거하는 것.",
         assumption: "키(Key)로 사용되는 객체는 <strong>불변(Immutable) 및 해시 계산이 가능한 객체(Hashable)</strong>여야 하며, 보수(Complement: $target - x$) 연산이 가능해야 합니다.",
         caution: "파이썬에서 리스트, 딕셔너리, 집합 같은 가변(Mutable) 객체는 해시 맵의 키로 사용할 수 없습니다(<code>TypeError: unhashable type</code>). Two Sum에서 동일 인덱스를 두 번 사용하는 실수를 막기 위해 보수 검사를 현재 원소 저장 *이전*에 수행해야 합니다.",
         mathBadges: [
-          { label: "보수 조회식", formula: "complement = target - num ∈ Hash?", color: "text-blue-400" },
-          { label: "시간 복잡도", formula: "T(N) = O(N)", color: "text-emerald-400 font-semibold" },
-          { label: "공간 복잡도", formula: "S(N) = O(N)", color: "text-purple-400 font-semibold" }
+          { label: "보수 조회식", formula: "$\\text{complement} = \\text{target} - \\text{num} \\in \\text{Hash?}$", color: "text-blue-400" },
+          { label: "시간 복잡도", formula: "$T(N) = O(N)$", color: "text-emerald-400 font-semibold" },
+          { label: "공간 복잡도", formula: "$S(N) = O(N)$", color: "text-purple-400 font-semibold" }
         ],
         inputHtml: `<span><span class="text-purple-400 font-semibold">nums</span>: <span class="text-amber-300 font-semibold">[2, 11, 7, 15]</span> | <span class="text-purple-400 font-semibold">target</span>: <span class="text-amber-300 font-semibold">9</span></span>`,
         outputHtml: `<span class="text-blue-300">list[int]</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">[0, 2] (2와 7의 인덱스)</span>`,
@@ -1185,14 +1192,14 @@
       'tree-heap': {
         title: "트리 & 힙 (Tree & Heap)",
         category: "📦 핵심 자료구조",
-        subtitle: "완전 이진 트리 기반의 Min-Heap에서 Sift-up을 통한 O(log N) 원소 삽입",
-        goal: "완전 이진 트리 형태의 자료구조에서 부모 노드가 자식 노드보다 항상 작거나 큰 힙 불변식을 유지하여, <strong>새로운 원소 삽입과 최댓값/최솟값 조회를 O(log N)에 안정적으로 보장</strong>하고 실시간 우선순위 작업을 처리하는 것.",
+        subtitle: "완전 이진 트리 기반의 Min-Heap에서 Sift-up을 통한 $O(\\log N)$ 원소 삽입",
+        goal: "완전 이진 트리 형태의 자료구조에서 부모 노드가 자식 노드보다 항상 작거나 큰 힙 불변식을 유지하여, <strong>새로운 원소 삽입과 최댓값/최솟값 조회를 $O(\\log N)$에 안정적으로 보장</strong>하고 실시간 우선순위 작업을 처리하는 것.",
         assumption: "힙에 저장되는 모든 원소 간에 <strong>엄격한 대소 비교 연산($<, >$)</strong>이 가능해야 하며(Strict Weak Ordering), $1 \\le K \\le \\text{len}(nums)$ 유효 범위여야 합니다.",
         caution: "파이썬의 <code>heapq</code>는 <strong>기본적으로 최소 힙(Min-Heap)으로만 동작</strong>하므로, 최대 힙이 필요하면 값에 음수 부호(<code>-val</code>)를 붙여 저장해야 합니다. 또한 힙은 루트(최솟값)만 $O(1)$일 뿐, 내부 원소들이 정렬된 상태는 아니라는 점에 유의해야 합니다.",
         mathBadges: [
-          { label: "부모 인덱스 관계", formula: "parent = ⌊(i - 1) / 2⌋", color: "text-blue-400" },
-          { label: "힙 불변식", formula: "Heap[parent] ≤ Heap[child]", color: "text-emerald-400 font-semibold" },
-          { label: "삽입 복잡도", formula: "T(N) = O(log N)", color: "text-purple-400 font-semibold" }
+          { label: "부모 인덱스 관계", formula: "$\\text{parent} = \\lfloor(i - 1) / 2\\rfloor$", color: "text-blue-400" },
+          { label: "힙 불변식", formula: "$\\text{Heap}[\\text{parent}] \\le \\text{Heap}[\\text{child}]$", color: "text-emerald-400 font-semibold" },
+          { label: "삽입 복잡도", formula: "$T(N) = O(\\log N)$", color: "text-purple-400 font-semibold" }
         ],
         inputHtml: `<span><span class="text-purple-400 font-semibold">heap</span>: <span class="text-amber-300 font-semibold">[3, 5, 8, 7]</span>, <span class="text-purple-400 font-semibold">insert</span>: <span class="text-emerald-400 font-semibold">1</span></span>`,
         outputHtml: `<span class="text-blue-300">list[int]</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">[1, 3, 8, 7, 5] (루트 1 수렴)</span>`,
@@ -1235,13 +1242,13 @@
       'array-string': {
         title: "배열 테크닉 (Array & String)",
         category: "👉 포인터 & 윈도우",
-        subtitle: "추가 메모리 없이 O(1) 공간에서 0을 맨 뒤로 이동시키는 In-Place 투 포인터",
-        goal: "새로운 배열을 추가로 생성하여 메모리를 낭비하지 않고, <strong>기존 배열 공간(In-Place) 내에서 읽기/쓰기 포인터를 조작하여 O(1) 추가 메모리로 원소를 재배치</strong>하는 최적의 공간 효율을 달성하는 것.",
+        subtitle: "추가 메모리 없이 $O(1)$ 공간에서 0을 맨 뒤로 이동시키는 In-Place 투 포인터",
+        goal: "새로운 배열을 추가로 생성하여 메모리를 낭비하지 않고, <strong>기존 배열 공간(In-Place) 내에서 읽기/쓰기 포인터를 조작하여 $O(1)$ 추가 메모리로 원소를 재배치</strong>하는 최적의 공간 효율을 달성하는 것.",
         assumption: "배열 <code>nums</code>는 제자리(In-place) 수정이 가능한 <strong>가변 시퀀스(Mutable List)</strong>여야 하며, 추가 메모리 할당 제한 $O(1)$ 공간 복잡도를 준수해야 합니다.",
         caution: "파이썬의 문자열(<code>str</code>)이나 튜플은 불변(Immutable)이므로 In-place 원소 교체(<code>s[i] = ...</code>)가 불가능하며 반드시 <code>list(s)</code>로 변환 후 조작해야 합니다. 또한 0이 아닌 유효 원소들의 기존 상대적 순서가 보존(Stable)되어야 합니다.",
         mathBadges: [
-          { label: "공간 불변식", formula: "In-Place Swap: Extra Memory O(1)", color: "text-blue-400" },
-          { label: "시간 복잡도", formula: "T(N) = O(N)", color: "text-emerald-400 font-semibold" }
+          { label: "공간 불변식", formula: "In-Place Swap: Extra Memory $O(1)$", color: "text-blue-400" },
+          { label: "시간 복잡도", formula: "$T(N) = O(N)$", color: "text-emerald-400 font-semibold" }
         ],
         inputHtml: `<span><span class="text-purple-400 font-semibold">nums</span>: <span class="text-amber-300 font-semibold">[0, 1, 0, 3, 12]</span></span>`,
         outputHtml: `<span class="text-blue-300">list[int]</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">[1, 3, 12, 0, 0] (In-Place)</span>`,
@@ -1292,6 +1299,31 @@
     let currentStepIndex = 0;
     let isPlaying = false;
     let playInterval = null;
+
+    // KaTeX LaTeX Rendering Helper
+    function renderLatexMath(container) {
+      const el = container || document.body;
+      if (typeof renderMathInElement === 'function') {
+        try {
+          renderMathInElement(el, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false },
+              { left: '\\(', right: '\\)', display: false },
+              { left: '\\[', right: '\\]', display: true }
+            ],
+            throwOnError: false,
+            errorColor: '#f43f5e',
+            ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+            ignoredClasses: ["code-text"]
+          });
+        } catch (e) {
+          console.warn("KaTeX render error:", e);
+        }
+      } else {
+        window.addEventListener('load', () => renderLatexMath(container), { once: true });
+      }
+    }
 
     // Canvas Render Helpers
     function renderArray(arr, L, R, M, activeIndices, foundIdx) {
@@ -1644,6 +1676,7 @@
         }
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      renderLatexMath(document.getElementById('homeView'));
     }
 
     function switchDfsBfsMode(mode) {
@@ -1762,6 +1795,7 @@
       // Render Step 0
       renderStep(0);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      renderLatexMath(document.getElementById('algoView'));
     }
 
     function renderStep(stepIndex) {
@@ -2001,6 +2035,7 @@
           </div>
         `;
       }).join('');
+      renderLatexMath(container);
     }
 
     // Event Listeners
@@ -2110,6 +2145,7 @@
       } else {
         loadAlgorithm(initialKey);
       }
+      renderLatexMath(document.body);
     }
 
     if (document.readyState === 'loading') {
