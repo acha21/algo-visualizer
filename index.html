@@ -236,6 +236,22 @@
           </div>
         </div>
 
+        <!-- DFS / BFS Dual-Mode Switcher Bar (Appears when dfs-bfs is active) -->
+        <div id="submodeBar" class="px-5 py-2.5 border-b border-[#1e293b] bg-[#0c1220] hidden flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-400">탐색 모드:</span>
+            <button id="btnModeBFS" onclick="switchDfsBfsMode('bfs')" class="px-3 py-1.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+              <span>🌊</span> <span>BFS (너비 우선 · 큐 · 최단거리)</span>
+            </button>
+            <button id="btnModeDFS" onclick="switchDfsBfsMode('dfs')" class="px-3 py-1.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+              <span>🌲</span> <span>DFS & 백트래킹 (깊이 우선 · 상태 복원)</span>
+            </button>
+          </div>
+          <div class="text-[11px] text-amber-400 font-medium hidden sm:flex items-center gap-1">
+            <span>💡</span> <span>두 알고리즘의 동작 원리와 백트래킹 메커니즘을 1:1로 비교해보세요</span>
+          </div>
+        </div>
+
       <!-- Algorithm Core Goal Bar -->
       <div class="px-5 py-3 border-b border-[#1e293b] bg-[#0d1527]/90 flex items-start gap-3">
         <div class="mt-0.5 px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold text-xs flex items-center gap-1.5 whitespace-nowrap shadow-xs">
@@ -342,6 +358,60 @@
 
         </div>
 
+      </div>
+
+      <!-- BFS vs DFS & Backtracking Comparison Table (Appears when dfs-bfs is active) -->
+      <div id="dfsBfsComparisonCard" class="p-5 bg-[#080d1a] border-t border-[#1e293b] hidden">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xs sm:text-sm font-bold text-amber-400">⚡ BFS vs DFS & Backtracking 핵심 차이점 1:1 비교 분석</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">Core Theory</span>
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono hidden sm:block">Queue(FIFO) vs Call Stack(LIFO)</div>
+        </div>
+        <div class="overflow-x-auto rounded-xl border border-[#1e293b] bg-[#0b1222]/80">
+          <table class="w-full text-left text-xs font-sans border-collapse">
+            <thead>
+              <tr class="border-b border-[#1e293b] bg-[#090d16] text-slate-400 font-semibold">
+                <th class="py-2.5 px-3.5 w-1/4">비교 항목</th>
+                <th class="py-2.5 px-3.5 w-3/8 text-blue-400">🌊 BFS (너비 우선 탐색)</th>
+                <th class="py-2.5 px-3.5 w-3/8 text-emerald-400">🌲 DFS & 백트래킹 (깊이 우선 탐색)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#1e293b]/60 text-slate-300 font-mono text-[11px]">
+              <tr class="hover:bg-slate-800/20">
+                <td class="py-2.5 px-3.5 font-sans font-semibold text-slate-400">탐색 형태 & 철학</td>
+                <td class="py-2.5 px-3.5 font-sans text-blue-200">수면에 사방으로 균일하게 퍼지는 동심원 파동 (Level-order)</td>
+                <td class="py-2.5 px-3.5 font-sans text-emerald-200">막다른 벽 만날 때까지 외길만 파는 깊이 직진 (Branch-dive)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/20">
+                <td class="py-2.5 px-3.5 font-sans font-semibold text-slate-400">사용 자료구조</td>
+                <td class="py-2.5 px-3.5 text-blue-300">큐 (Queue / collections.deque, FIFO)</td>
+                <td class="py-2.5 px-3.5 text-emerald-300">호출 스택 (Call Stack / 재귀 함수, LIFO)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/20">
+                <td class="py-2.5 px-3.5 font-sans font-semibold text-slate-400">최단거리 보장 여부</td>
+                <td class="py-2.5 px-3.5 font-sans font-bold text-emerald-400">⭕ 무조건 100% 보장 (최초 도착 = 최단거리)</td>
+                <td class="py-2.5 px-3.5 font-sans text-rose-400">❌ 보장 안 됨 (먼저 찾은 경로가 삥 돌아간 길일 수 있음)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/20">
+                <td class="py-2.5 px-3.5 font-sans font-semibold text-slate-400">백트래킹 (상태 복원)</td>
+                <td class="py-2.5 px-3.5 font-sans text-slate-400">❌ 하지 않음 (한 번 방문한 노드는 되돌리지 않음)</td>
+                <td class="py-2.5 px-3.5 font-sans font-bold text-amber-300">⭕ 필수 적용 (막다른 길 도달 시 path.pop() & visited 원상 복구)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/20">
+                <td class="py-2.5 px-3.5 font-sans font-semibold text-slate-400">공간 복잡도 (메모리)</td>
+                <td class="py-2.5 px-3.5">O(Width) — 한 레벨 전체 노드가 큐에 누적 (메모리 폭발 주의)</td>
+                <td class="py-2.5 px-3.5">O(Depth) — 트리 최대 깊이만큼만 스택 유지 (메모리 극도 절약)</td>
+              </tr>
+              <tr class="hover:bg-slate-800/20">
+                <td class="py-2.5 px-3.5 font-sans font-semibold text-slate-400">대표 실전 문제</td>
+                <td class="py-2.5 px-3.5 font-sans">미로 탈출 최단거리, 토마토 익는 최소 날짜, 게임 최소 조작</td>
+                <td class="py-2.5 px-3.5 font-sans">N-Queen, 모든 부분집합/순열 생성, 스도쿠, 미로 모든 경로</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>
@@ -685,18 +755,18 @@
       },
 
       'dfs-bfs': {
-        title: "DFS / BFS (너비 우선 탐색)",
+        title: "DFS / BFS & 백트래킹 (탐색 & 상태 복원)",
         category: "🔍 탐색 & 정렬",
-        subtitle: "큐(Queue, FIFO)를 활용한 레벨별 최단 경로 탐색 (격자 미로 최단거리)",
-        goal: "<strong>BFS(너비 우선)</strong>는 큐(Queue, FIFO)를 활용해 시작점부터 가까운 정점부터 레벨 단위로 확장하여 <strong>가중치 없는 최단 경로/최소 이동 횟수</strong>를 보장하고, <strong>DFS(깊이 우선)</strong>는 재귀와 백트래킹을 통해 모든 가능한 상태/경로를 끝까지 깊게 탐색하는 것.",
-        assumption: "그래프/격자 지도의 정점(Vertex)과 간선(Edge) 관계가 유한(Finite)하고, 방문 여부를 기록할 수 있는 <strong>방문 식별자(<code>visited</code> 상태 배열/집합)</strong> 관리가 가능해야 순환 사이클 무한 루프를 방지할 수 있습니다. 특히 BFS 최단거리 탐색은 <strong>모든 간선의 가중치가 동일(단위 가중치 1)</strong>하다는 전제가 필수적입니다.",
+        subtitle: "큐 기반 최단거리 파동(BFS)과 재귀 스택 상태 복원(DFS 백트래킹) 1:1 비교",
+        goal: "<strong>BFS(너비 우선)</strong>는 큐(FIFO)를 활용해 레벨 단위로 확장하여 <strong>가중치 없는 최단 경로/최소 이동 횟수</strong>를 보장하고, <strong>DFS(깊이 우선 & 백트래킹)</strong>는 재귀 호출 스택(LIFO)을 통해 막다른 길 도달 시 <strong>상태를 직전 분기로 완벽 복원(Undo)</strong>하며 모든 유효 경로/조합을 탐색하는 것.",
+        assumption: "그래프/격자 지도의 정점과 간선 관계가 유한(Finite)하고, 방문 여부를 기록하는 <strong><code>visited</code> 식별자</strong> 관리가 필수입니다. BFS는 <strong>단위 가중치 1</strong>에서 최단거리를 보장하며, DFS 백트래킹은 <strong>상태 복원(<code>path.pop()</code>, <code>visited.remove()</code>)이 대칭적으로 수행</strong>되어야 합니다.",
         mathBadges: [
-          { label: "BFS 큐 원리", formula: "FIFO: 먼저 큐에 들어간 노드가 먼저 확장", color: "text-blue-400" },
-          { label: "시간 복잡도", formula: "T(V, E) = O(V + E)", color: "text-emerald-400 font-semibold" },
-          { label: "공간 복잡도", formula: "S(V) = O(V)", color: "text-purple-400 font-semibold" }
+          { label: "BFS 큐 원리", formula: "FIFO (Level-order Wave)", color: "text-blue-400" },
+          { label: "DFS 백트래킹", formula: "LIFO Call Stack (Choose ➔ Undo)", color: "text-amber-400 font-semibold" },
+          { label: "시간 복잡도", formula: "T(V, E) = O(V + E)", color: "text-emerald-400 font-semibold" }
         ],
-        inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 격자</span> (시작: <span class="text-amber-300 font-semibold">(0,0)</span>, 도착: <span class="text-emerald-300 font-semibold">(3,3)</span>)</span>`,
-        outputHtml: `<span class="text-blue-300">int</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">6 (최단 이동 거리)</span>`,
+        inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 격자</span> | 모드: <span class="text-amber-300 font-semibold">BFS 최단거리 & DFS 백트래킹</span></span>`,
+        outputHtml: `<span class="text-blue-300">result</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">최단거리(6) & 유효경로(7칸)</span>`,
         code: [
           "from collections import deque",
           "def bfs_shortest_path(grid, start, target):",
@@ -711,36 +781,147 @@
           "                visited.add((nr, nc))",
           "                queue.append((nr, nc, dist + 1))"
         ],
-        steps: [
-          {
-            line: 3, title: "시작 노드 (0,0) 큐에 삽입",
-            desc: "시작 위치 (0,0)과 거리 0을 큐에 넣고 visited에 등록합니다.",
-            vars: { "(r, c)": "(0,0)", dist: 0, "큐 크기": 1, "방문 노드 수": 1 },
-            header: `<div class="text-xs text-blue-400 font-mono font-bold">Start: (0,0)</div><div class="text-xs text-slate-400">Queue: [(0,0, dist=0)]</div>`,
-            render: () => renderBFSGrid([ [1,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", ["(0,0, d=0)"])
+        steps: [],
+        submodes: {
+          'bfs': {
+            title: "너비 우선 탐색 (BFS - Breadth-First Search)",
+            category: "🔍 탐색 & 정렬",
+            subtitle: "큐(Queue, FIFO)를 활용한 레벨별 최단 경로 탐색 (격자 미로 최단거리)",
+            goal: "가중치 없는 그래프나 격자에서 <strong>큐(FIFO)를 이용해 거리 1, 거리 2 순으로 동심원 레벨 단위 탐색</strong>을 수행하여, 목적지에 최초 도달하는 순간 <strong>무조건 최단거리(최소 이동 횟수)를 보장</strong>하는 것.",
+            assumption: "모든 간선의 가중치가 동일(단위 가중치 1)해야 하며, 큐에 삽입하는 바로 그 순간 <code>visited</code> 도장을 찍어야 중복 노드 삽입으로 인한 메모리 폭발(Memory Limit Exceeded)을 방지할 수 있습니다.",
+            mathBadges: [
+              { label: "BFS 큐 원리", formula: "FIFO: 먼저 큐에 들어간 노드가 먼저 확장", color: "text-blue-400" },
+              { label: "최단거리 불변식", formula: "First Visited = Shortest Path", color: "text-emerald-400 font-semibold" },
+              { label: "시간 복잡도", formula: "T(V, E) = O(V + E)", color: "text-purple-400 font-semibold" }
+            ],
+            inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 격자</span> (시작: <span class="text-amber-300 font-semibold">(0,0)</span>, 도착: <span class="text-emerald-300 font-semibold">(3,3)</span>)</span>`,
+            outputHtml: `<span class="text-blue-300">int</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">6 (최단 이동 칸수)</span>`,
+            code: [
+              "from collections import deque",
+              "def bfs_shortest_path(grid, start, target):",
+              "    queue = deque([(start[0], start[1], 0)])",
+              "    visited = {start}",
+              "    while queue:",
+              "        r, c, dist = queue.popleft()",
+              "        if (r, c) == target: return dist",
+              "        for dr, dc in [(-1,0), (1,0), (0,-1), (0,1)]:",
+              "            nr, nc = r + dr, c + dc",
+              "            if valid(nr, nc) and (nr, nc) not in visited:",
+              "                visited.add((nr, nc))",
+              "                queue.append((nr, nc, dist + 1))"
+            ],
+            steps: [
+              {
+                line: 3, title: "시작 노드 (0,0) 큐에 삽입",
+                desc: "시작 위치 (0,0)과 거리 0을 큐에 넣고 visited에 등록합니다.",
+                vars: { "(r, c)": "(0,0)", dist: 0, "큐 크기": 1, "방문 노드 수": 1 },
+                header: `<div class="text-xs text-blue-400 font-mono font-bold">Start: (0,0)</div><div class="text-xs text-slate-400">Queue: [(0,0, dist=0)]</div>`,
+                render: () => renderBFSGrid([ [1,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", ["(0,0, d=0)"])
+              },
+              {
+                line: 6, title: "1레벨 확장: (1,0) 및 (0,1) 방문",
+                desc: "(0,0)을 큐에서 꺼내고 인접한 두 칸에 거리 1을 부여하며 큐에 삽입합니다.",
+                vars: { "(r, c)": "(0,0)", dist: 0, "큐 크기": 2, "방문 노드 수": 3 },
+                header: `<div class="text-xs text-slate-400">Pop: (0,0)</div><div class="text-xs text-amber-400 font-mono font-bold">Queue: [(1,0), (0,1)]</div>`,
+                render: () => renderBFSGrid([ [2,1,0,0],[1,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", ["(1,0, d=1)", "(0,1, d=1)"])
+              },
+              {
+                line: 12, title: "2레벨 확장: 대각선 방향 전파 (거리 2)",
+                desc: "큐에서 (1,0), (0,1)을 차례로 꺼내며 거리 2 영역으로 물결처럼 확장합니다.",
+                vars: { "(r, c)": "(1,1)", dist: 2, "큐 크기": 3, "방문 노드 수": 6 },
+                header: `<div class="text-xs text-blue-400 font-mono">레벨 2 파동 전파</div><div class="text-xs text-slate-400 font-mono">Queue 크기: 3</div>`,
+                render: () => renderBFSGrid([ [2,2,1,0],[2,1,0,0],[1,0,0,0],[0,0,0,0] ], "(1,1)", ["(2,0, d=2)", "(1,1, d=2)", "(0,2, d=2)"])
+              },
+              {
+                line: 7, title: "🎉 목적지 (3,3) 도달! 최단거리 반환",
+                desc: "큐에서 목표 지점 (3,3)이 꺼내졌습니다. 최초 도달 거리가 무조건 최단거리이므로 6을 반환합니다.",
+                vars: { "(r, c)": "(3,3)", dist: 6, "큐 크기": "-", "결과": "RETURN 6" },
+                header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 목적지 (3,3) 도착!</div><div class="text-xs text-emerald-400 font-bold">최단거리: 6</div>`,
+                render: () => renderBFSGrid([ [2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,3] ], "(3,3)", ["(3,3, d=6)"])
+              }
+            ]
           },
-          {
-            line: 6, title: "1레벨 확장: (1,0) 및 (0,1) 방문",
-            desc: "(0,0)을 큐에서 꺼내고 인접한 두 칸에 거리 1을 부여하며 큐에 삽입합니다.",
-            vars: { "(r, c)": "(0,0)", dist: 0, "큐 크기": 2, "방문 노드 수": 3 },
-            header: `<div class="text-xs text-slate-400">Pop: (0,0)</div><div class="text-xs text-amber-400 font-mono font-bold">Queue: [(1,0), (0,1)]</div>`,
-            render: () => renderBFSGrid([ [2,1,0,0],[1,0,0,0],[0,0,0,0],[0,0,0,0] ], "(0,0)", ["(1,0, d=1)", "(0,1, d=1)"])
-          },
-          {
-            line: 12, title: "2레벨 확장: 대각선 방향 전파 (거리 2)",
-            desc: "큐에서 (1,0), (0,1)을 차례로 꺼내며 거리 2 영역으로 물결처럼 확장합니다.",
-            vars: { "(r, c)": "(1,1)", dist: 2, "큐 크기": 3, "방문 노드 수": 6 },
-            header: `<div class="text-xs text-blue-400 font-mono">레벨 2 파동 전파</div><div class="text-xs text-slate-400 font-mono">Queue 크기: 3</div>`,
-            render: () => renderBFSGrid([ [2,2,1,0],[2,1,0,0],[1,0,0,0],[0,0,0,0] ], "(1,1)", ["(2,0, d=2)", "(1,1, d=2)", "(0,2, d=2)"])
-          },
-          {
-            line: 7, title: "🎉 목적지 (3,3) 도달! 최단거리 반환",
-            desc: "큐에서 목표 지점 (3,3)이 꺼내졌습니다. 최초 도달 거리가 무조건 최단거리이므로 6을 반환합니다.",
-            vars: { "(r, c)": "(3,3)", dist: 6, "큐 크기": "-", "결과": "RETURN 6" },
-            header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 목적지 (3,3) 도착!</div><div class="text-xs text-emerald-400 font-bold">최단거리: 6</div>`,
-            render: () => renderBFSGrid([ [2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,3] ], "(3,3)", ["(3,3, d=6)"])
+          'dfs': {
+            title: "깊이 우선 탐색 & 백트래킹 (DFS & Backtracking)",
+            category: "🔍 탐색 & 정렬",
+            subtitle: "재귀 호출 스택(LIFO)을 타고 한 우물을 깊게 파다 막히면 직전 분기로 상태를 되돌리는(Undo) 탐색",
+            goal: "가능한 모든 후보해를 깊이 우선(DFS)으로 끝까지 탐색하다가 제약 조건 위배나 막다른 길(Dead End)에 부딪히면, <strong>선택했던 상태를 이전 상태로 원상 복구(Backtrack: Un-choose / Undo)</strong>하고 불필요한 하위 분기를 <strong>가지치기(Pruning)</strong>하여 모든 유효한 경로/해를 찾아내는 것.",
+            assumption: "탐색 공간의 깊이가 유한(Finite)하거나 기저 조건(Base Case)이 명확해야 무한 재귀 스택 오버플로를 방지할 수 있습니다. 또한 분기 탐색 후 <code>path.pop()</code> 또는 <code>visited.remove()</code> 등의 <strong>상태 복원(State Restoration) 연산이 반드시 대칭적으로 수행</strong>되어야 다른 분기의 탐색에 부작용을 주지 않습니다.",
+            mathBadges: [
+              { label: "호출 스택 원리", formula: "Call Stack (LIFO: 재귀 함수)", color: "text-blue-400" },
+              { label: "백트래킹 불변식", formula: "Choose ➔ Explore ➔ Undo (복원)", color: "text-amber-400 font-semibold" },
+              { label: "공간 절약", formula: "S(Depth) = O(Depth)", color: "text-emerald-400 font-semibold" }
+            ],
+            inputHtml: `<span><span class="text-purple-400 font-semibold">grid</span>: <span class="text-blue-300">4x4 미로 (벽: (2,1), (3,0))</span> | 시작: <span class="text-amber-300 font-semibold">(0,0)</span>, 도착: <span class="text-emerald-300 font-semibold">(3,3)</span></span>`,
+            outputHtml: `<span class="text-blue-300">list[tuple]</span> <span class="text-slate-400">=</span> <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold">[(0,0), (1,0), (1,1), (1,2), (2,2), (3,2), (3,3)]</span>`,
+            code: [
+              "def dfs_backtrack(grid, r, c, path, visited, target):",
+              "    if (r, c) == target:",
+              "        return True  # 🌟 목적지 도달 성공!",
+              "    for dr, dc in [(1,0), (0,1), (-1,0), (0,-1)]:",
+              "        nr, nc = r + dr, c + dc",
+              "        if valid(nr, nc) and (nr, nc) not in visited:",
+              "            visited.add((nr, nc))      # 1. 상태 선택 (Choose)",
+              "            path.append((nr, nc))",
+              "            if dfs_backtrack(grid, nr, nc, path, visited, target):",
+              "                return True            # 2. 깊이 탐색 (Explore)",
+              "            path.pop()                 # 3. 백트래킹 원상복구 (Undo)",
+              "            visited.remove((nr, nc))   #    선택 취소 및 상태 복원!",
+              "    return False"
+            ],
+            steps: [
+              {
+                line: 1, title: "시작점 (0,0) 선택 및 경로(Path) 초기화",
+                desc: "시작 좌표 (0,0)을 방문 집합에 넣고 path 리스트에 추가합니다. 깊이 우선으로 직진 탐색을 시작합니다.",
+                vars: { "(r, c)": "(0,0)", "호출 깊이": "Depth 0", "path": "[(0,0)]", "스택 상태": "dfs(0,0)" },
+                header: `<div class="text-xs text-blue-400 font-mono font-bold">Start: (0,0) 진입</div><div class="text-xs text-slate-400 font-mono">Depth: 0 (Choose)</div>`,
+                render: () => renderDFSGrid([[0,0]], [[0,0]], null, null, "🟢 시작점 (0,0) 선택")
+              },
+              {
+                line: 7, title: "외길 깊이 탐색: 아래 방향 (1,0) 전진",
+                desc: "첫 번째 탐색 방향인 아래(dr=1, dc=0)로 이동하여 (1,0)을 선택하고 path에 추가합니다.",
+                vars: { "(r, c)": "(1,0)", "호출 깊이": "Depth 1", "path": "[(0,0), (1,0)]", "스택 상태": "dfs(1,0)" },
+                header: `<div class="text-xs text-blue-400 font-mono">아래로 전진: (1,0)</div><div class="text-xs text-slate-400 font-mono">Depth: 1</div>`,
+                render: () => renderDFSGrid([[0,0], [1,0]], [[0,0], [1,0]], null, null, "➡️ 깊이 탐색 전진: (1,0)")
+              },
+              {
+                line: 7, title: "외길 깊이 탐색: 아래 방향 (2,0) 추가 전진",
+                desc: "계속해서 아래 방향으로 직진하여 (2,0)을 선택하고 path에 추가합니다.",
+                vars: { "(r, c)": "(2,0)", "호출 깊이": "Depth 2", "path": "[(0,0), (1,0), (2,0)]", "스택 상태": "dfs(2,0)" },
+                header: `<div class="text-xs text-amber-400 font-mono">아래로 전진: (2,0)</div><div class="text-xs text-slate-400 font-mono">Depth: 2</div>`,
+                render: () => renderDFSGrid([[0,0], [1,0], [2,0]], [[0,0], [1,0], [2,0]], null, null, "➡️ 깊이 탐색 전진: (2,0)")
+              },
+              {
+                line: 6, title: "⚠️ 막다른 길(Dead End) 봉착: 진행 불가!",
+                desc: "(2,0)에서 아래는 벽(3,0), 우측은 벽(2,1), 위는 이미 방문한 (1,0)입니다. 모든 방향이 막혀 더 이상 탐색이 불가능합니다.",
+                vars: { "(r, c)": "(2,0)", "호출 깊이": "Depth 2", "진행 불가": "사방 폐쇄 (Dead End)", "스택 상태": "막힘 ❌" },
+                header: `<div class="text-xs text-rose-400 font-mono font-bold">❌ 막다른 길 도달 (Dead End)</div><div class="text-xs text-rose-400 font-bold">진행 불가</div>`,
+                render: () => renderDFSGrid([[0,0], [1,0], [2,0]], [[0,0], [1,0], [2,0]], [2,0], null, "❌ 사방 폐쇄! 막다른 길 도달")
+              },
+              {
+                line: 11, title: "⏪ [백트래킹 발동]: 선택 취소 및 상태 복원!",
+                desc: "path.pop()으로 (2,0)을 제거하고, visited.remove((2,0))으로 도장도 지웁니다! 이전 갈림길 Depth 1인 (1,0)으로 완벽히 복원됩니다.",
+                vars: { "(r, c)": "(1,0)", "호출 깊이": "Depth 1", "path": "[(0,0), (1,0)]", "백트래킹": "path.pop() 성공" },
+                header: `<div class="text-xs text-amber-400 font-mono font-bold">⏪ 백트래킹 발동: 상태 복원</div><div class="text-xs text-emerald-400 font-bold">path.pop() & visited.remove()</div>`,
+                render: () => renderDFSGrid([[0,0], [1,0]], [[0,0], [1,0]], null, [2,0], "⏪ 백트래킹: (2,0) 발자국 지우고 복귀")
+              },
+              {
+                line: 7, title: "우회로 분기 개척: 우측 (1,1) 선택",
+                desc: "되돌아온 갈림길 (1,0)에서 다음 유효 방향인 우측 (1,1)을 선택하여 새로운 경로를 개척합니다.",
+                vars: { "(r, c)": "(1,1)", "호출 깊이": "Depth 2", "path": "[(0,0), (1,0), (1,1)]", "스택 상태": "dfs(1,1)" },
+                header: `<div class="text-xs text-blue-400 font-mono font-bold">새 분기 탐색: (1,1) 진입</div><div class="text-xs text-slate-400 font-mono">Depth: 2</div>`,
+                render: () => renderDFSGrid([[0,0], [1,0], [1,1]], [[0,0], [1,0], [1,1]], null, null, "✨ 새로운 우회로 분기 진입")
+              },
+              {
+                line: 2, title: "🎉 목적지 (3,3) 도달 성공! 최종 경로 반환",
+                desc: "우회로를 거쳐 (3,3)에 성공적으로 도달했습니다! 수집된 최종 유효 경로 전체를 반환하며 탐색을 종료합니다.",
+                vars: { "(r, c)": "(3,3)", "호출 깊이": "Depth 6", "결과": "True (경로 완성)", "스택 상태": "Return True" },
+                header: `<div class="text-xs text-emerald-400 font-mono font-bold">🎉 목적지 (3,3) 도달 성공!</div><div class="text-xs text-emerald-400 font-bold">유효 경로 반환</div>`,
+                render: () => renderDFSGrid([[0,0], [1,0], [1,1], [1,2], [2,2], [3,2], [3,3]], [[0,0], [1,0], [1,1], [1,2], [2,2], [3,2], [3,3]], null, null, "🎉 목적지 (3,3) 도달 성공!", true)
+              }
+            ]
           }
-        ]
+        }
       },
 
       'dijkstra': {
@@ -1081,6 +1262,7 @@
 
     // State Variables
     let currentAlgoKey = 'binary-search';
+    let currentDfsBfsMode = 'bfs'; // 'bfs' or 'dfs'
     let currentStepIndex = 0;
     let isPlaying = false;
     let playInterval = null;
@@ -1200,6 +1382,83 @@
             <div class="text-[#94a3b8] mb-2 font-semibold">Queue (FIFO):</div>
             <div class="space-y-1">
               ${queueItems.map(item => `<div class="p-1 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20">▶ ${item}</div>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDFSGrid(pathCoords, visitedCoords, deadEndCoord, backtrackedCoord, actionLabel, isDone) {
+      const isDead = (r, c) => deadEndCoord && deadEndCoord[0] === r && deadEndCoord[1] === c;
+      const isBack = (r, c) => backtrackedCoord && backtrackedCoord[0] === r && backtrackedCoord[1] === c;
+      const isInPath = (r, c) => pathCoords.some(p => p[0] === r && p[1] === c);
+      const getPathOrder = (r, c) => pathCoords.findIndex(p => p[0] === r && p[1] === c);
+      const isWall = (r, c) => (r === 2 && c === 1) || (r === 3 && c === 0);
+
+      return `
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <!-- 4x4 Grid Board -->
+          <div class="grid grid-cols-4 gap-1.5 p-2 rounded-xl bg-[#0f172a] border border-[#1e293b]">
+            ${[0, 1, 2, 3].flatMap(r => [0, 1, 2, 3].map(c => {
+              const isStart = r === 0 && c === 0;
+              const isGoal = r === 3 && c === 3;
+              const inP = isInPath(r, c);
+              const order = inP ? getPathOrder(r, c) : -1;
+              const dead = isDead(r, c);
+              const back = isBack(r, c);
+              const wall = isWall(r, c);
+
+              let cellBg = 'bg-[#090d16] text-slate-600 border border-[#1e293b]/60';
+              let label = `<span class="text-[9px] opacity-70">${r},${c}</span>`;
+
+              if (wall) {
+                cellBg = 'bg-slate-800 text-slate-500 border border-slate-700 font-bold';
+                label = `<span class="text-[9px] text-slate-400">🧱 벽</span>`;
+              } else if (dead) {
+                cellBg = 'bg-rose-500/30 text-rose-300 border-2 border-rose-500 shadow-lg shadow-rose-500/30 animate-pulse';
+                label = `<span class="text-[9px] font-bold text-rose-300">❌ 막힘</span>`;
+              } else if (back) {
+                cellBg = 'bg-amber-500/25 text-amber-300 border-2 border-amber-400';
+                label = `<span class="text-[9px] font-bold text-amber-300">⏪ 복원</span>`;
+              } else if (inP) {
+                cellBg = isDone ? 'bg-emerald-500/30 text-emerald-300 border-2 border-emerald-400 shadow-md shadow-emerald-500/20' : 'bg-blue-600/30 text-blue-200 border-2 border-blue-400 shadow-md shadow-blue-500/20';
+                label = `<span class="text-[10px] font-mono font-bold text-white">${isStart ? 'S' : (isGoal ? 'G' : `p[${order}]`)}</span>`;
+              } else if (isStart) {
+                cellBg = 'bg-blue-500/20 text-blue-300 border border-blue-500/40';
+                label = `<span class="text-[9px] font-bold text-blue-300">Start</span>`;
+              } else if (isGoal) {
+                cellBg = 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40';
+                label = `<span class="text-[9px] font-bold text-emerald-300">Goal</span>`;
+              }
+
+              return `
+                <div class="w-10 h-10 rounded-lg flex flex-col items-center justify-center text-[10px] font-mono ${cellBg}">
+                  ${label}
+                  <span class="text-[8px] opacity-60">(${r},${c})</span>
+                </div>
+              `;
+            })).join('')}
+          </div>
+
+          <!-- Right: Call Stack & Backtracking Status -->
+          <div class="bg-[#090d16] p-3 rounded-xl border border-[#1e293b] text-xs font-mono w-48 space-y-2">
+            <div class="flex items-center justify-between border-b border-[#1e293b] pb-1">
+              <span class="text-[#94a3b8] font-semibold text-[11px]">호출 스택 (Call Stack):</span>
+              <span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[9px] font-bold">LIFO</span>
+            </div>
+            <div class="space-y-1 max-h-24 overflow-y-auto">
+              ${pathCoords.slice().reverse().map((coord, idx) => `
+                <div class="p-1 px-2 rounded ${idx === 0 ? 'bg-blue-500/20 text-blue-300 border border-blue-400 font-bold' : 'bg-[#0f172a] text-slate-400 border border-[#1e293b]'} flex justify-between text-[10px]">
+                  <span>dfs(${coord[0]}, ${coord[1]})</span>
+                  <span class="text-[9px] opacity-75">D${pathCoords.length - 1 - idx}</span>
+                </div>
+              `).join('')}
+            </div>
+            <div class="pt-1.5 border-t border-[#1e293b]">
+              <div class="text-[10px] text-slate-400 mb-0.5 font-sans">백트래킹 상태:</div>
+              <div class="px-2 py-1 rounded bg-[#0f172a] border border-[#1e293b] text-amber-300 font-bold text-[10px] text-center">
+                ${actionLabel}
+              </div>
             </div>
           </div>
         </div>
@@ -1361,6 +1620,11 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    function switchDfsBfsMode(mode) {
+      currentDfsBfsMode = mode;
+      loadAlgorithm('dfs-bfs');
+    }
+
     function loadAlgorithm(key) {
       if (!key || key === 'home' || key === 'intro' || key === 'toc' || key === 'overview') {
         showHomeView();
@@ -1391,7 +1655,31 @@
         mainContainer.classList.add('pb-36', 'sm:pb-32');
       }
 
-      const data = ALGORITHMS[key];
+      // Handle submode for dfs-bfs
+      const submodeBar = document.getElementById('submodeBar');
+      const comparisonCard = document.getElementById('dfsBfsComparisonCard');
+      let data = ALGORITHMS[key];
+      if (key === 'dfs-bfs') {
+        if (submodeBar) submodeBar.classList.remove('hidden');
+        if (comparisonCard) comparisonCard.classList.remove('hidden');
+        if (data.submodes) {
+          data = data.submodes[currentDfsBfsMode] || data.submodes['bfs'];
+        }
+        const btnBFS = document.getElementById('btnModeBFS');
+        const btnDFS = document.getElementById('btnModeDFS');
+        if (btnBFS && btnDFS) {
+          if (currentDfsBfsMode === 'bfs') {
+            btnBFS.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-blue-600 text-white shadow-md shadow-blue-600/30 border border-blue-400 transition cursor-pointer";
+            btnDFS.className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-[#1e293b] text-slate-300 hover:text-white border border-[#334155] transition cursor-pointer";
+          } else {
+            btnDFS.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg bg-emerald-600 text-white shadow-md shadow-emerald-600/30 border border-emerald-400 transition cursor-pointer";
+            btnBFS.className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-[#1e293b] text-slate-300 hover:text-white border border-[#334155] transition cursor-pointer";
+          }
+        }
+      } else {
+        if (submodeBar) submodeBar.classList.add('hidden');
+        if (comparisonCard) comparisonCard.classList.add('hidden');
+      }
 
       // Update Header & Category
       document.getElementById('algoTitle').innerText = data.title;
@@ -1435,7 +1723,7 @@
       const select = document.getElementById('algoSelect');
       if (select) select.value = key;
 
-      if (window.location.hash !== '#' + key) {
+      if (window.location.hash !== '#' + key && !(key === 'dfs-bfs' && ['#dfs', '#bfs', '#dfs-backtracking', '#backtracking'].includes(window.location.hash))) {
         if (history.replaceState) {
           history.replaceState(null, '', '#' + key);
         } else {
@@ -1450,7 +1738,10 @@
 
     function renderStep(stepIndex) {
       currentStepIndex = stepIndex;
-      const data = ALGORITHMS[currentAlgoKey];
+      let data = ALGORITHMS[currentAlgoKey];
+      if (currentAlgoKey === 'dfs-bfs' && data.submodes) {
+        data = data.submodes[currentDfsBfsMode] || data.submodes['bfs'];
+      }
       const s = data.steps[stepIndex];
       const totalSteps = data.steps.length - 1;
 
@@ -1521,7 +1812,10 @@
       document.getElementById('btnPlay').classList.replace('bg-blue-600', 'bg-amber-600');
       document.getElementById('btnPlay').classList.replace('hover:bg-blue-500', 'hover:bg-amber-500');
 
-      const data = ALGORITHMS[currentAlgoKey];
+      let data = ALGORITHMS[currentAlgoKey];
+      if (currentAlgoKey === 'dfs-bfs' && data.submodes) {
+        data = data.submodes[currentDfsBfsMode] || data.submodes['bfs'];
+      }
       if (currentStepIndex >= data.steps.length - 1) {
         currentStepIndex = 0;
         renderStep(0);
@@ -1576,6 +1870,9 @@
       'dynamic_programming': 'dp',
       'dfs': 'dfs-bfs',
       'bfs': 'dfs-bfs',
+      'dfs-backtracking': 'dfs-bfs',
+      'dfs_backtracking': 'dfs-bfs',
+      'backtracking': 'dfs-bfs',
       'dfs-bfs': 'dfs-bfs',
       'dfsbfs': 'dfs-bfs',
       'dfs_bfs': 'dfs-bfs',
@@ -1610,6 +1907,14 @@
         .toLowerCase();
       if (!raw || raw === 'home' || raw === 'intro' || raw === 'toc' || raw === 'index' || raw === 'overview') {
         return 'home';
+      }
+      if (raw === 'dfs' || raw === 'dfs-backtracking' || raw === 'backtracking') {
+        currentDfsBfsMode = 'dfs';
+        return 'dfs-bfs';
+      }
+      if (raw === 'bfs') {
+        currentDfsBfsMode = 'bfs';
+        return 'dfs-bfs';
       }
       if (ALGORITHMS[raw]) return raw;
       if (ALIAS_MAP[raw] && ALGORITHMS[ALIAS_MAP[raw]]) return ALIAS_MAP[raw];
@@ -1707,7 +2012,10 @@
 
     document.getElementById('btnNext').addEventListener('click', () => {
       pause();
-      const data = ALGORITHMS[currentAlgoKey];
+      let data = ALGORITHMS[currentAlgoKey];
+      if (currentAlgoKey === 'dfs-bfs' && data.submodes) {
+        data = data.submodes[currentDfsBfsMode] || data.submodes['bfs'];
+      }
       if (data && currentStepIndex < data.steps.length - 1) renderStep(currentStepIndex + 1);
     });
 
@@ -1740,7 +2048,10 @@
       if (e.key === 'ArrowRight' || e.key === 'n') {
         e.preventDefault();
         pause();
-        const data = ALGORITHMS[currentAlgoKey];
+        let data = ALGORITHMS[currentAlgoKey];
+        if (currentAlgoKey === 'dfs-bfs' && data.submodes) {
+          data = data.submodes[currentDfsBfsMode] || data.submodes['bfs'];
+        }
         if (data && currentStepIndex < data.steps.length - 1) renderStep(currentStepIndex + 1);
       } else if (e.key === 'ArrowLeft' || e.key === 'p') {
         e.preventDefault();
@@ -1757,7 +2068,7 @@
       const target = getHashKey();
       if (target === 'home') {
         if (currentAlgoKey !== 'home') showHomeView();
-      } else if (ALGORITHMS[target] && target !== currentAlgoKey) {
+      } else if (ALGORITHMS[target]) {
         loadAlgorithm(target);
       }
     });
